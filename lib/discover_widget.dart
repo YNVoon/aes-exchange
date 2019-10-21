@@ -11,11 +11,10 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
 
   var shoppingListTitle = ["Master Card", "Union Pay"];
   var shoppingListDescription = ["Pay master card bill", "Pay Union Pay bill"];
-  var blockChainListTitle = ["BTC", "ETH", "AES", "USDT"];
+  var blockChainListTitle = ["BTC", "ETH", "USDT"];
   var blockChainListWebPath = [
     "https://coinmarketcap.com/currencies/bitcoin/",
     "https://coinmarketcap.com/currencies/ethereum/",
-    "https://coinmarketcap.com/currencies/tether/",
     "https://coinmarketcap.com/currencies/tether/"
   ];
 
@@ -351,7 +350,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
               (BuildContext context, int index) {
                 return _buildCard("testing", index);
               },
-              childCount: 4
+              childCount: 3
             ),
           ),
           SliverToBoxAdapter(
