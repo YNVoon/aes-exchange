@@ -290,7 +290,6 @@ class _PerformancePageState extends State<PerformancePage> {
                                         ],
                                       ),
                                     ),
-                                    
                                   ],
                                 ),
                               ),

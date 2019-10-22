@@ -4,6 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'model/currency.dart';
 
 import 'performance_widget.dart';
+import 'assets_widget.dart';
  
 class PropertyWidget extends StatefulWidget {
   @override
@@ -31,7 +32,10 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                print("Tapped");
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => AssetsPage(currency: currency,)),
+                );
               },
               child: Container(
                 padding: EdgeInsets.only(left: 15.0, right: 10.0, top: 10.0, bottom: 10.0),
@@ -180,24 +184,14 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                     width: MediaQuery.of(context).size.width / 2.0,
                     child: FlatButton.icon(
                       onPressed: () {
-                        // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-                        //   statusBarIconBrightness: Brightness.light
-                        // ));
                         SystemChrome.setSystemUIOverlayStyle(
                           SystemUiOverlayStyle(
                             statusBarColor: Color(0x33000116)
                           )
                         );
-                        // SystemChrome.setSystemUIOverlayStyle(
-                        //   SystemUiOverlayStyle(
-                        //     statusBarColor: Colors.white,
-                        //     statusBarIconBrightness: Brightness.light,
-                        //     systemNavigationBarIconBrightness: Brightness.light,
-                        //   )
-                        // );
                         Navigator.push(
                           context, 
-                          MaterialPageRoute(builder: (context) => PerformancePage())
+                          MaterialPageRoute(builder: (context) => PerformancePage()),
                         );
                         
                         
