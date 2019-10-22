@@ -245,7 +245,7 @@ class _AssetsPageState extends State<AssetsPage> {
                ),
                Expanded(
                  child: Container(
-                   margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                   margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 15.0),
                    height: 50.0,
                    child: Align(
                     alignment: FractionalOffset.bottomCenter,
@@ -289,16 +289,7 @@ class _AssetsPageState extends State<AssetsPage> {
                     ),
                   ),
                  )
-               ),
-               
-              //  Container(
-              //   color: Colors.black,
-              //   child: Align(
-              //     alignment: Alignment.bottomCenter,
-              //     child: Text("Hello"),
-              //   ),
-              // )
-               
+               ), 
              ],
            )
          ),

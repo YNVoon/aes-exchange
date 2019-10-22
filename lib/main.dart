@@ -4,6 +4,7 @@ import 'property_widget.dart';
 import 'trust_widget.dart';
 import 'discover_widget.dart';
 import 'userprofile_widget.dart';
+import 'login_widget.dart';
 
 void main() => runApp(MyApp());
 
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ), 
-      home: MyHomePage(title: 'AES Exchange'),
+      // home: MyHomePage(title: 'AES Exchange'),
+      home: LoginPage(),
     );
   }
 }

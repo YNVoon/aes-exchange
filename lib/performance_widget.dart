@@ -267,7 +267,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                     ),
                                     Divider(
                                       color: Colors.grey,
-                                      thickness: 1.0,
+                                      thickness: 0.3,
                                       height: 28.0,
                                     ),
                                     Container(
@@ -330,84 +330,6 @@ class _PerformancePageState extends State<PerformancePage> {
             )
           ],
         )
-      // CustomScrollView(
-      //   slivers: <Widget>[
-      //     SliverAppBar(
-      //       backgroundColor: Color(0xFF000116),
-      //       brightness: Brightness.dark,
-      //       automaticallyImplyLeading: false,
-      //       leading: IconButton(
-      //         icon: Icon(Icons.arrow_back),
-      //         onPressed: () {
-      //           Navigator.pop(context);
-      //           SystemChrome.setSystemUIOverlayStyle(
-      //             SystemUiOverlayStyle(
-      //               statusBarColor: Colors.white
-      //             )
-      //           );
-      //         },
-      //       ),
-      //       actions: <Widget>[
-      //         Container(
-      //           margin: EdgeInsets.only(right: 15.0),
-      //           // height: 10.0,
-      //           child: Column(
-      //             mainAxisAlignment: MainAxisAlignment.center,
-      //             crossAxisAlignment: CrossAxisAlignment.center,
-      //             children: <Widget>[
-      //               Text(
-      //                 "Switch to Badge Reward",
-      //                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
-      //               )
-      //             ],
-      //           ),
-      //         )
-      //       ],
-      //       iconTheme: IconThemeData(
-      //         color: Colors.white
-      //       ),
-      //       expandedHeight: 250.0,
-      //       floating: false,
-      //       pinned: false,
-      //       snap: false,
-      //       flexibleSpace: Stack(
-      //         children: <Widget>[
-      //           FlexibleSpaceBar(
-      //             background: Image.asset(
-      //               "assets/blue_stock.jpg",
-      //               fit: BoxFit.cover,
-      //             ),
-      //           ),
-      //           Center(
-      //             child: Text("Hello World", style: TextStyle(color: Colors.white)),
-      //           )
-      //         ],
-      //       )
-      //     ),
-      //     SliverFillRemaining(
-      //       child: Center(
-      //         child: Text("Hello"),
-      //       ),
-      //     )
-      //   ],
-      // )
-
-      // Stack(
-      //   children: <Widget>[
-      //     Container(
-      //       decoration: BoxDecoration(
-      //         image: DecorationImage(
-      //           alignment: Alignment(-1.0, -1.0),
-      //           image: AssetImage("assets/blue_stock.jpg"),
-      //           fit: BoxFit.contain
-      //         )
-      //       ),
-      //     ),
-      //     Center(
-      //       child: Text("Hello World"),
-      //     )
-      //   ],
-      // )
       )
     );
   }
