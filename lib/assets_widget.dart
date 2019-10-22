@@ -14,8 +14,9 @@ class _AssetsPageState extends State<AssetsPage> {
 
   List<String> _buttonList = ["Hello World", "Testing", "Swap", "Transaction"];
 
-  Widget _buildGridButtons (String title) {
+  Widget _buildGridButtons (String title, int index) {
     return Container(
+      margin: index % 2 == 0 ? EdgeInsets.only(right: 5.0) : EdgeInsets.only(left: 5.0),
       height: 75.0,
       child: Card(
         color: Color(0xFFf3f7fa),
@@ -189,18 +190,18 @@ class _AssetsPageState extends State<AssetsPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(10.0),
+                      padding: EdgeInsets.all(5.0),
                       color: Color(0xFFf7f8fa),
                     ),
                     Container(
-                      margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+                      margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 20.0),
                       child: Column(
                         children: <Widget>[
                           Container(
                             width: MediaQuery.of(context).size.width,
                             child: Text(
                               "Trade",
-                              style: TextStyle(fontSize: 16.0, color: Color(0xFFa6a6a6), fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.start,
                             ),
                           )
@@ -213,26 +214,26 @@ class _AssetsPageState extends State<AssetsPage> {
                         children: <Widget>[
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Swap"),
+                            child: _buildGridButtons("Swap", 0),
                           ),
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Transfer"),
+                            child: _buildGridButtons("Transfer", 1),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(left: 15.0, right: 15.0),
+                      margin: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
                       child: Row(
                         children: <Widget>[
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Withdrawal Record"),
+                            child: _buildGridButtons("Withdrawal Record", 2),
                           ),
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Transaction"),
+                            child: _buildGridButtons("Transaction", 3),
                           ),
                         ],
                       ),
@@ -242,6 +243,54 @@ class _AssetsPageState extends State<AssetsPage> {
                 ),
                 
                ),
+               Expanded(
+                 child: Container(
+                   margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                   height: 50.0,
+                   child: Align(
+                    alignment: FractionalOffset.bottomCenter,
+                    child: Row(
+                      children: <Widget>[
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(right: 8.0),
+                            width: MediaQuery.of(context).size.width / 2 -20.0,
+                            child: RaisedButton(
+                              color: Color(0xFF00be82),
+                              onPressed: () {
+
+                              },
+                              child: Text(
+                                "Deposit",
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+                              ),
+                            ),
+                          )
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(left: 8.0),
+                            width: MediaQuery.of(context).size.width / 2 - 20.0,
+                            child: RaisedButton(
+                              color: Color(0xFFee318b),
+                              onPressed: () {
+
+                              },
+                              child: Text(
+                                "Withdrawal",
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+                              ),
+                            ),
+                          )
+                        )
+                      ],
+                    ),
+                  ),
+                 )
+               ),
+               
               //  Container(
               //   color: Colors.black,
               //   child: Align(
