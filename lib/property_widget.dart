@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'model/currency.dart';
+
+import 'performance_widget.dart';
  
 class PropertyWidget extends StatefulWidget {
   @override
@@ -177,7 +180,27 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                     width: MediaQuery.of(context).size.width / 2.0,
                     child: FlatButton.icon(
                       onPressed: () {
-
+                        // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+                        //   statusBarIconBrightness: Brightness.light
+                        // ));
+                        SystemChrome.setSystemUIOverlayStyle(
+                          SystemUiOverlayStyle(
+                            statusBarColor: Color(0x33000116)
+                          )
+                        );
+                        // SystemChrome.setSystemUIOverlayStyle(
+                        //   SystemUiOverlayStyle(
+                        //     statusBarColor: Colors.white,
+                        //     statusBarIconBrightness: Brightness.light,
+                        //     systemNavigationBarIconBrightness: Brightness.light,
+                        //   )
+                        // );
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (context) => PerformancePage())
+                        );
+                        
+                        
                       },
                       color: Colors.transparent,
                       icon: Icon(Icons.insert_chart, color: Color(0xFF1d2f33), size: 26.0),

@@ -3,6 +3,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/user_profile.dart';
 
+import 'personal_info_widget.dart';
+
 class UserProfileWidget extends StatefulWidget {
   UserProfileWidget({Key key}) : super(key: key);
 
@@ -42,7 +44,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                       margin: EdgeInsets.only(left: 20.0),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        child: Text(userProfile.title, textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                        child: Text(userProfile.title, textAlign: TextAlign.start),
                       ),
                     )
                   ],
@@ -78,7 +80,10 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
           SliverToBoxAdapter(
             child: GestureDetector(
               onTap: () {
-                print("tabbed");
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => PersonalInfoPage())
+                );
               },
               child: Container(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
