@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "800754295711",
+    "firebase_url": "https://aes-wallet.firebaseio.com",
+    "project_id": "aes-wallet",
+    "storage_bucket": "aes-wallet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800754295711:android:4a557e7949e564e10013aa",
+        "android_client_info": {
+          "package_name": "com.example.aes_exchange"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "800754295711-shdr99629nhq8o5nt2vciplftassd6ju.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5RMIeFH2BHMGysWPrvBiQo8N-hUPNoHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "800754295711-shdr99629nhq8o5nt2vciplftassd6ju.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

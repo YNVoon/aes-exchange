@@ -10,11 +10,14 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final _isUserLoggedin = false;
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.white
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark
       )
     );
     return MaterialApp(
@@ -23,7 +26,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.white,
       ), 
       // home: MyHomePage(title: 'AES Exchange'),
-      home: LoginPage(),
+      home: _isUserLoggedin ? MyHomePage(title: 'AES Exchange') : LoginPage(),
     );
   }
 }
@@ -71,12 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
       appBar: PreferredSize(

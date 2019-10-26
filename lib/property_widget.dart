@@ -5,6 +5,11 @@ import 'model/currency.dart';
 
 import 'performance_widget.dart';
 import 'assets_widget.dart';
+import 'model/crypto_address.dart';
+
+import 'dart:io';
+import 'dart:convert';
+
  
 class PropertyWidget extends StatefulWidget {
   @override
@@ -22,6 +27,18 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
     Currency("USDT", 1.00, -0.03, ""),
     // Currency("USDT", 1.00, -0.03, ""),
   ];
+
+  _request() async {
+    // Generate new address (btc) 
+    new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/webApi/api/v1/test'))
+      .then((HttpClientRequest request) => request.close())
+      .then((HttpClientResponse response) {
+        response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+          print(contents.toString());
+          print(CryptoAddress.fromJson(contents).privateKey);
+        });
+      });
+  }
 
   Widget _buildRow(Currency currency) {
     return Container(
@@ -209,7 +226,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                     width: MediaQuery.of(context).size.width / 2.05,
                     child: FlatButton.icon(
                       onPressed: () {
-
+                        _request();
                       },
                       color: Colors.transparent,
                       icon: Icon(Icons.notifications, color: Color(0xFF1d2f33), size: 26.0),

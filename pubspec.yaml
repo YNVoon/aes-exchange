@@ -25,6 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   pull_to_refresh: ^1.5.7
   url_launcher: ^5.2.3
+  progress_dialog: ^1.2.0
+  firebase_auth: ^0.14.0+5
 
 dev_dependencies:
   flutter_test:
