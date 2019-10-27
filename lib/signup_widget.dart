@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'main.dart';
 
@@ -14,7 +14,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
 
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
@@ -74,12 +74,12 @@ class _SignupPageState extends State<SignupPage> {
   Future<void> signUp() async {
     pr1.show();
     try {
-      // FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
+      FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
       pr1.dismiss();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
       
     } catch (e) {
-      // print(e.message);
+      print(e.message);
       pr1.dismiss();
       _showMaterialDialog(e.message);
     }

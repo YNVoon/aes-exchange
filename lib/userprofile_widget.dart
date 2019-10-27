@@ -6,7 +6,7 @@ import 'model/user_profile.dart';
 import 'personal_info_widget.dart';
 import 'login_widget.dart';
 
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserProfileWidget extends StatefulWidget {
   UserProfileWidget({Key key}) : super(key: key);
@@ -17,7 +17,7 @@ class UserProfileWidget extends StatefulWidget {
 class _UserProfileWidgetState extends State<UserProfileWidget> {
   final RefreshController _refreshController = RefreshController();
 
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<List<UserProfile>> _settingList = [
     [UserProfile("Invitation code", Icons.drafts, "invitation_code"), UserProfile("Address book", Icons.contacts, "address_book"),],
@@ -27,14 +27,14 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
 
   Future<void> signOut () async {
     try {
-      // FirebaseUser user = await _auth.currentUser();
-      // if (user != null) {
-      //   await _auth.signOut();
-      //   print('Sign out successful');
-      //   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
-      // } else {
-      //   print('No active user');
-      // }
+      FirebaseUser user = await _auth.currentUser();
+      if (user != null) {
+        await _auth.signOut();
+        print('Sign out successful');
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+      } else {
+        print('No active user');
+      }
     } catch (e) {
       print(e.message);
     }
