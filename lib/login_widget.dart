@@ -4,7 +4,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'signup_widget.dart';
 import 'main.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -14,7 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
   
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
@@ -56,28 +56,28 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.clear();
   }
 
-  Future<void> getCurrentUser() async {
-    try {
-      FirebaseUser user = (await _auth.currentUser());
-      if (user != null) {
-        print(user.email);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
-      } else {
-        print('No active user');
-      }
-      // await _auth.signOut();
-      // print("Success");
-    } catch (e) {
-      print(e.message);
-    }
-  }
+  // Future<void> getCurrentUser() async {
+  //   try {
+  //     FirebaseUser user = (await _auth.currentUser());
+  //     if (user != null) {
+  //       print(user.email);
+  //       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+  //     } else {
+  //       print('No active user');
+  //     }
+  //     // await _auth.signOut();
+  //     // print("Success");
+  //   } catch (e) {
+  //     print(e.message);
+  //   }
+  // }
 
   Future<void> signIn (String email, String password) async {
     pr.show();
     try {
-      AuthResult authResult =  await _auth.signInWithEmailAndPassword(email: email, password: password);
-      print("Success");
-      print(authResult);
+      // AuthResult authResult =  await _auth.signInWithEmailAndPassword(email: email, password: password);
+      // print("Success");
+      // print(authResult);
       pr.dismiss();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
       // Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    // getCurrentUser();
   }
 
   @override
