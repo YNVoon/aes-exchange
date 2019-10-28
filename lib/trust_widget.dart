@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/currency.dart';
+
+import 'total_trust_assets.dart';
  
 class TrustWidget extends StatefulWidget {
   @override
@@ -13,7 +15,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
 
   final List<Currency> _currencyList = [
     Currency("AES", 0.00, 0.00, "assets/aessignatum.png", 0.000000),
-    Currency("BTC", 0.00, 0.00, "assets/bitcoin.jpg", 0.000000),
+    Currency("BTC", 0.00, 0.00, "assets/bitcoin.png", 0.000000),
     Currency("ETH", 0.00, 0.00, "assets/ethereum.png", 0.000000),
     Currency("USDT", 0.00, 0.00, "assets/tether.png", 0.000000),
     // Currency("USDT", 1.00, -0.03, ""),
@@ -29,7 +31,10 @@ class _MyTrustWidgetState extends State<TrustWidget> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                print("Tapped");
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => TotalTrustAssetPage()),
+                );
               },
               child: Container(
                 padding: EdgeInsets.only(left: 15.0, right: 10.0, top: 10.0, bottom: 10.0),

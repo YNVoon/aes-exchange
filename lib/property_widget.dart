@@ -31,7 +31,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
 
   final List<Currency> _currencyList = [
     Currency("AES", 0.00, 0.00, "assets/aessignatum.png", 0.000000),
-    Currency("BTC", 0.00, 0.00, "assets/bitcoin.jpg", 0.000000),
+    Currency("BTC", 0.00, 0.00, "assets/bitcoin.png", 0.000000),
     Currency("ETH", 0.00, 0.00, "assets/ethereum.png", 0.000000),
     Currency("USDT", 0.00, 0.00, "assets/tether.png", 0.000000),
   ];
@@ -78,15 +78,27 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                   _currencyList[0].currencyCurrentValue = double.parse(myCryptoCurrentBalance.aesCurrentPrice);
                   _currencyList[0].currencyQuoteChange = double.parse(myCryptoCurrentBalance.aesPercentChange);
                   _currencyList[0].equalityToUsdt = double.parse(myCryptoCurrentBalance.aesToUsdt);
+                  _currencyList[0].currencyBalance = (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toStringAsFixed(8);
+                  _currencyList[0].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalAesToUsdt);
+                  _currencyList[0].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalAesBalance) / 1e8).toStringAsFixed(8);
                   _currencyList[1].currencyCurrentValue = double.parse(myCryptoCurrentBalance.btcCurrentPrice);
                   _currencyList[1].currencyQuoteChange = double.parse(myCryptoCurrentBalance.btcPercentChange);
                   _currencyList[1].equalityToUsdt = double.parse(myCryptoCurrentBalance.btcToUsdt);
+                  _currencyList[1].currencyBalance = (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toStringAsFixed(8);
+                  _currencyList[1].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalBtcToUsdt);
+                  _currencyList[1].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalBtcBalance) / 100000000).toStringAsFixed(8);
                   _currencyList[2].currencyCurrentValue = double.parse(myCryptoCurrentBalance.ethCurrentPrice);
                   _currencyList[2].currencyQuoteChange = double.parse(myCryptoCurrentBalance.ethPercentChange);
                   _currencyList[2].equalityToUsdt = double.parse(myCryptoCurrentBalance.ethToUsdt);
+                  _currencyList[2].currencyBalance = (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toStringAsFixed(10);
+                  _currencyList[2].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalEthToUsdt);
+                  _currencyList[2].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalEthBalance) / 1e18).toStringAsFixed(10);
                   _currencyList[3].currencyCurrentValue = double.parse(myCryptoCurrentBalance.usdtCurrentPrice);
                   _currencyList[3].currencyQuoteChange = double.parse(myCryptoCurrentBalance.usdtPercentChange);
                   _currencyList[3].equalityToUsdt = double.parse(myCryptoCurrentBalance.usdtToUsdt);
+                  _currencyList[3].currencyBalance = (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6);
+                  _currencyList[3].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalUsdtToUsdt);
+                  _currencyList[3].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalUsdtBalance) / 1000000).toStringAsFixed(6);
                 });
                 
                 print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
@@ -115,7 +127,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
               onTap: () {
                 Navigator.push(
                   context, 
-                  MaterialPageRoute(builder: (context) => AssetsPage(currency: currency,)),
+                  MaterialPageRoute(builder: (context) => AssetsPage(currency: currency)),
                 );
               },
               child: Container(

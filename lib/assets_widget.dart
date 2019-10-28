@@ -2,12 +2,12 @@ import 'package:aes_exchange/model/currency.dart';
 import 'package:flutter/material.dart';
 
 class AssetsPage extends StatefulWidget {
+
   final Currency currency;
+
   AssetsPage({Key key, @required this.currency}) : super(key: key);
 
   _AssetsPageState createState() => _AssetsPageState();
-
-  
 }
 
 class _AssetsPageState extends State<AssetsPage> {
@@ -26,6 +26,7 @@ class _AssetsPageState extends State<AssetsPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text("T", style: TextStyle(fontSize: 30.0)),
+              
               Container(
                 width: 80.0,
                 margin: EdgeInsets.only(left: 15.0),
@@ -71,7 +72,8 @@ class _AssetsPageState extends State<AssetsPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                           // Currency Logo Image
-                          Text("T", style: TextStyle(fontSize: 40.0)),
+                          // Text("T", style: TextStyle(fontSize: 40.0)),
+                          Image(image: AssetImage(widget.currency.currencyLogoUrl), width: 30.0,),
                           Container(
                             width:50,
                             margin: EdgeInsets.only(left: 20.0),
@@ -108,7 +110,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               ),
                               Spacer(),
                               Text(
-                                "0.000000",
+                                widget.currency.currencyBalanceTotal,
                                 style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.start,
                               ),
@@ -128,7 +130,7 @@ class _AssetsPageState extends State<AssetsPage> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  "0.000000",
+                                  widget.currency.currencyBalance,
                                   style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.start,
                                 ),
@@ -159,7 +161,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               ),
                               Spacer(),
                               Text(
-                                "0.000000",
+                                widget.currency.equalityToUsdtTotal.toStringAsFixed(6),
                                 style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.start,
                               ),
@@ -179,7 +181,7 @@ class _AssetsPageState extends State<AssetsPage> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  "0.000000",
+                                  widget.currency.equalityToUsdt.toStringAsFixed(6),
                                   style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.start,
                                 ),

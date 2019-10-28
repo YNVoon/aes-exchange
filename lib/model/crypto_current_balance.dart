@@ -1,8 +1,12 @@
 class CryptoCurrentBalance {
-  final String btcBalance;
+  final String btcBalance; //Available Balance
   final String ethBalance;
   final String usdtBalance;
   final String aesBalance;
+  final String totalBtcBalance;
+  final String totalEthBalance;
+  final String totalUsdtBalance;
+  final String totalAesBalance;
   final String btcCurrentPrice;
   final String ethCurrentPrice;
   final String usdtCurrentPrice;
@@ -15,12 +19,18 @@ class CryptoCurrentBalance {
   final String ethToUsdt;
   final String usdtToUsdt;
   final String aesToUsdt;
+  final String totalBtcToUsdt;
+  final String totalEthToUsdt;
+  final String totalUsdtToUsdt;
+  final String totalAesToUsdt;
   final String totalAssetInUsdt;
 
   CryptoCurrentBalance({this.btcBalance, this.ethBalance, this.usdtBalance, this.aesBalance,
                         this.btcCurrentPrice, this.ethCurrentPrice, this.usdtCurrentPrice, this.aesCurrentPrice,
                         this.btcPercentChange, this.ethPercentChange, this.usdtPercentChange, this.aesPercentChange,
-                        this.btcToUsdt, this.ethToUsdt, this.usdtToUsdt, this.aesToUsdt, this.totalAssetInUsdt});
+                        this.btcToUsdt, this.ethToUsdt, this.usdtToUsdt, this.aesToUsdt, this.totalAssetInUsdt,
+                        this.totalBtcBalance, this.totalEthBalance, this.totalUsdtBalance, this.totalAesBalance,
+                        this.totalBtcToUsdt, this.totalEthToUsdt, this.totalUsdtToUsdt, this.totalAesToUsdt});
 
   factory CryptoCurrentBalance.fromJson(Map<String, dynamic> json) {
     return CryptoCurrentBalance(
@@ -28,6 +38,10 @@ class CryptoCurrentBalance {
       ethBalance: json['ethBalance'].toString(),
       usdtBalance: json['usdtBalance'].toString(),
       aesBalance: json['aesBalance'].toString(),
+      totalBtcBalance: json['totalBtcBalance'].toString(),
+      totalEthBalance: json['totalEthBalance'].toString(),
+      totalUsdtBalance: json['totalUsdtBalance'].toString(),
+      totalAesBalance: json['totalAesBalance'].toString(),
       btcCurrentPrice: json['btcCurrentPrice'].toString(),
       ethCurrentPrice: json['ethCurrentPrice'].toString(),
       usdtCurrentPrice: json['usdtCurrentPrice'].toString(),
@@ -40,6 +54,10 @@ class CryptoCurrentBalance {
       ethToUsdt: json['ethToUsdt'].toString(),
       usdtToUsdt: json['usdtToUsdt'].toString(),
       aesToUsdt: json['aesToUsdt'].toString(),
+      totalBtcToUsdt: json['totalBtcToUsdt'].toString(),
+      totalEthToUsdt: json['totalEthToUsdt'].toString(),
+      totalUsdtToUsdt: json['totalUsdtToUsdt'].toString(),
+      totalAesToUsdt: json['totalAesToUsdt'].toString(),
       totalAssetInUsdt: json['totalAssetInUsdt'].toString()
     );
   }
