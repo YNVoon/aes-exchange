@@ -3,6 +3,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/trust_transaction_list.dart';
 
+import 'transfer_trust_widget.dart';
+
 class TotalTrustAssetPage extends StatefulWidget {
   TotalTrustAssetPage({Key key}) : super(key: key);
 
@@ -223,7 +225,10 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
         child: RaisedButton(
           color: Color(0xFF018dee),
           onPressed: () {
-
+            Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context) => TransferTrustPage()),
+            );
           },
           child: Text(
             "Transfer Trust",

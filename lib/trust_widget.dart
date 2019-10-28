@@ -3,7 +3,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/currency.dart';
 
-import 'total_trust_assets.dart';
+import 'total_trust_assets_widget.dart';
  
 class TrustWidget extends StatefulWidget {
   @override
