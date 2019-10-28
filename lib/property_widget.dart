@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'model/currency.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 import 'performance_widget.dart';
 import 'assets_widget.dart';
 import 'model/crypto_address.dart';
+import 'model/crypto_current_balance.dart';
 
 import 'dart:io';
 import 'dart:convert';
@@ -25,12 +27,16 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  ProgressDialog pr1;
+
   final List<Currency> _currencyList = [
     Currency("AES", 4.15, 0.72, ""),
     Currency("BTC", 8094.74, -0.61, ""),
     Currency("ETH", 176.77, -3.09, ""),
     Currency("USDT", 1.00, -0.03, ""),
   ];
+
+  CryptoCurrentBalance myCryptoCurrentBalance = CryptoCurrentBalance(btcBalance: "0.000000", ethBalance: "0.000000", usdtBalance: "0.000000", aesBalance: "0.000000");
 
   _request() async {
     // Generate new address (btc) 
@@ -44,13 +50,36 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
       });
   }
 
-  Future<void> _requestUserData() async {
+  Future<void> _requestUserDataThenCheckBalance() async {
     try {
       FirebaseUser user = (await _auth.currentUser());
       if (user != null) {
         final usersRef = FirebaseDatabase.instance.reference().child('users/' + user.uid);
         usersRef.once().then((DataSnapshot snapshot) {
-          print('Data: ${snapshot.value}');
+          // var btcAddress = snapshot.value.entries.elementAt(1).value.toString();
+          var btcAddress = '18rVSPVVjeMnhvncT1LuHZBzzkAoet4vcr';
+          // var ethAddress = snapshot.value.entries.elementAt(4).value.toString();
+          var ethAddress = '0x3c06e885c32e2e7d09eaf4c8e80480bd5e87f9f5';
+          print(btcAddress);
+          print(ethAddress);
+          var queryParameters = {
+            'btcAddress': btcAddress,
+            'ethAddress': ethAddress
+          };
+          new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/checkBalance', queryParameters))
+            .then((HttpClientRequest request) => request.close())
+            .then((HttpClientResponse response) {
+              response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+                setState(() {
+                  myCryptoCurrentBalance = CryptoCurrentBalance.fromJson(contents);
+                });
+                
+                print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
+                print('ethBalance: ' + (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toString());
+                print('aesBalance: ' + (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toString());
+                print('usdtBalance: ' + (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toString());
+              });
+            });
         });
       } else {
         print('No active user');
@@ -155,17 +184,21 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   @override
   void initState() {
     super.initState();
-    _requestUserData();
+    _requestUserDataThenCheckBalance();
   }
 
   @override
   Widget build(BuildContext context) {
+    pr1 = new ProgressDialog(context);
+    pr1.style(message: 'Please wait...');
+
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,
       header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
       onRefresh: () async {
-        await Future.delayed(Duration(seconds: 1));
+        _requestUserDataThenCheckBalance();
+        await Future.delayed(Duration(seconds: 2));
         _refreshController.refreshCompleted();
       },
       child: CustomScrollView(
@@ -322,10 +355,10 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                _buildRow(_currencyList[0], '0.000000'),
-                _buildRow(_currencyList[1], '0.000000'),
-                _buildRow(_currencyList[2], '0.000000'),
-                _buildRow(_currencyList[3], '0.000000'),
+                _buildRow(_currencyList[0], (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toStringAsFixed(8)),
+                _buildRow(_currencyList[1], (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toStringAsFixed(8)),
+                _buildRow(_currencyList[2], (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toStringAsFixed(10)),
+                _buildRow(_currencyList[3], (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6)),
               ]
             ),
           )
