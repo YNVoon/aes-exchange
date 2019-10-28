@@ -1,10 +1,11 @@
 // Currency Model
 // TODO: Get it from API
 class Currency {
-  final String currencyName;
-  final double currencyCurrentValue;
-  final double currencyQuoteChange;
-  final String currencyLogoUrl;
+  String currencyName;
+  double currencyCurrentValue;
+  double currencyQuoteChange;
+  String currencyLogoUrl;
+  double equalityToUsdt;
 
-  Currency(this.currencyName, this.currencyCurrentValue, this.currencyQuoteChange, this.currencyLogoUrl);
+  Currency(this.currencyName, this.currencyCurrentValue, this.currencyQuoteChange, this.currencyLogoUrl, this.equalityToUsdt);
 }

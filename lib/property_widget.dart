@@ -30,13 +30,16 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   ProgressDialog pr1;
 
   final List<Currency> _currencyList = [
-    Currency("AES", 4.15, 0.72, ""),
-    Currency("BTC", 8094.74, -0.61, ""),
-    Currency("ETH", 176.77, -3.09, ""),
-    Currency("USDT", 1.00, -0.03, ""),
+    Currency("AES", 0.00, 0.00, "assets/aessignatum.png", 0.000000),
+    Currency("BTC", 0.00, 0.00, "assets/bitcoin.jpg", 0.000000),
+    Currency("ETH", 0.00, 0.00, "assets/ethereum.png", 0.000000),
+    Currency("USDT", 0.00, 0.00, "assets/tether.png", 0.000000),
   ];
 
-  CryptoCurrentBalance myCryptoCurrentBalance = CryptoCurrentBalance(btcBalance: "0.000000", ethBalance: "0.000000", usdtBalance: "0.000000", aesBalance: "0.000000");
+  CryptoCurrentBalance myCryptoCurrentBalance = CryptoCurrentBalance(btcBalance: "0.000000", ethBalance: "0.000000", usdtBalance: "0.000000", aesBalance: "0.000000",
+                                                                    btcCurrentPrice: "0.00", ethCurrentPrice: "0.00", usdtCurrentPrice: "0.00", aesCurrentPrice: "0.00",
+                                                                    btcPercentChange: "0.00", ethPercentChange: "0.00", usdtPercentChange: "0.00", aesPercentChange: "0.00",
+                                                                    btcToUsdt: "0.000000", ethToUsdt: "0.000000", usdtToUsdt: "0.000000", aesToUsdt: "0.000000", totalAssetInUsdt: "0.000000");
 
   _request() async {
     // Generate new address (btc) 
@@ -72,6 +75,18 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
               response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
                 setState(() {
                   myCryptoCurrentBalance = CryptoCurrentBalance.fromJson(contents);
+                  _currencyList[0].currencyCurrentValue = double.parse(myCryptoCurrentBalance.aesCurrentPrice);
+                  _currencyList[0].currencyQuoteChange = double.parse(myCryptoCurrentBalance.aesPercentChange);
+                  _currencyList[0].equalityToUsdt = double.parse(myCryptoCurrentBalance.aesToUsdt);
+                  _currencyList[1].currencyCurrentValue = double.parse(myCryptoCurrentBalance.btcCurrentPrice);
+                  _currencyList[1].currencyQuoteChange = double.parse(myCryptoCurrentBalance.btcPercentChange);
+                  _currencyList[1].equalityToUsdt = double.parse(myCryptoCurrentBalance.btcToUsdt);
+                  _currencyList[2].currencyCurrentValue = double.parse(myCryptoCurrentBalance.ethCurrentPrice);
+                  _currencyList[2].currencyQuoteChange = double.parse(myCryptoCurrentBalance.ethPercentChange);
+                  _currencyList[2].equalityToUsdt = double.parse(myCryptoCurrentBalance.ethToUsdt);
+                  _currencyList[3].currencyCurrentValue = double.parse(myCryptoCurrentBalance.usdtCurrentPrice);
+                  _currencyList[3].currencyQuoteChange = double.parse(myCryptoCurrentBalance.usdtPercentChange);
+                  _currencyList[3].equalityToUsdt = double.parse(myCryptoCurrentBalance.usdtToUsdt);
                 });
                 
                 print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
@@ -112,7 +127,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                         child: Row(
                           children: <Widget>[
                             // Currency Logo Image
-                            Text("T", style: TextStyle(fontSize: 30.0)),
+                            Image(image: AssetImage(currency.currencyLogoUrl), width: 25.0,),
                             Container(
                               width:70.0,
                               margin: EdgeInsets.only(left: 20.0),
@@ -126,7 +141,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                                   // Currency current value
                                   Container(
                                     width: MediaQuery.of(context).size.width,
-                                    child: Text("\$" + currency.currencyCurrentValue.toString(), style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                                    child: Text("\$" + currency.currencyCurrentValue.toStringAsFixed(2), style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
                                   )
                                 ],
                               ),
@@ -146,7 +161,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                             // Currency current value
                             Container(
                               width: MediaQuery.of(context).size.width,
-                              child: Text('=0.00 AES', style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                              child: Text(currency.equalityToUsdt.toStringAsFixed(6) + ' USDT', style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
                             )
                           ],
                         ),
@@ -159,7 +174,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(
-                            currency.currencyQuoteChange < 0 ? currency.currencyQuoteChange.toString() + "%" : "+" + currency.currencyQuoteChange.toString() + "%",
+                            currency.currencyQuoteChange < 0 ? currency.currencyQuoteChange.toStringAsFixed(2) + "%" : "+" + currency.currencyQuoteChange.toStringAsFixed(2) + "%",
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 15.0, color: Colors.white, fontWeight: FontWeight.bold),
                           ),
@@ -238,8 +253,8 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                           fontSize: 16.0,
                         ),
                         children: <TextSpan>[
-                          TextSpan(text: '0.00000 ', style: TextStyle(fontSize: 32.0)),
-                          TextSpan(text: 'AES')
+                          TextSpan(text: double.parse(myCryptoCurrentBalance.totalAssetInUsdt).toStringAsFixed(6), style: TextStyle(fontSize: 32.0)),
+                          TextSpan(text: ' USDT')
                         ],
                       ),
                     )

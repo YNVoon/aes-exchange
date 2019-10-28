@@ -12,10 +12,10 @@ class _MyTrustWidgetState extends State<TrustWidget> {
   final RefreshController _refreshController = RefreshController();
 
   final List<Currency> _currencyList = [
-    Currency("AES", 4.15, 0.72, ""),
-    Currency("BTC", 8094.74, -0.61, ""),
-    Currency("ETH", 176.77, -3.09, ""),
-    Currency("USDT", 1.00, -0.03, ""),
+    Currency("AES", 0.00, 0.00, "assets/aessignatum.png", 0.000000),
+    Currency("BTC", 0.00, 0.00, "assets/bitcoin.jpg", 0.000000),
+    Currency("ETH", 0.00, 0.00, "assets/ethereum.png", 0.000000),
+    Currency("USDT", 0.00, 0.00, "assets/tether.png", 0.000000),
     // Currency("USDT", 1.00, -0.03, ""),
   ];
 
@@ -38,7 +38,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                     Row(
                       children: <Widget>[
                         // Currency Logo Image
-                        Text("T", style: TextStyle(fontSize: 30.0)),
+                        Image(image: AssetImage(currency.currencyLogoUrl), width: 25.0,),
                         Container(
                           width: 70.0,
                           margin: EdgeInsets.only(left: 20.0),
