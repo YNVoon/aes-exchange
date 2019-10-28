@@ -26,7 +26,10 @@ dependencies:
   pull_to_refresh: ^1.5.7
   url_launcher: ^5.2.3
   progress_dialog: ^1.2.0
+  random_string: ^1.1.0
   firebase_auth: ^0.14.0+5
+  firebase_database: ^3.0.7
+  
 
 dev_dependencies:
   flutter_test:

@@ -95,11 +95,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // getCurrentUser();
+    getCurrentUser();
   }
 
   @override
   Widget build(BuildContext context) {
+
     pr = new ProgressDialog(context);
     pr.style(message: 'Please wait...');
     

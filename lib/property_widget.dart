@@ -10,6 +10,9 @@ import 'model/crypto_address.dart';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
  
 class PropertyWidget extends StatefulWidget {
   @override
@@ -20,12 +23,13 @@ class PropertyWidget extends StatefulWidget {
 class _MyPropertyWidgetState extends State<PropertyWidget> {
   final RefreshController _refreshController = RefreshController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final List<Currency> _currencyList = [
     Currency("AES", 4.15, 0.72, ""),
     Currency("BTC", 8094.74, -0.61, ""),
     Currency("ETH", 176.77, -3.09, ""),
     Currency("USDT", 1.00, -0.03, ""),
-    // Currency("USDT", 1.00, -0.03, ""),
   ];
 
   _request() async {
@@ -40,7 +44,23 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
       });
   }
 
-  Widget _buildRow(Currency currency) {
+  Future<void> _requestUserData() async {
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        final usersRef = FirebaseDatabase.instance.reference().child('users/' + user.uid);
+        usersRef.once().then((DataSnapshot snapshot) {
+          print('Data: ${snapshot.value}');
+        });
+      } else {
+        print('No active user');
+      }
+    } catch (e) {
+      print(e.message);
+    }
+  }
+
+  Widget _buildRow(Currency currency, String myWalletAmount) {
     return Container(
       color: Colors.white,
       child: Column(
@@ -92,7 +112,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                             //Currency Name
                             Container(
                               width: MediaQuery.of(context).size.width,
-                              child: Text('0.000000', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                              child: Text(myWalletAmount, textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
                             ),
                             // Currency current value
                             Container(
@@ -132,6 +152,12 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
     
   }
   
+  @override
+  void initState() {
+    super.initState();
+    _requestUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SmartRefresher(
@@ -296,10 +322,10 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                _buildRow(_currencyList[0]),
-                _buildRow(_currencyList[1]),
-                _buildRow(_currencyList[2]),
-                _buildRow(_currencyList[3]),
+                _buildRow(_currencyList[0], '0.000000'),
+                _buildRow(_currencyList[1], '0.000000'),
+                _buildRow(_currencyList[2], '0.000000'),
+                _buildRow(_currencyList[3], '0.000000'),
               ]
             ),
           )

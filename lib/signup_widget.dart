@@ -5,6 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'main.dart';
 
+import 'dart:io';
+import 'package:random_string/random_string.dart';
+import 'dart:math' show Random;
+
+
 class SignupPage extends StatefulWidget {
   SignupPage({Key key}) : super(key: key);
 
@@ -70,11 +75,27 @@ class _SignupPageState extends State<SignupPage> {
     _passwordController.clear();
     _confirmPasswordController.clear();
   }
+  
+
+  _setUserDatabase(String email, String uuid, String invitationCode) async {
+    var queryParameters = {
+      'email': email,
+      'uuid': uuid,
+      'referralCode': randomAlphaNumeric(10),
+      'invitationCode': invitationCode
+    };
+    new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/createUser', queryParameters))
+      .then((HttpClientRequest request) => request.close())
+      .then((HttpClientResponse response) {
+        print(response.toString());
+      });
+  }
 
   Future<void> signUp() async {
     pr1.show();
     try {
       FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
+      _setUserDatabase(_email, user.uid, _invitationCode);
       pr1.dismiss();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
       
