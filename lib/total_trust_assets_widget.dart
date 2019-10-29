@@ -4,6 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'model/trust_transaction_list.dart';
 
 import 'transfer_trust_widget.dart';
+import 'trust_withdraw_widget.dart';
 
 class TotalTrustAssetPage extends StatefulWidget {
   TotalTrustAssetPage({Key key}) : super(key: key);
@@ -35,7 +36,12 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-
+                if (trustTransaction.isTransferIn) {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => TrustWithdrawPage()),
+                  );
+                }
               },
               child: Container(
                 padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 20.0),
