@@ -1,6 +1,10 @@
 import 'package:aes_exchange/model/currency.dart';
 import 'package:flutter/material.dart';
 
+import 'wallet_withdrawal_widget.dart';
+import 'wallet_transfer_widget.dart';
+import 'wallet_deposit_widget.dart';
+
 class AssetsPage extends StatefulWidget {
 
   final Currency currency;
@@ -15,28 +19,39 @@ class _AssetsPageState extends State<AssetsPage> {
   List<String> _buttonList = ["Hello World", "Testing", "Swap", "Transaction"];
 
   Widget _buildGridButtons (String title, int index) {
-    return Container(
-      margin: index % 2 == 0 ? EdgeInsets.only(right: 5.0) : EdgeInsets.only(left: 5.0),
-      height: 75.0,
-      child: Card(
-        color: Color(0xFFf3f7fa),
-        child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text("T", style: TextStyle(fontSize: 30.0)),
-              
-              Container(
-                width: 80.0,
-                margin: EdgeInsets.only(left: 15.0),
-                child: Text(
-                  title,
-                  style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              )
-            ],
+    return InkWell(
+      onTap: () {
+        if (index == 1) {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => WalletTransferPage()),
+          );
+        }
+        
+      },
+      child: Container(
+        margin: index % 2 == 0 ? EdgeInsets.only(right: 5.0) : EdgeInsets.only(left: 5.0),
+        height: 75.0,
+        child: Card(
+          color: Color(0xFFf3f7fa),
+          child: Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text("T", style: TextStyle(fontSize: 30.0)),
+                
+                Container(
+                  width: 80.0,
+                  margin: EdgeInsets.only(left: 15.0),
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -261,7 +276,10 @@ class _AssetsPageState extends State<AssetsPage> {
                             child: RaisedButton(
                               color: Color(0xFF00be82),
                               onPressed: () {
-
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(builder: (context) => WalletDepositPage()),
+                                );
                               },
                               child: Text(
                                 "Deposit",
@@ -278,7 +296,10 @@ class _AssetsPageState extends State<AssetsPage> {
                             child: RaisedButton(
                               color: Color(0xFFee318b),
                               onPressed: () {
-
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(builder: (context) => WalletWithdrawalPage()),
+                                );
                               },
                               child: Text(
                                 "Withdrawal",

@@ -29,6 +29,7 @@ dependencies:
   random_string: ^1.1.0
   firebase_auth: ^0.14.0+5
   firebase_database: ^3.0.7
+  qr_flutter: ^3.0.1
   
 
 dev_dependencies:
