@@ -1,4 +1,7 @@
+import 'package:aes_exchange/model/trust_currency.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/trust_transaction_list.dart';
@@ -6,8 +9,30 @@ import 'model/trust_transaction_list.dart';
 import 'transfer_trust_widget.dart';
 import 'trust_withdraw_widget.dart';
 
+import 'dart:io';
+import 'dart:convert';
+
+class TransactionList {
+  final String trustToUsdt;
+  final String trustBalance;
+  final List<dynamic> transaction;
+  String trustBalanceInString = "0.00000000";
+
+  TransactionList({this.trustToUsdt, this.trustBalance, this.transaction, this.trustBalanceInString });
+
+  factory TransactionList.fromJson(Map<String, dynamic> json) {
+    return TransactionList(
+      trustToUsdt: json['trustToUsdt'],
+      trustBalance: json['trustBalance'],
+      transaction: json['transaction']
+    );
+  }
+}
+
 class TotalTrustAssetPage extends StatefulWidget {
-  TotalTrustAssetPage({Key key}) : super(key: key);
+  final TrustCurrency currency;
+
+  TotalTrustAssetPage({Key key, @required this.currency}) : super(key: key);
 
   @override
   _TotalTrustAssetPageState createState() => _TotalTrustAssetPageState();
@@ -15,15 +40,139 @@ class TotalTrustAssetPage extends StatefulWidget {
 
 class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final RefreshController _refreshController = RefreshController();
 
   List<TrustTransaction> _trustTransactionList = List<TrustTransaction>();
+  
+  ProgressDialog pr1, pr2;
+
+  var queryParameters = <String, String>{};
+
+  
+
+  TransactionList myTransactionList = TransactionList(trustToUsdt: "0.000000", trustBalance: "0.00000000", transaction: [], trustBalanceInString: '0.00000000');
+  
+  Future<void> _getTransactionListAndLatestTrustBalance(ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+
+      if (user != null) {
+        if (widget.currency.currencyName == 'BTC') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'btc'
+          };
+        } else if (widget.currency.currencyName == 'ETH') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'eth'
+          };
+        } else if (widget.currency.currencyName == 'USDT') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'usdt'
+          };
+        } else if (widget.currency.currencyName == 'AES') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'aes'
+          };
+        }
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getTrustTransactionList', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print(contents.toString());
+              setState(() {
+                myTransactionList = TransactionList.fromJson(contents);
+                _trustTransactionList.length = 0;
+                // print(myTransactionList.transaction[0]);
+                if (myTransactionList.transaction.length > 0) {
+                  int counter = -1;
+                  for (var item in myTransactionList.transaction) {
+                    //  print(item.runtimeType);
+                    counter++;
+                    var status, date, day, month, year, time, hour, minute, second, transactionAmount, isTransferIn;
+                    for (String key in item.keys) {
+                      if (key == 'amount') {
+                        transactionAmount = item[key];
+                        if (widget.currency.currencyName == 'BTC') {
+                          transactionAmount = (item[key] / 1e8);
+                        } else if (widget.currency.currencyName == 'ETH') {
+                          transactionAmount = (item[key] / 1e12);
+                        } else if (widget.currency.currencyName == 'USDT') {
+                          transactionAmount = (item[key] / 1e6);
+                        } else if (widget.currency.currencyName == 'AES') {
+                          transactionAmount = (item[key] / 1e8);
+                        }
+                      } else if (key == 'day') {
+                        day = item[key];
+                      } else if (key == 'month') {
+                        month = item[key];
+                      } else if (key == 'year') {
+                        year = item[key];
+                      } else if (key == 'hour') {
+                        hour = item[key];
+                      } else if (key == 'minute') {
+                        minute = item[key];
+                      } else if (key == 'second') {
+                        second = item[key];
+                      } else if (key == 'isTransferIn') {
+                        isTransferIn = item[key];
+                      } else if (key == 'status') {
+                        status = item[key];
+                      } 
+                    }
+                    date = year.toString() + '-' + month.toString() + '-' + day.toString();
+                    time = hour.toString() + ':' + minute.toString() + ':' + second.toString();
+                    if (status == 'approved') {
+                      _trustTransactionList.add(TrustTransaction(date, time, widget.currency.currencyName, transactionAmount, isTransferIn, status));
+                    }
+                  }
+                }
+
+                
+                
+                if (widget.currency.currencyName == 'BTC') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e8).toStringAsFixed(8);
+                } else if (widget.currency.currencyName == 'ETH') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e18).toStringAsFixed(10);
+                } else if (widget.currency.currencyName == 'USDT') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e6).toStringAsFixed(6);
+                } else if (widget.currency.currencyName == 'AES') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e8).toStringAsFixed(8);
+                } 
+               
+                //  print(myTransactionList.transaction);
+              });
+              pd.dismiss();
+            });
+          });
+      } else {
+        print('No active user');
+        pd.dismiss();
+      }
+    } catch (e) {
+      pd.dismiss();
+      print(e.message);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _trustTransactionList.add(TrustTransaction('2019-10-28', '22:18:25', 'BTC', 0.00184561, true));
-    _trustTransactionList.add(TrustTransaction('2019-10-28', '22:25:25', 'BTC', 0.00382561, false));
+    // _trustTransactionList.add(TrustTransaction('2019-10-28', '22:18:25', 'BTC', 0.00184561, true));
+    // _trustTransactionList.add(TrustTransaction('2019-10-28', '22:25:25', 'BTC', 0.00382561, false));
+
+    Future.delayed(Duration.zero, () {
+      pr2 = new ProgressDialog(context);
+      pr2.style(message: 'Retrieving latest data...');
+      _getTransactionListAndLatestTrustBalance(pr2);
+    });
   }
 
   Widget _buildTransactionRow (TrustTransaction trustTransaction) {
@@ -87,7 +236,8 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                     Spacer(),
                     Container(
                       child: Text(
-                        trustTransaction.transactionAmount.toStringAsFixed(8) + ' BTC',
+                        // highlight
+                        trustTransaction.transactionAmount.toStringAsFixed(8) + ' ' + widget.currency.currencyName,
                         style: TextStyle(fontWeight: FontWeight.bold, color: trustTransaction.isTransferIn ? Color(0xFF34b187) : Color(0xFFff0152)),
                       ),
                     )
@@ -104,9 +254,18 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
       )
     );
   }
-
+  
   @override
   Widget build(BuildContext context) {
+    pr1 = new ProgressDialog(context);
+    pr1.style(message: 'Retrieving latest data...');
+
+    List<Widget> sliverDelegateList = List<Widget> ();
+
+    for (int i = 0; i < _trustTransactionList.length; i++) {
+      sliverDelegateList.add(_buildTransactionRow(_trustTransactionList[i]));
+    }
+
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
       appBar: PreferredSize(
@@ -115,7 +274,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
           centerTitle: true,
           elevation: 0.0,
           title: Text(
-            "Total Assest Value",
+            "Total Assets Value",
             style: Theme.of(context).textTheme.title,
           ),
         ),
@@ -125,8 +284,8 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
         enablePullDown: true,
         header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
         onRefresh: () async {
-          await Future.delayed(Duration(seconds: 1));
           _refreshController.refreshCompleted();
+          _getTransactionListAndLatestTrustBalance(pr1);
         },
         child: CustomScrollView(
           slivers: <Widget>[
@@ -147,8 +306,8 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                             fontSize: 14.0
                           ),
                           children: <TextSpan>[
-                            TextSpan(text: "0.000000", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0)),
-                            TextSpan(text: "  BTC")
+                            TextSpan(text: myTransactionList.trustBalanceInString, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32.0)),
+                            TextSpan(text: "  " + widget.currency.currencyName)
                           ]
                         ),
                       ),
@@ -156,7 +315,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                     Container(
                       margin: EdgeInsets.only(bottom: 25.0),
                       child: Text(
-                        '= 0.000000 USDT',
+                        '= ' + myTransactionList.trustToUsdt + ' USDT',
                         style: TextStyle(fontSize: 14.0),
                       ),
                     )
@@ -208,17 +367,17 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
               ),
             ) : SliverList(
               delegate: SliverChildListDelegate(
-                [
-                  _buildTransactionRow(_trustTransactionList[0]),
-                  _buildTransactionRow(_trustTransactionList[1]),
-                  _buildTransactionRow(_trustTransactionList[0]),
-                  _buildTransactionRow(_trustTransactionList[1]),
-                  _buildTransactionRow(_trustTransactionList[0]),
-                  _buildTransactionRow(_trustTransactionList[1]),
-                  _buildTransactionRow(_trustTransactionList[0]),
-                  _buildTransactionRow(_trustTransactionList[1]),
-                ]
-                
+                // [
+                //   _buildTransactionRow(_trustTransactionList[0]),
+                //   _buildTransactionRow(_trustTransactionList[1]),
+                //   _buildTransactionRow(_trustTransactionList[0]),
+                //   _buildTransactionRow(_trustTransactionList[1]),
+                //   _buildTransactionRow(_trustTransactionList[0]),
+                //   _buildTransactionRow(_trustTransactionList[1]),
+                //   _buildTransactionRow(_trustTransactionList[0]),
+                //   _buildTransactionRow(_trustTransactionList[1]),
+                // ]
+                sliverDelegateList
               ),
             ),
           ],
@@ -233,7 +392,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
           onPressed: () {
             Navigator.push(
               context, 
-              MaterialPageRoute(builder: (context) => TransferTrustPage()),
+              MaterialPageRoute(builder: (context) => TransferTrustPage(currency: widget.currency,)),
             );
           },
           child: Text(

@@ -125,7 +125,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               ),
                               Spacer(),
                               Text(
-                                widget.currency.currencyBalanceTotal,
+                                widget.currency.currencyBalance,
                                 style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.start,
                               ),
@@ -145,7 +145,8 @@ class _AssetsPageState extends State<AssetsPage> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  widget.currency.currencyBalance,
+                                  widget.currency.currencyBalanceTotal,
+                                  
                                   style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.start,
                                 ),
@@ -176,7 +177,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               ),
                               Spacer(),
                               Text(
-                                widget.currency.equalityToUsdtTotal.toStringAsFixed(6),
+                                widget.currency.equalityToUsdt.toStringAsFixed(6),
                                 style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.start,
                               ),
@@ -196,7 +197,8 @@ class _AssetsPageState extends State<AssetsPage> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  widget.currency.equalityToUsdt.toStringAsFixed(6),
+                                  widget.currency.equalityToUsdtTotal.toStringAsFixed(6),
+                                  
                                   style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.start,
                                 ),

@@ -30,6 +30,7 @@ dependencies:
   firebase_auth: ^0.14.0+5
   firebase_database: ^3.0.7
   qr_flutter: ^3.0.1
+  decimal: ^0.3.0
   
 
 dev_dependencies:

@@ -23,11 +23,12 @@ class PropertyWidget extends StatefulWidget {
 
 
 class _MyPropertyWidgetState extends State<PropertyWidget> {
+
   final RefreshController _refreshController = RefreshController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  ProgressDialog pr1;
+  ProgressDialog pr1, pr2;
 
   final List<Currency> _currencyList = [
     Currency("AES", 0.00, 0.00, "assets/aessignatum.png", 0.000000),
@@ -39,7 +40,8 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   CryptoCurrentBalance myCryptoCurrentBalance = CryptoCurrentBalance(btcBalance: "0.000000", ethBalance: "0.000000", usdtBalance: "0.000000", aesBalance: "0.000000",
                                                                     btcCurrentPrice: "0.00", ethCurrentPrice: "0.00", usdtCurrentPrice: "0.00", aesCurrentPrice: "0.00",
                                                                     btcPercentChange: "0.00", ethPercentChange: "0.00", usdtPercentChange: "0.00", aesPercentChange: "0.00",
-                                                                    btcToUsdt: "0.000000", ethToUsdt: "0.000000", usdtToUsdt: "0.000000", aesToUsdt: "0.000000", totalAssetInUsdt: "0.000000");
+                                                                    btcToUsdt: "0.000000", ethToUsdt: "0.000000", usdtToUsdt: "0.000000", aesToUsdt: "0.000000", totalAssetInUsdt: "0.000000",
+                                                                    totalAesBalance: "0.000000", totalBtcBalance: "0.000000", totalUsdtBalance: "0.000000", totalEthBalance: "0.000000");
 
   _request() async {
     // Generate new address (btc) 
@@ -53,65 +55,60 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
       });
   }
 
-  Future<void> _requestUserDataThenCheckBalance() async {
+  Future<void> _requestUserDataThenCheckBalance(ProgressDialog pd) async {
+    pd.show();
     try {
       FirebaseUser user = (await _auth.currentUser());
       if (user != null) {
-        final usersRef = FirebaseDatabase.instance.reference().child('users/' + user.uid);
-        usersRef.once().then((DataSnapshot snapshot) {
-          // var btcAddress = snapshot.value.entries.elementAt(1).value.toString();
-          var btcAddress = '18rVSPVVjeMnhvncT1LuHZBzzkAoet4vcr';
-          // var ethAddress = snapshot.value.entries.elementAt(4).value.toString();
-          var ethAddress = '0x3c06e885c32e2e7d09eaf4c8e80480bd5e87f9f5';
-          print(btcAddress);
-          print(ethAddress);
-          var queryParameters = {
-            'btcAddress': btcAddress,
-            'ethAddress': ethAddress
-          };
-          new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/checkBalance', queryParameters))
-            .then((HttpClientRequest request) => request.close())
-            .then((HttpClientResponse response) {
-              response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
-                setState(() {
-                  myCryptoCurrentBalance = CryptoCurrentBalance.fromJson(contents);
-                  _currencyList[0].currencyCurrentValue = double.parse(myCryptoCurrentBalance.aesCurrentPrice);
-                  _currencyList[0].currencyQuoteChange = double.parse(myCryptoCurrentBalance.aesPercentChange);
-                  _currencyList[0].equalityToUsdt = double.parse(myCryptoCurrentBalance.aesToUsdt);
-                  _currencyList[0].currencyBalance = (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toStringAsFixed(8);
-                  _currencyList[0].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalAesToUsdt);
-                  _currencyList[0].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalAesBalance) / 1e8).toStringAsFixed(8);
-                  _currencyList[1].currencyCurrentValue = double.parse(myCryptoCurrentBalance.btcCurrentPrice);
-                  _currencyList[1].currencyQuoteChange = double.parse(myCryptoCurrentBalance.btcPercentChange);
-                  _currencyList[1].equalityToUsdt = double.parse(myCryptoCurrentBalance.btcToUsdt);
-                  _currencyList[1].currencyBalance = (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toStringAsFixed(8);
-                  _currencyList[1].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalBtcToUsdt);
-                  _currencyList[1].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalBtcBalance) / 100000000).toStringAsFixed(8);
-                  _currencyList[2].currencyCurrentValue = double.parse(myCryptoCurrentBalance.ethCurrentPrice);
-                  _currencyList[2].currencyQuoteChange = double.parse(myCryptoCurrentBalance.ethPercentChange);
-                  _currencyList[2].equalityToUsdt = double.parse(myCryptoCurrentBalance.ethToUsdt);
-                  _currencyList[2].currencyBalance = (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toStringAsFixed(10);
-                  _currencyList[2].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalEthToUsdt);
-                  _currencyList[2].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalEthBalance) / 1e18).toStringAsFixed(10);
-                  _currencyList[3].currencyCurrentValue = double.parse(myCryptoCurrentBalance.usdtCurrentPrice);
-                  _currencyList[3].currencyQuoteChange = double.parse(myCryptoCurrentBalance.usdtPercentChange);
-                  _currencyList[3].equalityToUsdt = double.parse(myCryptoCurrentBalance.usdtToUsdt);
-                  _currencyList[3].currencyBalance = (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6);
-                  _currencyList[3].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalUsdtToUsdt);
-                  _currencyList[3].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalUsdtBalance) / 1000000).toStringAsFixed(6);
-                });
-                
-                print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
-                print('ethBalance: ' + (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toString());
-                print('aesBalance: ' + (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toString());
-                print('usdtBalance: ' + (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toString());
+        var queryParameters = {
+          'uuid': user.uid,
+        };
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/checkBalance', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              setState(() {
+                myCryptoCurrentBalance = CryptoCurrentBalance.fromJson(contents);
+                _currencyList[0].currencyCurrentValue = double.parse(myCryptoCurrentBalance.aesCurrentPrice);
+                _currencyList[0].currencyQuoteChange = double.parse(myCryptoCurrentBalance.aesPercentChange);
+                _currencyList[0].equalityToUsdt = double.parse(myCryptoCurrentBalance.aesToUsdt);
+                _currencyList[0].currencyBalance = (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toStringAsFixed(8);
+                _currencyList[0].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalAesToUsdt);
+                _currencyList[0].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalAesBalance) / 1e8).toStringAsFixed(8);
+                _currencyList[1].currencyCurrentValue = double.parse(myCryptoCurrentBalance.btcCurrentPrice);
+                _currencyList[1].currencyQuoteChange = double.parse(myCryptoCurrentBalance.btcPercentChange);
+                _currencyList[1].equalityToUsdt = double.parse(myCryptoCurrentBalance.btcToUsdt);
+                _currencyList[1].currencyBalance = (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toStringAsFixed(8);
+                _currencyList[1].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalBtcToUsdt);
+                _currencyList[1].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalBtcBalance) / 100000000).toStringAsFixed(8);
+                _currencyList[2].currencyCurrentValue = double.parse(myCryptoCurrentBalance.ethCurrentPrice);
+                _currencyList[2].currencyQuoteChange = double.parse(myCryptoCurrentBalance.ethPercentChange);
+                _currencyList[2].equalityToUsdt = double.parse(myCryptoCurrentBalance.ethToUsdt);
+                _currencyList[2].currencyBalance = (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toStringAsFixed(10);
+                _currencyList[2].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalEthToUsdt);
+                _currencyList[2].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalEthBalance) / 1e18).toStringAsFixed(10);
+                _currencyList[3].currencyCurrentValue = double.parse(myCryptoCurrentBalance.usdtCurrentPrice);
+                _currencyList[3].currencyQuoteChange = double.parse(myCryptoCurrentBalance.usdtPercentChange);
+                _currencyList[3].equalityToUsdt = double.parse(myCryptoCurrentBalance.usdtToUsdt);
+                _currencyList[3].currencyBalance = (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6);
+                _currencyList[3].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalUsdtToUsdt);
+                _currencyList[3].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalUsdtBalance) / 1000000).toStringAsFixed(6);
               });
+
+              pd.dismiss();
+              
+              print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
+              print('ethBalance: ' + (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toString());
+              print('aesBalance: ' + (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toString());
+              print('usdtBalance: ' + (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toString());
             });
-        });
+          });
       } else {
+        pd.dismiss();
         print('No active user');
       }
     } catch (e) {
+      pd.dismiss();
       print(e.message);
     }
   }
@@ -211,22 +208,29 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   @override
   void initState() {
     super.initState();
-    _requestUserDataThenCheckBalance();
+    
+    Future.delayed(Duration.zero, () {
+      pr2 = new ProgressDialog(context);
+      pr2.style(message: 'Retrieving latest data...');
+      _requestUserDataThenCheckBalance(pr2);
+    });
+    
   }
 
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context);
-    pr1.style(message: 'Please wait...');
+    pr1.style(message: 'Retrieving latest data...');
 
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,
       header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
       onRefresh: () async {
-        _requestUserDataThenCheckBalance();
-        await Future.delayed(Duration(seconds: 2));
         _refreshController.refreshCompleted();
+        _requestUserDataThenCheckBalance(pr1);
+        // await Future.delayed(Duration(seconds: 2));
+        
       },
       child: CustomScrollView(
         slivers: <Widget>[
@@ -382,10 +386,10 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                _buildRow(_currencyList[0], (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toStringAsFixed(8)),
-                _buildRow(_currencyList[1], (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toStringAsFixed(8)),
-                _buildRow(_currencyList[2], (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toStringAsFixed(10)),
-                _buildRow(_currencyList[3], (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6)),
+                _buildRow(_currencyList[0], (double.parse(myCryptoCurrentBalance.totalAesBalance) / 1e8).toStringAsFixed(8)),
+                _buildRow(_currencyList[1], (double.parse(myCryptoCurrentBalance.totalBtcBalance) / 100000000).toStringAsFixed(8)),
+                _buildRow(_currencyList[2], (double.parse(myCryptoCurrentBalance.totalEthBalance) / 1e18).toStringAsFixed(10)),
+                _buildRow(_currencyList[3], (double.parse(myCryptoCurrentBalance.totalUsdtBalance) / 1000000).toStringAsFixed(6)),
               ]
             ),
           )

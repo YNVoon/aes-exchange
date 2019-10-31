@@ -1,9 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
-import 'model/currency.dart';
+import 'model/crypto_trust_balance.dart';
+import 'model/trust_currency.dart';
 
 import 'total_trust_assets_widget.dart';
+
+import 'dart:io';
+import 'dart:convert';
  
 class TrustWidget extends StatefulWidget {
   @override
@@ -11,17 +18,78 @@ class TrustWidget extends StatefulWidget {
 }
 
 class _MyTrustWidgetState extends State<TrustWidget> {
+
   final RefreshController _refreshController = RefreshController();
 
-  final List<Currency> _currencyList = [
-    Currency("AES", 0.00, 0.00, "assets/aessignatum.png", 0.000000),
-    Currency("BTC", 0.00, 0.00, "assets/bitcoin.png", 0.000000),
-    Currency("ETH", 0.00, 0.00, "assets/ethereum.png", 0.000000),
-    Currency("USDT", 0.00, 0.00, "assets/tether.png", 0.000000),
-    // Currency("USDT", 1.00, -0.03, ""),
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  ProgressDialog pr1, pr2;
+
+  final List<TrustCurrency> _currencyList = [
+    TrustCurrency("AES", 0.00, "0.00000000", "assets/aessignatum.png", 0.000000),
+    TrustCurrency("BTC", 0.00, "0.00000000", "assets/bitcoin.png", 0.000000),
+    TrustCurrency("ETH", 0.00, "0.0000000000", "assets/ethereum.png", 0.000000),
+    TrustCurrency("USDT", 0.00, "0.000000", "assets/tether.png", 0.000000),
   ];
 
-  Widget _buildRow(Currency currency) {
+  CryptoTrustBalance myCryptoTrustBalance = CryptoTrustBalance(
+    btcTrustBalance: "0.00000000",
+    ethTrustBalance: "0.0000000000",
+    usdtTrustBalance: "0.000000",
+    aesTrustBalance: "0.00000000",
+    btcCurrentPrice: "0.00",
+    ethCurrentPrice: "0.00",
+    usdtCurrentPrice: "0.00",
+    aesCurrentPrice: "0.00",
+    btcTrustToUsdt: "0.000000",
+    ethTrustToUsdt: "0.000000",
+    usdtTrustToUsdt: "0.000000",
+    aesTrustToUsdt: "0.000000",
+    totalAssetInUsdt: "0.000000"
+  );
+
+  Future<void> _requestUserDataThenCheckTrustBalance(ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        var queryParameters = {
+          'uuid' : user.uid
+        };
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/checkTrustBalance', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              setState(() {
+               myCryptoTrustBalance = CryptoTrustBalance.fromJson(contents);
+               _currencyList[0].currencyCurrentValue = double.parse(myCryptoTrustBalance.aesCurrentPrice);
+               _currencyList[0].equalityToUsdt = double.parse(myCryptoTrustBalance.aesTrustToUsdt);
+               _currencyList[0].currencyBalance = (double.parse(myCryptoTrustBalance.aesTrustBalance) / 1e8).toStringAsFixed(8);
+               _currencyList[1].currencyCurrentValue = double.parse(myCryptoTrustBalance.btcCurrentPrice);
+               _currencyList[1].equalityToUsdt = double.parse(myCryptoTrustBalance.btcTrustToUsdt);
+               _currencyList[1].currencyBalance = (double.parse(myCryptoTrustBalance.btcTrustBalance) / 1e8).toStringAsFixed(8);
+               _currencyList[2].currencyCurrentValue = double.parse(myCryptoTrustBalance.ethCurrentPrice);
+               _currencyList[2].equalityToUsdt = double.parse(myCryptoTrustBalance.ethTrustToUsdt);
+               _currencyList[2].currencyBalance = (double.parse(myCryptoTrustBalance.ethTrustBalance) / 1e18).toStringAsFixed(10);
+               _currencyList[3].currencyCurrentValue = double.parse(myCryptoTrustBalance.usdtCurrentPrice);
+               _currencyList[3].equalityToUsdt = double.parse(myCryptoTrustBalance.usdtTrustToUsdt);
+               _currencyList[3].currencyBalance = (double.parse(myCryptoTrustBalance.usdtTrustBalance) / 1e6).toStringAsFixed(6);    
+              });
+              pd.dismiss();
+              print(_currencyList[2].currencyBalance);
+            });
+          });
+      } else {
+        pd.dismiss();
+        print('No active user');
+      }
+    } catch (e) {
+      pd.dismiss();
+      print(e.message);
+    }
+  }
+
+  Widget _buildRow(TrustCurrency currency, String myTrustAmount) {
     return Container(
       // color: Colors.white,
       // padding: EdgeInsets.only(left: 15.0, right: 10.0),
@@ -33,7 +101,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
               onTap: () {
                 Navigator.push(
                   context, 
-                  MaterialPageRoute(builder: (context) => TotalTrustAssetPage()),
+                  MaterialPageRoute(builder: (context) => TotalTrustAssetPage(currency: currency,)),
                 );
               },
               child: Container(
@@ -57,7 +125,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                               // Currency current value
                               Container(
                                 width: MediaQuery.of(context).size.width,
-                                child: Text("\$" + currency.currencyCurrentValue.toString(), style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                                child: Text("\$" + currency.currencyCurrentValue.toStringAsFixed(2), style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
                               )
                               
                             ],
@@ -70,13 +138,13 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                       children: <Widget>[
                         //Currency Name
                         Container(
-                          // width: MediaQuery.of(context).size.width,
-                          child: Text('0.000000', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                          width: 200.0,
+                          child: Text(myTrustAmount, textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.bold), ),
                         ),
                         // Currency current value
                         Container(
-                          // width: MediaQuery.of(context).size.width,
-                          child: Text('=0.00 AES', style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                          width: 200.0,
+                          child: Text('= ' + currency.equalityToUsdt.toStringAsFixed(6) + ' USDT', style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.end)
                         )
                         
                       ],
@@ -99,14 +167,27 @@ class _MyTrustWidgetState extends State<TrustWidget> {
   }
 
   @override
+  void initState() { 
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      pr2 = new ProgressDialog(context);
+      pr2.style(message: 'Retrieving latest data...');
+      _requestUserDataThenCheckTrustBalance(pr2);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    pr1 = new ProgressDialog(context);
+    pr1.style(message: 'Retrieving latest data...');
+
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,
       header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
       onRefresh: () async {
-        await Future.delayed(Duration(seconds: 1));
         _refreshController.refreshCompleted();
+        _requestUserDataThenCheckTrustBalance(pr1);
       },
       child: CustomScrollView(
         slivers: <Widget>[
@@ -148,8 +229,8 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                             ),
                             children: <TextSpan>[
                               TextSpan(text: '= '),
-                              TextSpan(text: '0.00000 ', style: TextStyle(fontSize: 28.0)),
-                              TextSpan(text: 'AES')
+                              TextSpan(text: double.parse(myCryptoTrustBalance.totalAssetInUsdt).toStringAsFixed(6), style: TextStyle(fontSize: 28.0)),
+                              TextSpan(text: '  USDT')
                             ],
                           ),
                         )
@@ -175,10 +256,10 @@ class _MyTrustWidgetState extends State<TrustWidget> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                _buildRow(_currencyList[0]),
-                _buildRow(_currencyList[1]),
-                _buildRow(_currencyList[2]),
-                _buildRow(_currencyList[3]),
+                _buildRow(_currencyList[0], (double.parse(myCryptoTrustBalance.aesTrustBalance) / 1e8).toStringAsFixed(8)),
+                _buildRow(_currencyList[1], (double.parse(myCryptoTrustBalance.btcTrustBalance) / 1e8).toStringAsFixed(8)),
+                _buildRow(_currencyList[2], (double.parse(myCryptoTrustBalance.ethTrustBalance) / 1e18).toStringAsFixed(10)),
+                _buildRow(_currencyList[3], (double.parse(myCryptoTrustBalance.usdtTrustBalance) / 1000000).toStringAsFixed(6)),
               ]
             ),
           )
