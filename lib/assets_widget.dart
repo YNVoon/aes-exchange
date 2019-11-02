@@ -280,7 +280,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               onPressed: () {
                                 Navigator.push(
                                   context, 
-                                  MaterialPageRoute(builder: (context) => WalletDepositPage()),
+                                  MaterialPageRoute(builder: (context) => WalletDepositPage(currency: widget.currency,)),
                                 );
                               },
                               child: Text(
@@ -300,7 +300,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               onPressed: () {
                                 Navigator.push(
                                   context, 
-                                  MaterialPageRoute(builder: (context) => WalletWithdrawalPage()),
+                                  MaterialPageRoute(builder: (context) => WalletWithdrawalPage(currency: widget.currency,)),
                                 );
                               },
                               child: Text(

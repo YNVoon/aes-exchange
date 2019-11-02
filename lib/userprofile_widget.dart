@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/user_profile.dart';
@@ -7,6 +8,16 @@ import 'personal_info_widget.dart';
 import 'login_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'invitation_code_widget.dart';
+
+import 'dart:io';
+import 'dart:convert';
+import 'model/user_information.dart';
+
+
 
 class UserProfileWidget extends StatefulWidget {
   UserProfileWidget({Key key}) : super(key: key);
@@ -19,11 +30,45 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  ProgressDialog pr1, pr2;
+
+  UserInformation myUserInformation = UserInformation(userEmail: '', userId: '', userInvitationCode: '', userVIPStatus: 0);
+
   List<List<UserProfile>> _settingList = [
     [UserProfile("Invitation code", Icons.drafts, "invitation_code"), UserProfile("Address book", Icons.contacts, "address_book"),],
     [UserProfile("Security", Icons.security, "security"), UserProfile("Settings", Icons.settings_applications, "settings"),],
     [UserProfile("About us", Icons.help_outline, "about_us"),]
   ];
+
+  Future<void> _getUserInformation (ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = await _auth.currentUser();
+      if (user != null) {
+        var queryParameters = {
+          'uuid': user.uid
+        };
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getUserInformation', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print(contents.toString());
+              setState(() {
+                myUserInformation = UserInformation.fromJson(contents); 
+              });
+              pd.dismiss();
+            });
+          });
+      } else {
+        print('No active user');
+        pd.dismiss();
+      }
+    } catch (e) {
+      print(e.message);
+      pd.dismiss();
+    }
+  }
 
   Future<void> signOut () async {
     try {
@@ -31,6 +76,9 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
       if (user != null) {
         await _auth.signOut();
         print('Sign out successful');
+        Fluttertoast.showToast(
+            msg: "Successfully Sign Out",
+        );
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
       } else {
         print('No active user');
@@ -46,6 +94,12 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
     return GestureDetector(
       onTap: () {
         print("tabbed");
+        if (userProfile.title == 'Invitation code') {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => InvitationCodePage(userInformation: myUserInformation,)),
+          );
+        }
       },
       child: Column(
         children: <Widget>[
@@ -84,6 +138,18 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
         ],
       )
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    
+    Future.delayed(Duration.zero, () {
+      pr2 = new ProgressDialog(context, isDismissible: false);
+      pr2.style(message: 'Getting User Information..');
+      _getUserInformation(pr2);
+    });
+    
   }
 
   @override
@@ -131,12 +197,13 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                             children: <Widget>[
                               Container(
                                 width: MediaQuery.of(context).size.width,
-                                child: Text("demo@email.com", textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                                child: Text(myUserInformation.userEmail, textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
                               ),
                               // Currency current value
                               Container(
+                                margin: EdgeInsets.only(top: 5.0),
                                 width: MediaQuery.of(context).size.width,
-                                child: Text("ID: ABC12345", style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                                child: Text("User ID: " + myUserInformation.userId, style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
                               )
                             ],
                           ),
@@ -156,7 +223,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                             color: Colors.blue,
                           ),
                           child: Text(
-                            "VIP 0",
+                            "VIP " + myUserInformation.userVIPStatus.toString(),
                             style: TextStyle(color: Colors.white, letterSpacing: 2.0, fontSize: 11.0)
                           ),
                         ),

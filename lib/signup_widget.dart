@@ -109,7 +109,7 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    pr1 = new ProgressDialog(context);
+    pr1 = new ProgressDialog(context, isDismissible: false);
     pr1.style(message: 'Please wait...');
 
     return Container(

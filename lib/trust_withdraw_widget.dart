@@ -1,7 +1,25 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+
+import 'dart:io';
+import 'dart:convert';
+
+import 'model/processing_fee.dart';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TrustWithdrawPage extends StatefulWidget {
-  TrustWithdrawPage({Key key}) : super(key: key);
+  final String date;
+  final String currency;
+  var transactionAmount;
+  var day='1', year='1997', month='1';
+  final String transactionId;
+
+
+  TrustWithdrawPage({Key key,  @required this.date, @required this.currency, @required this.transactionAmount, @required this.day, @required this.year, @required this.month, @required this.transactionId}) : super(key: key);
 
   @override
   _TrustWithdrawPageState createState() => _TrustWithdrawPageState();
@@ -9,10 +27,229 @@ class TrustWithdrawPage extends StatefulWidget {
 
 class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   bool accept = false;
 
+  var queryParameters = <String, String>{};
+
+  ProgressDialog pr1, pr2;
+
+  ProcessingFee processingFee = ProcessingFee(lowProcessing: 0.00, highProcessing: 0.00);
+  var actualAESProcessingFee = 0.00;
+
+  void _showMaterialDialogForError(String message, String condition) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () {},
+          child: AlertDialog(
+            content: Text(
+              message,
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                onPressed: () {
+                  if (condition == 'navigate') {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  } else if (condition == 'dismissDialog') {
+                    Navigator.pop(context);
+                  }
+                  
+                },
+              ),
+            ],
+          ),
+        );
+        
+      }
+    );
+  }
+
+  Future<void> _confirmWithdrawTrust (ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        if (widget.currency == 'BTC') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'btc',
+            'oldTransactionId': widget.transactionId,
+            'withdrawalAmount': (widget.transactionAmount * 1e3 * 1e3 * 1e2).toString(),
+            'aesProcessingFee': (actualAESProcessingFee * 1e3 * 1e3 * 1e2).toString(),
+            'aesPrevBalance': (processingFee.aesBalance * 1e3 * 1e3 *1e2).toString()
+          };
+        } else if (widget.currency == 'ETH') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'eth',
+            'oldTransactionId': widget.transactionId,
+            'withdrawalAmount': (widget.transactionAmount * 1e3 * 1e3 * 1e3 * 1e3).toString(), // now we put 1e12 because we need to consider firebase restriction, but remember the real transaction have to convert to full int, even in the admin firebase database
+            'aesProcessingFee': (actualAESProcessingFee * 1e3 * 1e3 * 1e2).toString(),  // Therefore in admin database, when doing real transaction have to multiply the current integer with *1e6 to the real transaction case (which is in unit WEI)
+            'aesPrevBalance': (processingFee.aesBalance * 1e3 * 1e3 *1e2).toString()
+          };
+        } else if (widget.currency == 'USDT') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'usdt',
+            'oldTransactionId': widget.transactionId,
+            'withdrawalAmount': (widget.transactionAmount * 1e3 * 1e3).toString(),
+            'aesProcessingFee': (actualAESProcessingFee * 1e3 * 1e3 * 1e2).toString(),
+            'aesPrevBalance': (processingFee.aesBalance * 1e3 * 1e3 *1e2).toString()
+          };
+        } else if (widget.currency == 'AES') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'aes',
+            'oldTransactionId': widget.transactionId,
+            'withdrawalAmount': (widget.transactionAmount * 1e3 * 1e3 * 1e2).toString(),
+            'aesProcessingFee': (actualAESProcessingFee * 1e3 * 1e3 * 1e2).toString(),
+            'aesPrevBalance': (processingFee.aesBalance * 1e3 * 1e3 *1e2).toString()
+          };
+        }
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/withdrawTrustTest', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print(contents.toString());
+              pd.dismiss();
+              _showMaterialDialogForError('Pending for approval', 'navigate');
+            });
+          });
+      }
+    } catch (e) {
+      pd.dismiss();
+      print(e.message);
+    }
+  }
+
+  Future<void> _requestProcessingFee (ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        if (widget.currency == 'BTC') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'btc',
+            'amountToProcess': widget.transactionAmount.toStringAsFixed(8),
+            'transactionId': widget.transactionId
+          };
+        } else if (widget.currency == 'ETH') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'eth',
+            'amountToProcess': widget.transactionAmount.toStringAsFixed(10),
+            'transactionId': widget.transactionId
+          };
+        } else if (widget.currency == 'USDT') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'usdt',
+            'amountToProcess': widget.transactionAmount.toStringAsFixed(6),
+            'transactionId': widget.transactionId
+          };
+        } else if (widget.currency == 'AES') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'aes',
+            'amountToProcess': widget.transactionAmount.toStringAsFixed(8),
+            'transactionId': widget.transactionId
+          };
+        }
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/processingFee', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print('contents ' + contents.toString());
+              
+              setState(() {
+                processingFee = ProcessingFee.fromJson(contents);
+                // convert full of aesBalance to actual
+                processingFee.aesBalance = processingFee.aesBalance / 1e8;
+                final trustInDate = DateTime(int.parse(widget.year), int.parse(widget.month), int.parse(widget.day));
+                final currentDate = DateTime.now();
+                final difference = currentDate.difference(trustInDate).inDays;
+                if (difference > 28) {
+                  actualAESProcessingFee = processingFee.lowProcessing;
+                } else {
+                  actualAESProcessingFee = processingFee.highProcessing;
+                }
+                print('transactionamount:' + widget.transactionAmount.toStringAsFixed(10));
+                print('transactionamountInInt:' + (widget.transactionAmount*1e8).toString());
+                FirebaseDatabase.instance.reference().child('users/' + user.uid + '/aesPrevious').once()
+                  .then((DataSnapshot snapshot) {
+                    if (snapshot.value.toString() != 'null') {
+                      if (double.parse(snapshot.value.toString()) != 0) {
+                        if (snapshot.value.toString() == processingFee.aesBalance) {
+                          print('Not allowed!');
+                          _showMaterialDialogForError('You have pending transaction. Please try again later', 'navigate');
+                          
+                        }
+                        pd.dismiss();
+                      } else {
+                        pd.dismiss();
+                      }
+                    } else {
+                      pd.dismiss();
+                    }
+                  });
+              });
+              print(widget.transactionId);
+              pd.dismiss();
+            });
+          });
+      } 
+    } catch (e) {
+      pd.dismiss();
+      print(e.message);
+    }
+    
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      pr2 = new ProgressDialog(context, isDismissible: false);
+      pr2.style(message: 'Retrieving latest data...');
+      _requestProcessingFee(pr2);
+    });
+    
+
+  }
+  
+  //TODO: During transaction remember to use transactionAmount * 0.x in order to make it into integer
   @override
   Widget build(BuildContext context) {
+    var transactionAmountInString;
+    final trustInDate = DateTime(int.parse(widget.year), int.parse(widget.month), int.parse(widget.day));
+    final currentDate = DateTime.now();
+    final difference = currentDate.difference(trustInDate).inDays;
+    
+    if (widget.currency == 'BTC') {
+      transactionAmountInString = widget.transactionAmount.toStringAsFixed(8);
+    } else if (widget.currency == 'ETH') {
+      transactionAmountInString = widget.transactionAmount.toStringAsFixed(10);
+    } else if (widget.currency == 'AES') {
+      transactionAmountInString = widget.transactionAmount.toStringAsFixed(8);
+    } else if (widget.currency == 'USDT') {
+      transactionAmountInString = widget.transactionAmount.toStringAsFixed(6);
+    }
+
+    pr1 = new ProgressDialog(context, isDismissible: false);
+    pr1.style(message: 'Create transaction. Do not close the dialog.');
+    
     return Container(
        child: Scaffold(
          backgroundColor: Color(0xFFFAFAFA),
@@ -62,7 +299,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                            Container(
                              margin: EdgeInsets.only(left: 15.0),
                              child: Text(
-                                "2019-10-28",
+                                widget.date,
                                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
                               ),
                            )
@@ -97,7 +334,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                            Container(
                              margin: EdgeInsets.only(left: 15.0),
                              child: Text(
-                                "0 day",
+                                difference > 1 ? difference.toString() + ' days' : difference.toString() + ' day',
                                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
                               ),
                            )
@@ -120,7 +357,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                   width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.only(bottom: 10.0),
                   child: Text(
-                    'Bitcoin',
+                    widget.currency,
                     style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.start,
                   ),
@@ -142,7 +379,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                   width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.only(bottom: 10.0),
                   child: Text(
-                    '0.000195',
+                    transactionAmountInString,
                     style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.start,
                   ),
@@ -160,7 +397,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'If you stop storing FD at AES Wallet within 28 days, you will be charged a 5% fee.\nAfter 28 days, it can be realized at any time, only 1% of the handling fee is deducted.\nProcessing fees: ' + '0.020037 AES',
+                        'If you stop storing FD at AES Wallet within 28 days, you will be charged a 5% fee.\nAfter 28 days, it can be realized at any time, only 1% of the handling fee is deducted.\n\nProcessing fees: ' + actualAESProcessingFee.toString() + ' AES',
                         style: TextStyle(color: Colors.grey, fontSize: 12.0),
                       )
                     ],
@@ -176,7 +413,24 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                           value: accept,
                           onChanged: (bool value) {
                             setState(() {
-                              accept = value; 
+                              // TODO: Enable this after official launch
+                              if (processingFee.aesBalance < actualAESProcessingFee) {
+                                print('Insufficient processing fee');
+                                _showMaterialDialogForError('Insufficient processing fee', 'dismissDialog');
+                              } else if (processingFee.ethBalance < 420000000000000) {
+                                print('Insufficient gas');
+                                _showMaterialDialogForError('Insufficient gas', 'dismissDialog');
+                              } else {
+                                accept = value; 
+                              }
+
+                              // if (processingFee.ethBalance < 420000000000000) {
+                              //   _showMaterialDialogForError('Insufficient gas', 'dismissDialog');
+                              // } else {
+                              //   accept = value;
+                              // }
+                              // _showMaterialDialogForError('Transaction pending for approval', 'navigate');
+                              
                             });
                           },
                         ),
@@ -215,11 +469,15 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                         width: MediaQuery.of(context).size.width,
                         child: RaisedButton(
                           color: Colors.blue,
-                          onPressed: () {
-
-                          },
+                          onPressed: accept && processingFee.status != 'claimed' ? () {
+                            // test();
+                            _confirmWithdrawTrust(pr1);
+                            
+                            
+                          } : null,
                           child: Text(
-                            'Confirm Withdraw',
+                            processingFee.status == 'claimed' ? 'You have withdrawn this' : 'Confirm Withdraw',
+                            
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                       ),

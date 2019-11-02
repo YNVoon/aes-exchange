@@ -1,14 +1,87 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import 'model/currency.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+
+import 'package:fluttertoast/fluttertoast.dart';
+
+class UserAddress {
+
+  final String ethAddress;
+  final String btcAddress;
+
+  UserAddress({this.ethAddress, this.btcAddress});
+
+  factory UserAddress.fromJson(Map<String, dynamic> json) {
+    return UserAddress(
+      ethAddress: json['ethAddress'],
+      btcAddress: json['btcAddress'],
+    );
+  }
+}
+
 class WalletDepositPage extends StatefulWidget {
-  WalletDepositPage({Key key}) : super(key: key);
+
+  final Currency currency;
+
+  WalletDepositPage({Key key, @required this.currency}) : super(key: key);
 
   @override
   _WalletDepositPageState createState() => _WalletDepositPageState();
 }
 
 class _WalletDepositPageState extends State<WalletDepositPage> {
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  UserAddress myUserAddress = UserAddress(ethAddress: '', btcAddress: '');
+
+  ProgressDialog pr1, pr2;
+
+  Future<void> _getUserAddress(ProgressDialog pd) async{
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        var queryParameters = {
+          'uuid': user.uid,
+        };
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getUserAddress', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print(contents.toString());
+              setState(() {
+                myUserAddress = UserAddress.fromJson(contents);
+                print(myUserAddress.ethAddress);
+              });
+              pd.dismiss();
+            });
+          });
+        
+      }
+    } catch (e) {
+      pd.dismiss();
+      print(e.message);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () {
+      pr1 = new ProgressDialog(context, isDismissible: false);
+      pr1.style(message: 'Getting User Information');
+      _getUserAddress(pr1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,11 +111,11 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                  height: 35.0,
                  child: Row(
                    children: <Widget>[
-                     Image(image: AssetImage('assets/bitcoin.png'), width: 25.0,),
+                     Image(image: AssetImage(widget.currency.currencyLogoUrl), width: 25.0,),
                      Container(
                        margin: EdgeInsets.only(left: 10.0),
                        child: Text(
-                         'BTC',
+                         widget.currency.currencyName,
                          style: TextStyle(fontWeight: FontWeight.bold),
                        ),
                      ),
@@ -59,7 +132,7 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                    crossAxisAlignment: CrossAxisAlignment.center,
                    children: <Widget>[
                      QrImage(
-                       data: "123456789010",
+                       data: widget.currency.currencyName == 'BTC' ? myUserAddress.btcAddress.toString() : myUserAddress.ethAddress.toString(),
                        version: 4,
                        size: 165.0,
                      ),
@@ -72,8 +145,9 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                      ),
                      Container(
                        margin: EdgeInsets.all(5.0),
+                       padding: EdgeInsets.only(left: 15.0, right: 15.0),
                        child: Text(
-                         '123456789010',
+                         widget.currency.currencyName == 'BTC' ? myUserAddress.btcAddress.toString() : myUserAddress.ethAddress.toString(),
                          style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.bold),
                        ),
                      ),
@@ -82,7 +156,10 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                        child: RaisedButton(
                          color: Colors.blue,
                          onPressed: () {
-                           
+                            Clipboard.setData(new ClipboardData(text: widget.currency.currencyName == 'BTC' ? myUserAddress.btcAddress : myUserAddress.ethAddress));
+                            Fluttertoast.showToast(
+                                msg: "Copied to clipboard",
+                            );
                          },
                          child: Text(
                            "Copy",

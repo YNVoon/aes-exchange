@@ -1,8 +1,8 @@
 import 'package:aes_exchange/model/trust_currency.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:decimal/decimal.dart';
 import 'utils/decimal_text_input_formatter.dart';
+import 'model/transfer_trust_fess_amount.dart';
 
 import 'dart:io';
 import 'dart:convert';
@@ -20,23 +20,23 @@ class TransferTrustPage extends StatefulWidget {
   _TransferTrustPageState createState() => _TransferTrustPageState();
 }
 
-class TransferTrustFeesAndAmount {
-  final String btcBalance;
-  final String ethBalance;
-  final String aesBalance;
-  final String usdtBalance;
+// class TransferTrustFeesAndAmount {
+//   final String btcBalance;
+//   final String ethBalance;
+//   final String aesBalance;
+//   final String usdtBalance;
 
-  TransferTrustFeesAndAmount({this.btcBalance, this.ethBalance, this.aesBalance, this.usdtBalance});
+//   TransferTrustFeesAndAmount({this.btcBalance, this.ethBalance, this.aesBalance, this.usdtBalance});
 
-  factory TransferTrustFeesAndAmount.fromJson(Map<String, dynamic> json) {
-    return TransferTrustFeesAndAmount(
-      btcBalance: json['btcBalance'].toString(),
-      ethBalance: json['ethBalance'].toString(),
-      aesBalance: json['aesBalance'].toString(),
-      usdtBalance: json['usdtBalance'].toString()
-    );
-  }
-}
+//   factory TransferTrustFeesAndAmount.fromJson(Map<String, dynamic> json) {
+//     return TransferTrustFeesAndAmount(
+//       btcBalance: json['btcBalance'].toString(),
+//       ethBalance: json['ethBalance'].toString(),
+//       aesBalance: json['aesBalance'].toString(),
+//       usdtBalance: json['usdtBalance'].toString()
+//     );
+//   }
+// }
 
 class _TransferTrustPageState extends State<TransferTrustPage> {
 
@@ -62,17 +62,36 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
     btcBalance: '0.00000000', ethBalance: '0.0000000000', aesBalance: '0.00000000', usdtBalance: '0.000000'
   );
 
-  void _showMaterialDialogForError(String message) {
+  void _showMaterialDialogForError(String message, String condition) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
-        return AlertDialog(
-          content: Text(
-            message,
-            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
+        return WillPopScope(
+          onWillPop: () {},
+          child: AlertDialog(
+            content: Text(
+              message,
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                onPressed: () {
+                  if (condition == 'navigate') {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  } else if (condition == 'dismissDialog') {
+                    Navigator.pop(context);
+                  }
+                  
+                },
+              ),
+            ],
           ),
         );
+        
       }
     );
   }
@@ -158,7 +177,8 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                       print('in condition');
                       if (snapshot.value.toString() == avaiBalance) {
                         print('Not allowed!');
-                        Navigator.pop(context);
+                        pd.dismiss();
+                        _showMaterialDialogForError('You have pending transaction. Please come back after 5 minutes', 'navigate');
                       }
                       pd.dismiss();
                     } else {
@@ -183,7 +203,8 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                       print('in condition');
                       if (snapshot.value.toString() == avaiBalance) {
                         print('Not allowed!');
-                        Navigator.pop(context);
+                        pd.dismiss();
+                        _showMaterialDialogForError('You have pending transaction. Please come back after 5 minutes', 'navigate');
                       }
                       pd.dismiss();
                     } else {
@@ -254,7 +275,8 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
               
             });
             pd.dismiss();
-            Navigator.pop(context);
+            _showMaterialDialogForError("Successful transfer", "navigate");
+            // Navigator.pop(context);
             
           });
         
@@ -344,7 +366,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
     super.initState();
 
     Future.delayed(Duration.zero, () {
-      pr2 = new ProgressDialog(context);
+      pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
       _requestAppropriateAvailableAmount(pr2);
     });
@@ -508,13 +530,13 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
 
                               if (_quantityController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
-                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e8;
+                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
                                 } else if (widget.currency.currencyName == 'ETH'){
-                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e18;
+                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
                                 } else if (widget.currency.currencyName == 'USDT'){
-                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e6;
+                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
                                 } else if (widget.currency.currencyName == 'AES'){
-                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e8;
+                                  inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
                                 }
                               }
 
@@ -531,7 +553,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                                 textFormInvalidMsg = 'Insufficient Fund.';
                                 
                               } else {
-                                pr1 = new ProgressDialog(context);
+                                pr1 = new ProgressDialog(context, isDismissible: false);
                                 pr1.style(message: 'Verifying Transaction...');
                                 if (value) {
                                   if (widget.currency.currencyName == 'BTC') {
@@ -560,9 +582,6 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                                 } else {
                                   accept = value;
                                 }
-                                
-                                
-                                
                               }
                             });
                           },
@@ -605,16 +624,16 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                           color: Colors.blue,
                           onPressed: accept ? () {
                             // test();
-                            pr1 = new ProgressDialog(context);
+                            pr1 = new ProgressDialog(context, isDismissible: false);
                             pr1.style(message: 'Verifying Transaction...');
                             if (widget.currency.currencyName == 'BTC') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e8).round());
+                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round());
                             } else if (widget.currency.currencyName == 'ETH') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e18).round());
+                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3).round());
                             } else if (widget.currency.currencyName == 'USDT') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e6).round());
+                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3).round());
                             } else if (widget.currency.currencyName == 'AES') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e8).round());
+                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round());
                             }
                             
                           } : null,

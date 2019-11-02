@@ -96,7 +96,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                   for (var item in myTransactionList.transaction) {
                     //  print(item.runtimeType);
                     counter++;
-                    var status, date, day, month, year, time, hour, minute, second, transactionAmount, isTransferIn;
+                    var status, date, day, month, year, time, hour, minute, second, transactionAmount, isTransferIn, transactionId;
                     for (String key in item.keys) {
                       if (key == 'amount') {
                         transactionAmount = item[key];
@@ -125,12 +125,14 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                         isTransferIn = item[key];
                       } else if (key == 'status') {
                         status = item[key];
-                      } 
+                      } else if (key == 'transactionId') {
+                        transactionId = item[key];
+                      }
                     }
                     date = year.toString() + '-' + month.toString() + '-' + day.toString();
                     time = hour.toString() + ':' + minute.toString() + ':' + second.toString();
-                    if (status == 'approved') {
-                      _trustTransactionList.add(TrustTransaction(date, time, widget.currency.currencyName, transactionAmount, isTransferIn, status));
+                    if (status == 'approved' || status == 'claimed') {
+                      _trustTransactionList.add(TrustTransaction(date, time, widget.currency.currencyName, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
                     }
                   }
                 }
@@ -169,7 +171,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
     // _trustTransactionList.add(TrustTransaction('2019-10-28', '22:25:25', 'BTC', 0.00382561, false));
 
     Future.delayed(Duration.zero, () {
-      pr2 = new ProgressDialog(context);
+      pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
       _getTransactionListAndLatestTrustBalance(pr2);
     });
@@ -188,7 +190,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                 if (trustTransaction.isTransferIn) {
                   Navigator.push(
                     context, 
-                    MaterialPageRoute(builder: (context) => TrustWithdrawPage()),
+                    MaterialPageRoute(builder: (context) => TrustWithdrawPage(date: trustTransaction.date, currency: trustTransaction.currencyType, transactionAmount: trustTransaction.transactionAmount, day: trustTransaction.day, year: trustTransaction.year, month: trustTransaction.month, transactionId: trustTransaction.transactionId,)),
                   );
                 }
               },
@@ -257,7 +259,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
   
   @override
   Widget build(BuildContext context) {
-    pr1 = new ProgressDialog(context);
+    pr1 = new ProgressDialog(context, isDismissible: false);
     pr1.style(message: 'Retrieving latest data...');
 
     List<Widget> sliverDelegateList = List<Widget> ();

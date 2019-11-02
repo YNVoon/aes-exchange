@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
 
-    pr = new ProgressDialog(context);
+    pr = new ProgressDialog(context, isDismissible: false);
     pr.style(message: 'Please wait...');
     
     return Container(

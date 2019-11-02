@@ -210,7 +210,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
     super.initState();
     
     Future.delayed(Duration.zero, () {
-      pr2 = new ProgressDialog(context);
+      pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
       _requestUserDataThenCheckBalance(pr2);
     });
@@ -219,7 +219,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    pr1 = new ProgressDialog(context);
+    pr1 = new ProgressDialog(context, isDismissible: false);
     pr1.style(message: 'Retrieving latest data...');
 
     return SmartRefresher(
