@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.account_balance_wallet),
-            title: Text('Property')
+            title: Text('Funds')
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.monetization_on),

@@ -63,7 +63,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
         var queryParameters = {
           'uuid': user.uid,
         };
-        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/checkBalance', queryParameters))
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/updateUserBalanceInWallet', queryParameters))
           .then((HttpClientRequest request) => request.close())
           .then((HttpClientResponse response) {
             response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
@@ -93,9 +93,10 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                 _currencyList[3].currencyBalance = (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6);
                 _currencyList[3].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalUsdtToUsdt);
                 _currencyList[3].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalUsdtBalance) / 1000000).toStringAsFixed(6);
+                pd.dismiss();
               });
 
-              pd.dismiss();
+              
               
               print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
               print('ethBalance: ' + (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toString());
@@ -209,7 +210,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   void initState() {
     super.initState();
     
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 300), () {
       pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
       _requestUserDataThenCheckBalance(pr2);

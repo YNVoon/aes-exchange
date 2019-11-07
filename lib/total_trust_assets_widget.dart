@@ -54,6 +54,106 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
 
   TransactionList myTransactionList = TransactionList(trustToUsdt: "0.000000", trustBalance: "0.00000000", transaction: [], trustBalanceInString: '0.00000000');
   
+  Future<void> _getTransactionListAndLatestTrustBalance2(ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+
+      if (user != null) {
+        if (widget.currency.currencyName == 'BTC') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'btc'
+          };
+        } else if (widget.currency.currencyName == 'ETH') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'eth'
+          };
+        } else if (widget.currency.currencyName == 'USDT') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'usdt'
+          };
+        } else if (widget.currency.currencyName == 'AES') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'aes'
+          };
+        }
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/updateTrustTransactionList', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              setState(() {
+                myTransactionList = TransactionList.fromJson(contents);
+                _trustTransactionList.length = 0;
+                if (myTransactionList.transaction.length > 0) {
+                  for (var item in myTransactionList.transaction) {
+                    var status, date, day, month, year, time, hour, minute, second, transactionAmount, isTransferIn, transactionId;
+                    for (String key in item.keys) {
+                      if (key == 'amount') {
+                        transactionAmount = item[key];
+                        if (widget.currency.currencyName == 'BTC') {
+                          transactionAmount = (item[key] / 1e8);
+                        } else if (widget.currency.currencyName == 'ETH') {
+                          transactionAmount = (item[key] / 1e18);
+                        } else if (widget.currency.currencyName == 'USDT') {
+                          transactionAmount = (item[key] / 1e6);
+                        } else if (widget.currency.currencyName == 'AES') {
+                          transactionAmount = (item[key] / 1e8);
+                        }
+                      } else if (key == 'day') {
+                        day = item[key];
+                      } else if (key == 'month') {
+                        month = item[key];
+                      } else if (key == 'year') {
+                        year = item[key];
+                      } else if (key == 'hour') {
+                        hour = item[key];
+                      } else if (key == 'minute') {
+                        minute = item[key];
+                      } else if (key == 'second') {
+                        second = item[key];
+                      } else if (key == 'type') {
+                        if (item[key] == 'trust in') {
+                          isTransferIn = true;
+                        } else {
+                          isTransferIn = false;
+                        }
+                      } else if (key == 'status') {
+                        status = item[key];
+                      } else if (key == 'transactionId') {
+                        transactionId = item[key];
+                      }
+                    }
+                    date = year.toString() + '-' + month.toString() + '-' + day.toString();
+                    time = hour.toString() + ':' + minute.toString() + ':' + second.toString();
+                    if (status == 'approved' || status == 'claimed') {
+                      _trustTransactionList.add(TrustTransaction(date, time, widget.currency.currencyName, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
+                    }
+                  }
+                }
+
+                if (widget.currency.currencyName == 'BTC') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e8).toStringAsFixed(8);
+                } else if (widget.currency.currencyName == 'ETH') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e18).toStringAsFixed(10);
+                } else if (widget.currency.currencyName == 'USDT') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e6).toStringAsFixed(6);
+                } else if (widget.currency.currencyName == 'AES') {
+                  myTransactionList.trustBalanceInString = (double.parse(myTransactionList.trustBalance) / 1e8).toStringAsFixed(8);
+                } 
+              });
+              pd.dismiss();
+            });
+          });
+      }
+    } catch (e) {
+      print(e.message);
+    }
+  }
+
   Future<void> _getTransactionListAndLatestTrustBalance(ProgressDialog pd) async {
     pd.show();
     try {
@@ -173,7 +273,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
-      _getTransactionListAndLatestTrustBalance(pr2);
+      _getTransactionListAndLatestTrustBalance2(pr2);
     });
   }
 
@@ -287,7 +387,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
         header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
         onRefresh: () async {
           _refreshController.refreshCompleted();
-          _getTransactionListAndLatestTrustBalance(pr1);
+          _getTransactionListAndLatestTrustBalance2(pr1);
         },
         child: CustomScrollView(
           slivers: <Widget>[

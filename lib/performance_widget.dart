@@ -1,14 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/performance_team.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'dart:io';
+import 'dart:convert';
+
+
+class TrustPerformanceParam {
+  final String yesterdayTeamEarningInUsdt;
+  final String acquired30DaysInUsdt;
+  final String communityMarketRevenueInUsdt;
+  final String currencyManagementIncomeInUsdt;
+  final String recent7DaysInUsdt;
+  final String referralBonusInUsdt;
+  final String yesterdayTeamEarning;
+  final String acquired30Days;
+  final String communityMarketRevenue;
+  final String currencyManagementIncome;
+  final String recent7Days;
+  final String referralBonus;
+  final String teamMember;
+
+  TrustPerformanceParam({
+    this.yesterdayTeamEarningInUsdt, this.yesterdayTeamEarning,
+    this.acquired30DaysInUsdt, this.acquired30Days,
+    this.communityMarketRevenueInUsdt, this.communityMarketRevenue,
+    this.currencyManagementIncomeInUsdt, this.currencyManagementIncome,
+    this.recent7DaysInUsdt, this.recent7Days,
+    this.referralBonusInUsdt, this.referralBonus, this.teamMember});
+
+  factory TrustPerformanceParam.fromJson(Map<String, dynamic> json) {
+    return TrustPerformanceParam(
+      acquired30Days: json['acquired30Days'],
+      acquired30DaysInUsdt: json['acquired30DaysInUsdt'],
+      yesterdayTeamEarning: json['yesterDayTeamEarning'],
+      yesterdayTeamEarningInUsdt: json['yesterdayTeamEarningInUsdt'],
+      communityMarketRevenueInUsdt: json['communityMarketRevenueInUsdt'],
+      communityMarketRevenue: json['communityMarketRevenue'],
+      currencyManagementIncome: json['currencyManagementIncome'],
+      currencyManagementIncomeInUsdt: json['currencyManagementIncomeInUsdt'],
+      recent7Days: json['recent7Days'],
+      recent7DaysInUsdt: json['recent7DaysInUsdt'],
+      referralBonus: json['referralBonus'],
+      referralBonusInUsdt: json['referralBonusInUsdt'],
+      teamMember: json['teamMember']
+    );
+  }
+}
 
 class PerformancePage extends StatefulWidget {
   
   PerformancePage({Key key}) : super(key: key);
 
-  
   _PerformancePageState createState() => _PerformancePageState();
 }
 
@@ -17,14 +65,65 @@ class _PerformancePageState extends State<PerformancePage> {
 
   final RefreshController _refreshController = RefreshController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   List<PerformanceTeam> _performanceAttrList = [
     PerformanceTeam("Currency Management Income", 0.000000, 0.000000),
-    PerformanceTeam("Recommended Market Income", 0.000000, 0.000000),
-    PerformanceTeam("Sponsor Share Bonus", 0.000000, 0.000000),
+    PerformanceTeam("Referral Bonus", 0.000000, 0.000000),
     PerformanceTeam("Community Market Revenue", 0.000000, 0.000000),
-    PerformanceTeam("Rank Overriding Bonus", 0.000000, 0.000000),
-    PerformanceTeam("Rank Level Matching Bonus", 0.000000, 0.000000),
+    // PerformanceTeam("Community Market Revenue", 0.000000, 0.000000),
+    // PerformanceTeam("Rank Overriding Bonus", 0.000000, 0.000000),
+    // PerformanceTeam("Rank Level Matching Bonus", 0.000000, 0.000000),
   ];
+
+  TrustPerformanceParam myTrustPerformance = TrustPerformanceParam(
+    acquired30Days: '0.00', acquired30DaysInUsdt: '0.00', yesterdayTeamEarning: '0.00',
+    yesterdayTeamEarningInUsdt: '0.00', communityMarketRevenue: '0.00', communityMarketRevenueInUsdt: '0.00',
+    currencyManagementIncome: '0.00', currencyManagementIncomeInUsdt: '0.00', recent7Days: '0.00', recent7DaysInUsdt: '0.00',
+    referralBonus: '0.00', referralBonusInUsdt: '0.00', teamMember: '0'
+  );
+
+  ProgressDialog pr1, pr2;
+
+  var queryParameters = <String, String>{};
+
+  String yesterdayEarninginAES = '0.000000';
+  String yesterdayEarninginUSDT = '0.000000';
+
+  Future<void> _getPerformance (ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        queryParameters = {
+          'uuid': user.uid
+        };
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getPerformance', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              setState(() {
+                myTrustPerformance = TrustPerformanceParam.fromJson(contents);
+                _performanceAttrList[0].aesVal = double.parse(myTrustPerformance.currencyManagementIncome);
+                _performanceAttrList[0].usdtVal = double.parse(myTrustPerformance.currencyManagementIncomeInUsdt);
+                _performanceAttrList[1].aesVal = double.parse(myTrustPerformance.referralBonus);
+                _performanceAttrList[1].usdtVal = double.parse(myTrustPerformance.referralBonusInUsdt);
+                _performanceAttrList[2].aesVal = double.parse(myTrustPerformance.communityMarketRevenue);
+                _performanceAttrList[2].usdtVal = double.parse(myTrustPerformance.communityMarketRevenueInUsdt);
+                yesterdayEarninginAES = myTrustPerformance.yesterdayTeamEarning;
+                yesterdayEarninginUSDT = myTrustPerformance.yesterdayTeamEarningInUsdt;
+                print(myTrustPerformance.yesterdayTeamEarning);
+                pd.dismiss();
+              });
+            });
+          });
+        
+      }
+    } catch (e) {
+      print (e);
+    }
+  }
 
   Widget _buildCardRow(PerformanceTeam performanceTeam) {
     return Container(
@@ -58,7 +157,7 @@ class _PerformancePageState extends State<PerformancePage> {
                     ),
                     Spacer(),
                     Text(
-                      performanceTeam.usdtVal.toStringAsFixed(6) + " USDT",
+                      performanceTeam.usdtVal.toStringAsFixed(2) + " USDT",
                       style: TextStyle(color: Color(0xFF273b54), fontSize: 15.0, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -72,8 +171,19 @@ class _PerformancePageState extends State<PerformancePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      pr2 = new ProgressDialog(context, isDismissible: false);
+      pr2.style(message: 'Retrieving latest data...');
+      _getPerformance(pr2);
+    });
+  }
+  
+  @override
   Widget build(BuildContext context) {
-
+    pr1 = new ProgressDialog(context, isDismissible: false);
+    pr1.style(message: 'Retrieving latest data...');
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
       appBar: PreferredSize(
@@ -93,22 +203,22 @@ class _PerformancePageState extends State<PerformancePage> {
 
             },
           ),
-          actions: <Widget>[
-            Container(
-              margin: EdgeInsets.only(right: 15.0),
-              // height: 10.0,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Switch to Badge Reward",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
-                  )
-                ],
-              ),
-            )
-          ],
+          // actions: <Widget>[
+          //   Container(
+          //     margin: EdgeInsets.only(right: 15.0),
+          //     // height: 10.0,
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       crossAxisAlignment: CrossAxisAlignment.center,
+          //       children: <Widget>[
+          //         Text(
+          //           "Switch to Badge Reward",
+          //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
+          //         )
+          //       ],
+          //     ),
+          //   )
+          // ],
           backgroundColor: Color(0xFF000116),
           elevation: 5.0,
           iconTheme: IconThemeData(
@@ -121,15 +231,15 @@ class _PerformancePageState extends State<PerformancePage> {
         enablePullDown: true,
         header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
         onRefresh: () async {
-          await Future.delayed(Duration(seconds: 1));
           _refreshController.refreshCompleted();
+          _getPerformance(pr1);
         },
         child: CustomScrollView(
           slivers: <Widget>[
             SliverToBoxAdapter(
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: 400.0,
+                height: 380.0,
                 child: Stack(
                   children: <Widget>[
                     Container(
@@ -157,7 +267,7 @@ class _PerformancePageState extends State<PerformancePage> {
                             width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.only(top: 20.0),
                             child: Text(
-                              "0.000000",
+                              yesterdayEarninginAES,
                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30.0),
                               textAlign: TextAlign.start,
                             ),
@@ -166,7 +276,7 @@ class _PerformancePageState extends State<PerformancePage> {
                             width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.only(top: 10.0),
                             child: Text(
-                              "= 0.000000 USDT",
+                              yesterdayEarninginUSDT + " USDT",
                               style: TextStyle(color: Colors.white, fontSize: 13.0),
                               textAlign: TextAlign.start,
                             ),
@@ -192,7 +302,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                         width: MediaQuery.of(context).size.width,
                                         margin: EdgeInsets.only(top: 10.0),
                                         child: Text(
-                                          "0.000000 AES",
+                                          myTrustPerformance.recent7Days + ' AES',
                                           style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold),
                                           textAlign: TextAlign.start,
                                         ),
@@ -217,7 +327,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                         width: MediaQuery.of(context).size.width,
                                         margin: EdgeInsets.only(top: 10.0),
                                         child: Text(
-                                          "0.000000 AES",
+                                          myTrustPerformance.acquired30Days + " AES",
                                           style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold),
                                           textAlign: TextAlign.start,
                                         ),
@@ -234,7 +344,7 @@ class _PerformancePageState extends State<PerformancePage> {
                               child: Container(
                                 padding: EdgeInsets.all(15.0),
                                 width: MediaQuery.of(context).size.width,
-                                height: 130.0,
+                                height: 100.0,
                                 child: Column(
                                   children: <Widget>[
                                     Container(
@@ -259,37 +369,37 @@ class _PerformancePageState extends State<PerformancePage> {
                                           ),
                                           Spacer(),
                                           Text(
-                                            "0 People",
+                                            myTrustPerformance.teamMember + " People",
                                             style: TextStyle(color: Colors.black, fontSize: 15.0),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Divider(
-                                      color: Colors.grey,
-                                      thickness: 0.3,
-                                      height: 28.0,
-                                    ),
-                                    Container(
-                                      // margin: EdgeInsets.only(top: 15.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Container(
-                                            width: MediaQuery.of(context).size.width / 2,
-                                            child: Text(
-                                              "Trust Performance",
-                                              style: TextStyle(color: Colors.black, fontSize: 15.0),
-                                              textAlign: TextAlign.start,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            "0.000000 USDT",
-                                            style: TextStyle(color: Color(0xFF273b54), fontSize: 15.0, fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    // Divider(
+                                    //   color: Colors.grey,
+                                    //   thickness: 0.3,
+                                    //   height: 28.0,
+                                    // ),
+                                    // Container(
+                                    //   // margin: EdgeInsets.only(top: 15.0),
+                                    //   child: Row(
+                                    //     children: <Widget>[
+                                    //       Container(
+                                    //         width: MediaQuery.of(context).size.width / 2,
+                                    //         child: Text(
+                                    //           "Trust Performance",
+                                    //           style: TextStyle(color: Colors.black, fontSize: 15.0),
+                                    //           textAlign: TextAlign.start,
+                                    //         ),
+                                    //       ),
+                                    //       Spacer(),
+                                    //       Text(
+                                    //         "0.000000 USDT",
+                                    //         style: TextStyle(color: Color(0xFF273b54), fontSize: 15.0, fontWeight: FontWeight.bold),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -317,9 +427,9 @@ class _PerformancePageState extends State<PerformancePage> {
                   _buildCardRow(_performanceAttrList[0]),
                   _buildCardRow(_performanceAttrList[1]),
                   _buildCardRow(_performanceAttrList[2]),
-                  _buildCardRow(_performanceAttrList[3]),
-                  _buildCardRow(_performanceAttrList[4]),
-                  _buildCardRow(_performanceAttrList[5]),
+                  // _buildCardRow(_performanceAttrList[3]),
+                  // _buildCardRow(_performanceAttrList[4]),
+                  // _buildCardRow(_performanceAttrList[5]),
                 ]
               ),
             ),

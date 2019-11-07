@@ -146,9 +146,11 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                      Container(
                        margin: EdgeInsets.all(5.0),
                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                       width: MediaQuery.of(context).size.width,
                        child: Text(
                          widget.currency.currencyName == 'BTC' ? myUserAddress.btcAddress.toString() : myUserAddress.ethAddress.toString(),
                          style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.bold),
+                         textAlign: TextAlign.center,
                        ),
                      ),
                      Container(

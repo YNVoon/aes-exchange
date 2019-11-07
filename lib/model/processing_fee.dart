@@ -4,8 +4,10 @@ class ProcessingFee {
   var aesBalance;
   var ethBalance;
   final String status;
+  var currentBalance;
+  var processingFee;
 
-  ProcessingFee({this.highProcessing, this.lowProcessing, this.aesBalance, this.ethBalance, this.status});
+  ProcessingFee({this.highProcessing, this.lowProcessing, this.aesBalance, this.ethBalance, this.status, this.processingFee, this.currentBalance});
 
   factory ProcessingFee.fromJson(Map<String, dynamic> json) {
     return ProcessingFee(
@@ -13,7 +15,9 @@ class ProcessingFee {
       lowProcessing: json['lowProcessing'],
       aesBalance: json['aesBalance'],
       ethBalance: json['ethBalance'],
-      status: json['status']
+      status: json['status'],
+      processingFee: json['processingFee'],
+      currentBalance: json['currentBalance']
     );
   }
 }

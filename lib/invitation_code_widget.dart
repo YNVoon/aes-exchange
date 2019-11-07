@@ -53,7 +53,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                 children: <Widget>[
                   Container(
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                    child: Image(image: AssetImage('assets/aes_transparent.png'), width: 200.0,),
+                    child: Image(image: AssetImage('assets/aes_deposit_full.png'), width: 150.0,),
                   ),
                   Container(
                     margin: EdgeInsets.only(bottom: 10.0),

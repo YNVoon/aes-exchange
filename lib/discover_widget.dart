@@ -9,14 +9,16 @@ class DiscoverWidget extends StatefulWidget {
 
 class _DiscoverWidgetState extends State<DiscoverWidget> {
 
-  var shoppingListTitle = ["Master Card", "Union Pay"];
-  var shoppingListDescription = ["Pay master card bill", "Pay Union Pay bill"];
+  var shoppingListTitle = ["AES Pay"];
+  var shoppingListDescription = ["Pay bill"];
   var blockChainListTitle = ["BTC", "ETH", "USDT"];
   var blockChainListWebPath = [
     "https://coinmarketcap.com/currencies/bitcoin/",
     "https://coinmarketcap.com/currencies/ethereum/",
     "https://coinmarketcap.com/currencies/tether/"
   ];
+  var shoppingListImagePath = ["assets/aessignatum.png"];
+  var blockChainListImagePath = ["assets/bitcoin.png", "assets/ethereum.png", "assets/tether.png"];
 
   void _launchURL(String path) async {
     var url = path;
@@ -62,10 +64,10 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text("T", style: TextStyle(fontSize: 30.0)),
-                // Image(
-                //   image: AssetImage(imagePath),
-                // ),
+                // Text("T", style: TextStyle(fontSize: 30.0)),
+                Image(
+                  image: AssetImage(blockChainListImagePath[index]),
+                ),
                 Container(
                   margin: EdgeInsets.only(left: 20.0),
                   child: Column(
@@ -112,10 +114,10 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text("T", style: TextStyle(fontSize: 30.0)),
-                // Image(
-                //   image: AssetImage(imagePath),
-                // ),
+                // Text("T", style: TextStyle(fontSize: 30.0)),
+                Image(
+                  image: AssetImage(shoppingListImagePath[index]),
+                ),
                 Container(
                   margin: EdgeInsets.only(left: 20.0),
                   child: Column(
@@ -169,11 +171,11 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
                     ),
                   ),
                   Text(
-                    "EXCHANGE",
+                    "DEPOSIT",
                     style: TextStyle(
                       color: Colors.white, 
                       fontSize: 16.0,
-                      letterSpacing: 5.0
+                      letterSpacing: 9.0
                     ),
                   )
                 ],
@@ -324,7 +326,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
               (BuildContext context, int index) {
                 return _buildShoppingCard("testing", index);
               },
-              childCount: 2
+              childCount: 1
             ),
           ),
           SliverToBoxAdapter(

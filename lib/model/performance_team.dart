@@ -2,8 +2,8 @@
 
 class PerformanceTeam {
   final String title;
-  final double aesVal;
-  final double usdtVal;
+  double aesVal;
+  double usdtVal;
 
   PerformanceTeam(this.title, this.aesVal, this.usdtVal);
 }

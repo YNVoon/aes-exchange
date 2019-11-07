@@ -20,24 +20,6 @@ class TransferTrustPage extends StatefulWidget {
   _TransferTrustPageState createState() => _TransferTrustPageState();
 }
 
-// class TransferTrustFeesAndAmount {
-//   final String btcBalance;
-//   final String ethBalance;
-//   final String aesBalance;
-//   final String usdtBalance;
-
-//   TransferTrustFeesAndAmount({this.btcBalance, this.ethBalance, this.aesBalance, this.usdtBalance});
-
-//   factory TransferTrustFeesAndAmount.fromJson(Map<String, dynamic> json) {
-//     return TransferTrustFeesAndAmount(
-//       btcBalance: json['btcBalance'].toString(),
-//       ethBalance: json['ethBalance'].toString(),
-//       aesBalance: json['aesBalance'].toString(),
-//       usdtBalance: json['usdtBalance'].toString()
-//     );
-//   }
-// }
-
 class _TransferTrustPageState extends State<TransferTrustPage> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -97,6 +79,89 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
   }
 
   var queryParameters = <String, String>{};
+
+  Future<void> _requestAppropriateAvailableAmount2(ProgressDialog pd) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        queryParameters = {
+          'uuid': user.uid
+        };
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getAvailableBalanceFromWallet', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              setState(() {
+                myTransferTrustFeesAndAmount = TransferTrustFeesAndAmount.fromJson(contents); 
+                if (widget.currency.currencyName == 'BTC') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(8);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.btcBalance);
+                } else if (widget.currency.currencyName == 'ETH') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(10);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.ethBalance);
+                } else if (widget.currency.currencyName == 'USDT') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(6);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.usdtBalance);
+                } else if (widget.currency.currencyName == 'AES') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(8);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.aesBalance);
+                }
+              });
+              pd.dismiss();
+            });
+          });
+      }
+    } catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<void> _confirmAndTransfer2(ProgressDialog pd, String amountToSend) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        if (widget.currency.currencyName == 'BTC') {
+          queryParameters = {
+            'typeOfCurrency': 'btc',
+            'uuid': user.uid,
+            'amountToSend': amountToSend
+          };
+        } else if (widget.currency.currencyName == 'ETH') {
+          queryParameters = {
+            'typeOfCurrency': 'eth',
+            'uuid': user.uid,
+            'amountToSend': amountToSend
+          };
+        } else if (widget.currency.currencyName == 'USDT') {
+          queryParameters = {
+            'typeOfCurrency': 'usdt',
+            'uuid': user.uid,
+            'amountToSend': amountToSend
+          };
+        } else if (widget.currency.currencyName == 'AES') {
+          queryParameters = {
+            'typeOfCurrency': 'aes',
+            'uuid': user.uid,
+            'amountToSend': amountToSend
+          };
+        }
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/transferTrust', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print(contents.toString());
+            });
+            pd.dismiss();
+            _showMaterialDialogForError("Successful transfer", "navigate");
+          });
+      }
+    } catch (e) {
+      print(e.message);
+    }
+  }
 
   Future<void> _requestAppropriateAvailableAmount(ProgressDialog pd) async{
     pd.show();
@@ -368,7 +433,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
-      _requestAppropriateAvailableAmount(pr2);
+      _requestAppropriateAvailableAmount2(pr2);
     });
   }
 
@@ -483,24 +548,24 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: 15.0),
-                  padding: EdgeInsets.all(15.0),
-                  color: Color(0xFFf7f6fb),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: Text(
-                          'Mining Fee / Gas Price: ' + miningFee + ' ' + miningCurrency,
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                // Container(
+                //   margin: EdgeInsets.only(top: 15.0),
+                //   padding: EdgeInsets.all(15.0),
+                //   color: Color(0xFFf7f6fb),
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: <Widget>[
+                //       Container(
+                //         width: MediaQuery.of(context).size.width,
+                //         child: Text(
+                //           'Mining Fee / Gas Price: ' + miningFee + ' ' + miningCurrency,
+                //           style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
                 Container(
                   margin: EdgeInsets.only(top: 15.0),
                   padding: EdgeInsets.all(15.0),
@@ -531,16 +596,23 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                               if (_quantityController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 } else if (widget.currency.currencyName == 'ETH'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 } else if (widget.currency.currencyName == 'USDT'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 } else if (widget.currency.currencyName == 'AES'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 }
                               }
+                              print(inputQuantityInDouble.runtimeType);
+                              print('quantity' + inputQuantityInDouble.toString());
 
-                              print('inputQuantityInDouble' + inputQuantityInDouble.toString());
+                              // var test = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                              // print(test.toString());
                               
                               if (_quantityController.text.isEmpty) {
                                 textFormValidate = false;
@@ -551,37 +623,38 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                               } else if (inputQuantityInDouble > avaiBalanceForCalc){
                                 textFormValidate = false;
                                 textFormInvalidMsg = 'Insufficient Fund.';
-                                
                               } else {
-                                pr1 = new ProgressDialog(context, isDismissible: false);
-                                pr1.style(message: 'Verifying Transaction...');
-                                if (value) {
-                                  if (widget.currency.currencyName == 'BTC') {
-                                    // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e8).round());
-                                    // _createAndVerifyTrustTransfer(pr1, 1000000);
-                                  } else if (widget.currency.currencyName == 'ETH'){
-                                    // TODO: !!!!!!!!!!! When we transfer ETH, the receipt of total eth transfer need to divide by 6 then only can push to firebase as a transaction
-                                    // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e18).round());
-                                  } else if (widget.currency.currencyName == 'USDT'){
-                                    // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e6).round());
-                                    if (avaiEthBalanceForCalc < 420000000000000) {
-                                      textFormValidate = false;
-                                      textFormInvalidMsg = 'Insufficient Gas for transaction.';
-                                      return;
-                                    }
-                                  } else if (widget.currency.currencyName == 'AES'){
-                                    // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e8).round());
-                                    if (avaiEthBalanceForCalc < 420000000000000) {
-                                      textFormValidate = false;
-                                      textFormInvalidMsg = 'Insufficient Gas for transaction.';
-                                      return;
-                                    }
-                                  }
-                                  accept = value;
-                                  textFormValidate = true;
-                                } else {
-                                  accept = value;
-                                }
+                                accept = value;
+                                textFormValidate = true;
+                                // pr1 = new ProgressDialog(context, isDismissible: false);
+                                // pr1.style(message: 'Verifying Transaction...');
+                                // if (value) {
+                                //   // if (widget.currency.currencyName == 'BTC') {
+                                //   //   // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e8).round());
+                                //   //   // _createAndVerifyTrustTransfer(pr1, 1000000);
+                                //   // } else if (widget.currency.currencyName == 'ETH'){
+                                //   //   // TODO: !!!!!!!!!!! When we transfer ETH, the receipt of total eth transfer need to divide by 6 then only can push to firebase as a transaction
+                                //   //   // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e18).round());
+                                //   // } else if (widget.currency.currencyName == 'USDT'){
+                                //   //   // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e6).round());
+                                //   //   if (avaiEthBalanceForCalc < 420000000000000) {
+                                //   //     textFormValidate = false;
+                                //   //     textFormInvalidMsg = 'Insufficient Gas for transaction.';
+                                //   //     return;
+                                //   //   }
+                                //   // } else if (widget.currency.currencyName == 'AES'){
+                                //   //   // _createAndVerifyTrustTransfer(pr1, (double.parse(_quantityController.text) * 1e8).round());
+                                //   //   if (avaiEthBalanceForCalc < 420000000000000) {
+                                //   //     textFormValidate = false;
+                                //   //     textFormInvalidMsg = 'Insufficient Gas for transaction.';
+                                //   //     return;
+                                //   //   }
+                                //   // }
+                                //   accept = value;
+                                //   textFormValidate = true;
+                                // } else {
+                                //   accept = value;
+                                // }
                               }
                             });
                           },
@@ -626,15 +699,21 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                             // test();
                             pr1 = new ProgressDialog(context, isDismissible: false);
                             pr1.style(message: 'Verifying Transaction...');
+                            var inputQuantityInDouble;
                             if (widget.currency.currencyName == 'BTC') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round());
-                            } else if (widget.currency.currencyName == 'ETH') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3).round());
-                            } else if (widget.currency.currencyName == 'USDT') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3).round());
-                            } else if (widget.currency.currencyName == 'AES') {
-                              _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round());
+                              inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                            } else if (widget.currency.currencyName == 'ETH'){
+                              inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                            } else if (widget.currency.currencyName == 'USDT'){
+                              inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                            } else if (widget.currency.currencyName == 'AES'){
+                              inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                             }
+                            _confirmAndTransfer2(pr1, inputQuantityInDouble.toString());
                             
                           } : null,
                           child: Text(

@@ -6,8 +6,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'main.dart';
 
 import 'dart:io';
+import 'dart:convert';
 import 'package:random_string/random_string.dart';
 import 'dart:math' show Random;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'login_widget.dart';
+
+
+class SignUpStatus {
+  var status;
+
+  SignUpStatus({this.status});
+
+  factory SignUpStatus.fromJson(Map<String, dynamic> json) {
+    return SignUpStatus(
+      status: json['status']
+    );
+  }
+}
 
 
 class SignupPage extends StatefulWidget {
@@ -41,6 +57,8 @@ class _SignupPageState extends State<SignupPage> {
   final FocusNode _nodeInvitation = FocusNode();
 
   ProgressDialog pr1;
+
+  SignUpStatus mySignUpStatus = SignUpStatus(status: '');
 
   bool validateEmail(String value) {
     Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
@@ -91,13 +109,50 @@ class _SignupPageState extends State<SignupPage> {
       });
   }
 
+  Future<void> signOut () async {
+    try {
+      FirebaseUser user = await _auth.currentUser();
+      if (user != null) {
+        await _auth.signOut();
+        print('Sign out successful');
+        Fluttertoast.showToast(
+            msg: "Something went wrong!",
+        );
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+      } else {
+        print('No active user');
+      }
+    } catch (e) {
+      print(e.message);
+    }
+  }
+
   Future<void> signUp() async {
     pr1.show();
     try {
       FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
-      _setUserDatabase(_email, user.uid, _invitationCode);
-      pr1.dismiss();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+      var queryParameters = {
+        'email': _email,
+        'uuid': user.uid,
+        'referralCode': randomAlphaNumeric(10),
+        'invitationCode': _invitationCode
+      };
+      new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/createUser', queryParameters))
+        .then((HttpClientRequest request) => request.close())
+        .then((HttpClientResponse response) {
+          response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+            mySignUpStatus = SignUpStatus.fromJson(contents);
+            if (mySignUpStatus.status == 'success') {
+              pr1.dismiss();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+            } else {
+              pr1.dismiss();
+              signOut();
+            }
+          });
+          print(response.toString());
+        });
+      
       
     } catch (e) {
       print(e.message);
@@ -127,7 +182,7 @@ class _SignupPageState extends State<SignupPage> {
                       //Logo
                       Container(
                         margin: EdgeInsets.only(top: 50.0, left: 50.0, right: 50.0),
-                        child: Image(image: AssetImage('assets/aes_transparent.png')),
+                        child: Image(image: AssetImage('assets/aes_deposit_full.png'), width: 200.0,),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),

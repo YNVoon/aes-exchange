@@ -80,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
       print(authResult);
       pr.dismiss();
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+      
       // Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
     } catch (e) {
       print("error");
@@ -120,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                     // Logo
                     Container(
                       margin: EdgeInsets.all(10.0),
-                      child: Image(image: AssetImage('assets/aes_transparent.png')),
+                      child: Image(image: AssetImage('assets/aes_deposit_full.png'), width: 200.0,),
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 50.0),

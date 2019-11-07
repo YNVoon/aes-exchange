@@ -10,6 +10,7 @@ import 'dart:io';
 import 'dart:convert';
 
 class FlexibleProcessingFee {
+  
   final double aesProcessing;
   var aesBalance;
   var ethBalance;
@@ -118,6 +119,95 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
         
       }
     );
+  }
+
+  Future<void> _confirmAndTransfer2(ProgressDialog pd, String amountToSend, String receiverAddress) async {
+    pd.show();
+    try {
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        if (widget.currency.currencyName == 'BTC') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'btc',
+            'amountToSend': amountToSend,
+            'withdrawalAddress': receiverAddress
+          };
+        } else if (widget.currency.currencyName == 'ETH') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'eth',
+            'amountToSend': amountToSend,
+            'withdrawalAddress': receiverAddress
+          };
+        } else if (widget.currency.currencyName == 'USDT') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'usdt',
+            'amountToSend': amountToSend,
+            'withdrawalAddress': receiverAddress
+          };
+        } else if (widget.currency.currencyName == 'AES') {
+          queryParameters = {
+            'uuid': user.uid,
+            'typeOfCurrency': 'aes',
+            'amountToSend': amountToSend,
+            'withdrawalAddress': receiverAddress
+          };
+        }
+
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/withdrawalFromWallet', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              print(contents.toString());
+              pd.dismiss();
+              _showMaterialDialogForError("Successful transfer. Transaction usually takes 1 day to transfer.", "navigate");
+            });
+            
+          });
+      }
+    } catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<void> _requestAppropriateAvailableAmount2(ProgressDialog pd) async {
+    pd.show();
+    try{
+      FirebaseUser user = (await _auth.currentUser());
+      if (user != null) {
+        queryParameters = {
+          'uuid': user.uid
+        };
+        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getAvailableBalanceFromWallet', queryParameters))
+          .then((HttpClientRequest request) => request.close())
+          .then((HttpClientResponse response) {
+            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+              setState(() {
+                myTransferTrustFeesAndAmount = TransferTrustFeesAndAmount.fromJson(contents);
+                if (widget.currency.currencyName == 'BTC') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(8);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.btcBalance);
+                } else if (widget.currency.currencyName == 'ETH') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(10);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.ethBalance);
+                } else if (widget.currency.currencyName == 'USDT') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(6);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.usdtBalance);
+                } else if (widget.currency.currencyName == 'AES') {
+                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(8);
+                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.aesBalance);
+                }
+                pd.dismiss();
+              });
+              
+            });
+          });
+      }
+    } catch (e) { 
+      print(e.message);
+    }
   }
 
   Future<void> _requestAppropriateAvailableAmount(ProgressDialog pd) async{
@@ -386,7 +476,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: 'Retrieving latest data...');
-      _requestAppropriateAvailableAmount(pr2);
+      _requestAppropriateAvailableAmount2(pr2);
     });
   }
 
@@ -575,24 +665,24 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                 //     textAlign: TextAlign.start,
                 //   ),
                 // ),
-                Divider(
-                  thickness: 0.5,
-                  height: 0.0,
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 15.0),
-                  padding: EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0),
-                  color: Color(0xFFf7f6fb),
-                  height: 35.0,
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                       'Mining Fee / Gas Price: ' + miningFee + ' ' + miningCurrency,
-                       style: TextStyle(color: Colors.grey, fontSize: 12.0),
-                     )
-                    ],
-                  ),
-                ),
+                // Divider(
+                //   thickness: 0.5,
+                //   height: 0.0,
+                // ),
+                // Container(
+                //   margin: EdgeInsets.only(top: 15.0),
+                //   padding: EdgeInsets.only(left: 10.0, top: 5.0, bottom: 5.0),
+                //   color: Color(0xFFf7f6fb),
+                //   height: 35.0,
+                //   child: Row(
+                //     children: <Widget>[
+                //       Text(
+                //        'Mining Fee / Gas Price: ' + miningFee + ' ' + miningCurrency,
+                //        style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                //      )
+                //     ],
+                //   ),
+                // ),
                 // Container(
                 //   margin: EdgeInsets.only(top: 15.0),
                 //   child: Row(
@@ -624,12 +714,16 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                               if (_quantityController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 } else if (widget.currency.currencyName == 'ETH'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 } else if (widget.currency.currencyName == 'USDT'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 } else if (widget.currency.currencyName == 'AES'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                                 }
                               }
 
@@ -664,36 +758,45 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                                 textFormValidate = false;
                                 textFormInvalidMsg = 'Insufficient Fund.';
                               } else {
-                                pr1 = new ProgressDialog(context, isDismissible: false);
-                                pr1.style(message: 'Verifying Transaction...');
-                                if (value) {
-                                  if (widget.currency.currencyName == 'BTC') {
-                                    // _getProcessingFee(pr1, _quantityController.text);
-                                  } else if (widget.currency.currencyName == 'ETH'){
-
-                                  } else if (widget.currency.currencyName == 'USDT'){
-                                    if (avaiEthBalanceForCalc < 420000000000000) {
-                                      textFormValidate = false;
-                                      textFormInvalidMsg = 'Insufficient Gas for transaction.';
-                                      return;
-                                    }
-                                  } else if (widget.currency.currencyName == 'AES'){
-                                    if (avaiEthBalanceForCalc < 420000000000000) {
-                                      textFormValidate = false;
-                                      textFormInvalidMsg = 'Insufficient Gas for transaction.';
-                                      return;
-                                    }
+                                // accept = value;
+                                textFormValidate = true;
+                                if (textFormValidate && textFormValidate2) {
+                                  if (value) {
+                                    _showMaterialDialogForError('Please double confirm the receiver address is\n ' + _coinAddressController.text + '\n\nThis process is not reversible.', 'dismissDialog');
+                                    accept = value;
+                                  } else {
+                                    accept = value;
                                   }
-                                  // accept = value;
-                                  textFormValidate = true;
-                                } else {
-                                  accept = value;
+                                  
                                 }
+                                // pr1 = new ProgressDialog(context, isDismissible: false);
+                                // pr1.style(message: 'Verifying Transaction...');
+                                // if (value) {
+                                //   if (widget.currency.currencyName == 'BTC') {
+                                //     // _getProcessingFee(pr1, _quantityController.text);
+                                //   } else if (widget.currency.currencyName == 'ETH'){
+
+                                //   } else if (widget.currency.currencyName == 'USDT'){
+                                //     if (avaiEthBalanceForCalc < 420000000000000) {
+                                //       textFormValidate = false;
+                                //       textFormInvalidMsg = 'Insufficient Gas for transaction.';
+                                //       return;
+                                //     }
+                                //   } else if (widget.currency.currencyName == 'AES'){
+                                //     if (avaiEthBalanceForCalc < 420000000000000) {
+                                //       textFormValidate = false;
+                                //       textFormInvalidMsg = 'Insufficient Gas for transaction.';
+                                //       return;
+                                //     }
+                                //   }
+                                //   // accept = value;
+                                //   textFormValidate = true;
+                                // } else {
+                                //   accept = value;
+                                // }
                               }
 
-                              if (textFormValidate && textFormValidate2) {
-                                accept = value;
-                              }
+                              
                             });
                           },
                         ),
@@ -729,16 +832,31 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                     onPressed: accept ? () {
                       pr1 = new ProgressDialog(context, isDismissible: false);
                       pr1.style(message: 'Verifying Transaction...');
+                      // if (widget.currency.currencyName == 'BTC') {
+                      //   _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round(), _coinAddressController.text);
+                      // } else if (widget.currency.currencyName == 'ETH') {
+                      //   _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3).round(), _coinAddressController.text);
+                      // } else if (widget.currency.currencyName == 'USDT') {
+                      //   _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3).round(), _coinAddressController.text);
+                      // } else if (widget.currency.currencyName == 'AES') {
+                      //   _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round(), _coinAddressController.text);
+                      // }
+                      // print(_coinAddressController.text);
+                      var inputQuantityInDouble;
                       if (widget.currency.currencyName == 'BTC') {
-                        _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round(), _coinAddressController.text);
-                      } else if (widget.currency.currencyName == 'ETH') {
-                        _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3).round(), _coinAddressController.text);
-                      } else if (widget.currency.currencyName == 'USDT') {
-                        _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3).round(), _coinAddressController.text);
-                      } else if (widget.currency.currencyName == 'AES') {
-                        _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round(), _coinAddressController.text);
+                        inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                      } else if (widget.currency.currencyName == 'ETH'){
+                        inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                      } else if (widget.currency.currencyName == 'USDT'){
+                        inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                      } else if (widget.currency.currencyName == 'AES'){
+                        inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
                       }
-                      print(_coinAddressController.text);
+                      _confirmAndTransfer2(pr1, inputQuantityInDouble.toString(), _coinAddressController.text);
                       
 
                     } : null,

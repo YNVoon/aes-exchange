@@ -24,7 +24,7 @@ class _AssetsPageState extends State<AssetsPage> {
         if (index == 1) {
           Navigator.push(
             context, 
-            MaterialPageRoute(builder: (context) => WalletTransferPage()),
+            MaterialPageRoute(builder: (context) => WalletTransferPage(currency: widget.currency,)),
           );
         }
         
