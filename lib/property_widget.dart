@@ -11,8 +11,6 @@ import 'model/crypto_current_balance.dart';
 
 import 'dart:io';
 import 'dart:convert';
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
  
@@ -53,6 +51,21 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
           print(CryptoAddress.fromJson(contents).privateKey);
         });
       });
+  }
+
+  void _showMaterialDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(
+            'Coming Soon',
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        );
+      }
+    );
   }
 
   Future<void> _requestUserDataThenCheckBalance(ProgressDialog pd) async {
@@ -317,7 +330,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                     width: MediaQuery.of(context).size.width / 2.05,
                     child: FlatButton.icon(
                       onPressed: () {
-                        _request();
+                        _showMaterialDialog();
                       },
                       color: Colors.transparent,
                       icon: Icon(Icons.notifications, color: Color(0xFF1d2f33), size: 26.0),

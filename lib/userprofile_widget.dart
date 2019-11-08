@@ -35,10 +35,26 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
   UserInformation myUserInformation = UserInformation(userEmail: '', userId: '', userInvitationCode: '', userVIPStatus: 0);
 
   List<List<UserProfile>> _settingList = [
-    [UserProfile("Invitation code", Icons.drafts, "invitation_code"), UserProfile("Address book", Icons.contacts, "address_book"),],
-    [UserProfile("Security", Icons.security, "security"), UserProfile("Settings", Icons.settings_applications, "settings"),],
+    // [UserProfile("Invitation code", Icons.drafts, "invitation_code"), UserProfile("Address book", Icons.contacts, "address_book"),],
+    [UserProfile("Invitation code", Icons.drafts, "invitation_code"), ],
+    [UserProfile("Security", Icons.security, "security"), UserProfile("Language", Icons.settings_applications, "settings"),],
     [UserProfile("About us", Icons.help_outline, "about_us"),]
   ];
+
+  void _showMaterialDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(
+            'Coming Soon',
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        );
+      }
+    );
+  }
 
   Future<void> _getUserInformation (ProgressDialog pd) async {
     pd.show();
@@ -99,6 +115,8 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
             context, 
             MaterialPageRoute(builder: (context) => InvitationCodePage(userInformation: myUserInformation,)),
           );
+        } else if (userProfile.title == 'Language' || userProfile.title == 'About us') {
+          _showMaterialDialog();
         }
       },
       child: Column(
@@ -168,10 +186,10 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
           SliverToBoxAdapter(
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => PersonalInfoPage())
-                );
+                // Navigator.push(
+                //   context, 
+                //   MaterialPageRoute(builder: (context) => PersonalInfoPage())
+                // );
               },
               child: Container(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
@@ -249,7 +267,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
             delegate: SliverChildListDelegate(
               [
                 _buildSettingRow(_settingList[0][0], 0),
-                _buildSettingRow(_settingList[0][1], 0),
+                // _buildSettingRow(_settingList[0][1], 0),
               ]
             ),
           ),

@@ -4,6 +4,15 @@ import 'package:flutter/material.dart';
 import 'wallet_withdrawal_widget.dart';
 import 'wallet_transfer_widget.dart';
 import 'wallet_deposit_widget.dart';
+import 'swap_widget.dart';
+import 'transaction_record_widget.dart';
+import 'withdrawal_record_widget.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:progress_dialog/progress_dialog.dart';
+
 
 class AssetsPage extends StatefulWidget {
 
@@ -16,7 +25,13 @@ class AssetsPage extends StatefulWidget {
 
 class _AssetsPageState extends State<AssetsPage> {
 
-  List<String> _buttonList = ["Hello World", "Testing", "Swap", "Transaction"];
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  var queryParameters = <String, String>{};
+
+  ProgressDialog pr1, pr2;
+
+  List<String> _assetList = ["assets/swap.png", "assets/transfer.png", "assets/withdrawal.png", "assets/transaction.png"];
 
   Widget _buildGridButtons (String title, int index) {
     return InkWell(
@@ -25,6 +40,21 @@ class _AssetsPageState extends State<AssetsPage> {
           Navigator.push(
             context, 
             MaterialPageRoute(builder: (context) => WalletTransferPage(currency: widget.currency,)),
+          );
+        } else if (index == 0) {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => SwapPage(currency: widget.currency,)),
+          );
+        } else if (index == 3) {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => TransactionPage(currency: widget.currency,)),
+          );
+        } else if (index == 2) {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => WithdrawalRecordPage(currency: widget.currency,)),
           );
         }
         
@@ -39,8 +69,8 @@ class _AssetsPageState extends State<AssetsPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text("T", style: TextStyle(fontSize: 30.0)),
-                
+                // Text("T", style: TextStyle(fontSize: 30.0)),
+                Image(image: AssetImage(_assetList[index]), width: index == 3 ? 35.0 : 28.0,),
                 Container(
                   width: 80.0,
                   margin: EdgeInsets.only(left: 15.0),

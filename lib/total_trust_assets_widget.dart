@@ -267,8 +267,6 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
   @override
   void initState() {
     super.initState();
-    // _trustTransactionList.add(TrustTransaction('2019-10-28', '22:18:25', 'BTC', 0.00184561, true));
-    // _trustTransactionList.add(TrustTransaction('2019-10-28', '22:25:25', 'BTC', 0.00382561, false));
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);

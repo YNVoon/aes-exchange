@@ -187,17 +187,17 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
               setState(() {
                 myTransferTrustFeesAndAmount = TransferTrustFeesAndAmount.fromJson(contents);
                 if (widget.currency.currencyName == 'BTC') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(8);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.btcBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(10);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.btcBalance);
                 } else if (widget.currency.currencyName == 'ETH') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(10);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.ethBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(12);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.ethBalance);
                 } else if (widget.currency.currencyName == 'USDT') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(6);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.usdtBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(8);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.usdtBalance);
                 } else if (widget.currency.currencyName == 'AES') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(8);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.aesBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(10);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.aesBalance);
                 }
                 pd.dismiss();
               });
@@ -547,35 +547,35 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                     hintText: 'Please enter your address',
                     hintStyle: TextStyle(fontSize: 14.0, color: Colors.grey, fontWeight: FontWeight.w300),
                     border: OutlineInputBorder(),
-                    suffixIcon: Container(
-                      width: 75.0,
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            child: Icon(Icons.center_focus_weak, size: 20.0, color: Colors.black,),
-                          ),
+                    // suffixIcon: Container(
+                    //   width: 75.0,
+                    //   child: Row(
+                    //     children: <Widget>[
+                    //       Container(
+                    //         child: Icon(Icons.center_focus_weak, size: 20.0, color: Colors.black,),
+                    //       ),
                           
-                          Text(
-                            '  |',
-                            style: TextStyle(fontSize: 25.0, color: Color(0xFFc4c5c7), fontWeight: FontWeight.w200),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: 10.0),
-                            child: InkWell(
-                              highlightColor: Colors.transparent,
-                              splashColor: Colors.transparent,
-                              onTap: () {
+                    //       Text(
+                    //         '  |',
+                    //         style: TextStyle(fontSize: 25.0, color: Color(0xFFc4c5c7), fontWeight: FontWeight.w200),
+                    //       ),
+                    //       Container(
+                    //         margin: EdgeInsets.only(left: 10.0),
+                    //         child: InkWell(
+                    //           highlightColor: Colors.transparent,
+                    //           splashColor: Colors.transparent,
+                    //           onTap: () {
 
-                              },
-                              child: Text(
-                                "Add",
-                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12.0),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    //           },
+                    //           child: Text(
+                    //             "Add",
+                    //             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12.0),
+                    //           ),
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                   ),
                 ),
                 Container(
@@ -815,7 +815,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                             },
                             child: Text(
                               'Terms and Conditions',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
                           

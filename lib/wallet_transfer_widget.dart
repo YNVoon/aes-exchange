@@ -125,17 +125,17 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
               setState(() {
                 myTransferTrustFeesAndAmount = TransferTrustFeesAndAmount.fromJson(contents);
                 if (widget.currency.currencyName == 'BTC') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(8);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.btcBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(12);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.btcBalance);
                 } else if (widget.currency.currencyName == 'ETH') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(10);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.ethBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(12);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.ethBalance);
                 } else if (widget.currency.currencyName == 'USDT') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(6);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.usdtBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(12);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.usdtBalance);
                 } else if (widget.currency.currencyName == 'AES') {
-                  avaiBalance = (int.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(8);
-                  avaiBalanceForCalc = int.parse(myTransferTrustFeesAndAmount.aesBalance);
+                  avaiBalance = (double.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(12);
+                  avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.aesBalance);
                 }
                 pd.dismiss();
               });
@@ -575,7 +575,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                             },
                             child: Text(
                               'Terms and Conditions',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
                         )

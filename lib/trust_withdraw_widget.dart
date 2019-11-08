@@ -597,7 +597,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                             },
                             child: Text(
                               'Trust Trading Rules',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
                           
