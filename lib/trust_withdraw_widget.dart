@@ -133,7 +133,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
             response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
               print(contents.toString());
               pd.dismiss();
-              _showMaterialDialogForError('Successful Withdraw', 'navigate');
+              _showMaterialDialogForError('Withdraw Successfully', 'navigate');
             });
           });
       }

@@ -162,7 +162,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
             response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
               print(contents.toString());
               pd.dismiss();
-              _showMaterialDialogForError("Successful transfer. Transaction usually takes 1 day to transfer.", "navigate");
+              _showMaterialDialogForError("Successfully transferred. Transaction usually takes 1 day to transfer.", "navigate");
             });
             
           });
@@ -378,7 +378,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
               print(contents.toString());
             });
             pd.dismiss();
-            _showMaterialDialogForError("Successful transfer", "navigate");
+            _showMaterialDialogForError("Transfer Successfully", "navigate");
           });
         
       } else {
@@ -592,7 +592,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                   onFieldSubmitted: (term) {
 
                   },
-                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 10)],
+                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 12)],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   controller: _quantityController,
                   textInputAction: TextInputAction.done,

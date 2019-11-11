@@ -262,7 +262,7 @@ class _SwapPageState extends State<SwapPage> {
               myTransactionStatus = TransactionStatus.fromJson(contents);
               pd.dismiss();
               if (myTransactionStatus.status == 'success') {
-                _showMaterialDialogForError("Successful Swap", "navigate");
+                _showMaterialDialogForError("Swap Successfully", "navigate");
               } else {
                 _showMaterialDialogForError("Transaction Failed", "navigate");
               }
@@ -562,7 +562,7 @@ class _SwapPageState extends State<SwapPage> {
                              margin: EdgeInsets.only(left: 20.0, right: 10.0),
                              child: TextFormField(
                                controller: _fromConversionController,
-                               inputFormatters: [DecimalTextInputFormatter(decimalRange: 10)],
+                               inputFormatters: [DecimalTextInputFormatter(decimalRange: 12)],
                                onFieldSubmitted: (term) {
 
                                },

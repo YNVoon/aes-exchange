@@ -382,7 +382,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                   onFieldSubmitted: (term) {
 
                   },
-                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 10)],
+                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 12)],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   controller: _quantityController,
                   textInputAction: TextInputAction.done,

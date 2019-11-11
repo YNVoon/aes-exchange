@@ -16,6 +16,7 @@ import 'invitation_code_widget.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'model/user_information.dart';
+import 'security_widget.dart';
 
 
 
@@ -37,7 +38,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
   List<List<UserProfile>> _settingList = [
     // [UserProfile("Invitation code", Icons.drafts, "invitation_code"), UserProfile("Address book", Icons.contacts, "address_book"),],
     [UserProfile("Invitation code", Icons.drafts, "invitation_code"), ],
-    [UserProfile("Security", Icons.security, "security"), UserProfile("Language", Icons.settings_applications, "settings"),],
+    [UserProfile("Security", Icons.security, "security"), UserProfile("English", Icons.settings_applications, "settings"),],
     [UserProfile("About us", Icons.help_outline, "about_us"),]
   ];
 
@@ -115,9 +116,15 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
             context, 
             MaterialPageRoute(builder: (context) => InvitationCodePage(userInformation: myUserInformation,)),
           );
-        } else if (userProfile.title == 'Language' || userProfile.title == 'About us') {
+        } else if (userProfile.title == 'About us' || userProfile.title == 'Security') {
           _showMaterialDialog();
-        }
+        } 
+        // else if (userProfile.title == 'Security') {
+        //   Navigator.push(
+        //     context, 
+        //     MaterialPageRoute(builder: (context) => SecurityPage()),
+        //   );
+        // }
       },
       child: Column(
         children: <Widget>[

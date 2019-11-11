@@ -239,20 +239,20 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            Container(
-                              margin: EdgeInsets.only(bottom: 20.0),
-                              child: InkWell(
-                                highlightColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                onTap: () {
-                                  print("Forgot password");
-                                },
-                                child: Text(
-                                  "Forgot Password",
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0e47a1), fontSize: 16.0),
-                                ),
-                              )
-                            ),
+                            // Container(
+                            //   margin: EdgeInsets.only(bottom: 20.0),
+                            //   child: InkWell(
+                            //     highlightColor: Colors.transparent,
+                            //     splashColor: Colors.transparent,
+                            //     onTap: () {
+                            //       print("Forgot password");
+                            //     },
+                            //     child: Text(
+                            //       "Forgot Password",
+                            //       style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0e47a1), fontSize: 16.0),
+                            //     ),
+                            //   )
+                            // ),
                             Container(
                               margin: EdgeInsets.only(bottom: 20.0),
                               child: InkWell(

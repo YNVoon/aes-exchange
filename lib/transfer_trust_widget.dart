@@ -155,7 +155,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
               print(contents.toString());
             });
             pd.dismiss();
-            _showMaterialDialogForError("Successful transfer", "navigate");
+            _showMaterialDialogForError("Transfer Successfully", "navigate");
           });
       }
     } catch (e) {
@@ -340,7 +340,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
               
             });
             pd.dismiss();
-            _showMaterialDialogForError("Successful transfer", "navigate");
+            _showMaterialDialogForError("Transfer Successfully", "navigate");
             // Navigator.pop(context);
             
           });
@@ -496,7 +496,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                   },
                   validator: (value) {
                   },
-                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 10)],
+                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 12)],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   // keyboardType: TextInputType.number,
                   controller: _quantityController,

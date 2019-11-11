@@ -66,7 +66,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                     width: MediaQuery.of(context).size.width,
                     margin: EdgeInsets.only(bottom: 10.0),
                     child: Text(
-                      'https://www.aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode,
+                      'https://aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode,
                       style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
@@ -76,7 +76,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                     child: RaisedButton(
                       color: Color(0xFF33468a),
                       onPressed: () {
-                        Clipboard.setData(new ClipboardData(text: 'https://www.aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode));
+                        Clipboard.setData(new ClipboardData(text: 'https://aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode));
                         Fluttertoast.showToast(
                             msg: "Copied to clipboard",
                         );
@@ -103,7 +103,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                   ),
                   Container(
                     child: QrImage(
-                       data: 'https://www.aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode,
+                       data: 'https://wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode,
                        version: 4,
                        size: 165.0,
                      ),

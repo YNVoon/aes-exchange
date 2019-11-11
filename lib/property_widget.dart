@@ -146,7 +146,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                 child: Row(
                   children: <Widget>[
                     Flexible(
-                        flex: 4,
+                        flex: 5,
                         child: Row(
                           children: <Widget>[
                             // Currency Logo Image
@@ -173,7 +173,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                         ),
                       ),
                       Flexible(
-                        flex: 6,
+                        flex: 5,
                         child: Column(
                           children: <Widget>[
                             //Currency Name
@@ -264,7 +264,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Total Assets Value",
+                    "Funds Assets Value",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       // backgroundColor: Colors.black,
@@ -355,7 +355,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                   Row(
                     children: <Widget>[
                       Flexible(
-                        flex: 4,
+                        flex: 5,
                         child: Container(
                           width: MediaQuery.of(context).size.width,
                           height: 30.0,
@@ -373,7 +373,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                           height: 30.0,
                           // color: Colors.green,
                           child: Text(
-                            "Quantity Owned", 
+                            "", 
                             style: TextStyle(color: Colors.grey, fontSize: 12.0)
                           ),
                         ),
@@ -384,7 +384,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                         height: 30.0,
                         // color: Colors.yellow,
                         child: Text(
-                          "Quote Change", 
+                          "24H Chg %", 
                           style: TextStyle(color: Colors.grey, fontSize: 12.0)
                         ),
                       ),

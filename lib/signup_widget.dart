@@ -114,7 +114,7 @@ class _SignupPageState extends State<SignupPage> {
       FirebaseUser user = await _auth.currentUser();
       if (user != null) {
         await _auth.signOut();
-        print('Sign out successful');
+        print('Successfully Signed out');
         Fluttertoast.showToast(
             msg: "Something went wrong!",
         );

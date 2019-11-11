@@ -55,9 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
       if (_selectedIndex == 0) {
-        appBarTitle = "AES Exchange";
+        appBarTitle = "AES | Deposit";
       } else if (_selectedIndex == 1) {
-        appBarTitle = "Trust";
+        appBarTitle = "AES | Deposit";
       } else if (_selectedIndex == 2) {
         appBarTitle = "Discover";
       } else if (_selectedIndex == 3) {
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    appBarTitle = "AES Exchange";
+    appBarTitle = "AES | Deposit";
   }
 
   @override

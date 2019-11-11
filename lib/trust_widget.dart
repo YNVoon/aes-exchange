@@ -144,7 +144,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                         // Currency current value
                         Container(
                           width: 200.0,
-                          child: Text('= ' + currency.equalityToUsdt.toStringAsFixed(6) + ' USDT', style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.end)
+                          child: Text(currency.equalityToUsdt.toStringAsFixed(6) + ' USDT', style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.end)
                         )
                         
                       ],
@@ -209,7 +209,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "Trust Assets",
+                        "Trust Assets Value",
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           // backgroundColor: Colors.black,
@@ -219,22 +219,39 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.only(top: 10.0),
+                        margin: EdgeInsets.only(top: 30.0),
                         child: RichText(
-                          textAlign: TextAlign.start,
+                          textAlign: TextAlign.end,
                           text: TextSpan(
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
                             ),
                             children: <TextSpan>[
-                              TextSpan(text: '= '),
                               TextSpan(text: double.parse(myCryptoTrustBalance.totalAssetInUsdt).toStringAsFixed(6), style: TextStyle(fontSize: 28.0)),
                               TextSpan(text: '  USDT')
                             ],
                           ),
                         )
                       )
+                      // Container(
+                      //   width: MediaQuery.of(context).size.width,
+                      //   margin: EdgeInsets.only(top: 10.0),
+                      //   child: RichText(
+                      //     textAlign: TextAlign.start,
+                      //     text: TextSpan(
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: 16.0,
+                      //       ),
+                      //       children: <TextSpan>[
+                      //         TextSpan(text: '= '),
+                      //         TextSpan(text: double.parse(myCryptoTrustBalance.totalAssetInUsdt).toStringAsFixed(6), style: TextStyle(fontSize: 28.0)),
+                      //         TextSpan(text: '  USDT')
+                      //       ],
+                      //     ),
+                      //   )
+                      // )
                     ],
                   )
                 ),
@@ -244,7 +261,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                   padding: EdgeInsets.only(left: 12.0, bottom: 15.0),
                   margin: EdgeInsets.only(top: 15.0),
                   child: Text(
-                    "Trust List",
+                    "Trust Assets List",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
                     textAlign: TextAlign.start,
                   ),
