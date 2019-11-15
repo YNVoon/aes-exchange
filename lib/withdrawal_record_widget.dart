@@ -115,9 +115,13 @@ class _WithdrawalRecordPageState extends State<WithdrawalRecordPage> {
                         transactionId = item[key];
                       }
                     }
+                    DateTime utcTime = DateTime.utc(year, month, day, hour, minute, second);
+                    String localTime = utcTime.toLocal().toString();
+                    var dateString = localTime.split(' ');
+                    var timeString = dateString[1].split('.000');
                     date = year.toString() + '-' + month.toString() + '-' + day.toString();
                     time = hour.toString() + ':' + minute.toString() + ':' + second.toString();
-                    _transactionRecordList.add(TransactionRecord(date, time, typeOfTransaction, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
+                    _transactionRecordList.add(TransactionRecord(dateString[0], timeString[0], typeOfTransaction, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
                   }
                 } 
               });

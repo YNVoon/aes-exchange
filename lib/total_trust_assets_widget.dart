@@ -127,10 +127,14 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                         transactionId = item[key];
                       }
                     }
+                    DateTime utcTime = DateTime.utc(year, month, day, hour, minute, second);
+                    String localTime = utcTime.toLocal().toString();
+                    var dateString = localTime.split(' ');
+                    var timeString = dateString[1].split('.000');
                     date = year.toString() + '-' + month.toString() + '-' + day.toString();
                     time = hour.toString() + ':' + minute.toString() + ':' + second.toString();
                     if (status == 'approved' || status == 'claimed') {
-                      _trustTransactionList.add(TrustTransaction(date, time, widget.currency.currencyName, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
+                      _trustTransactionList.add(TrustTransaction(dateString[0], timeString[0], widget.currency.currencyName, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
                     }
                   }
                 }
@@ -229,10 +233,14 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                         transactionId = item[key];
                       }
                     }
+                    DateTime utcTime = DateTime.utc(year, month, day, hour, minute, second);
+                    String localTime = utcTime.toLocal().toString();
+                    var dateString = localTime.split(' ');
+                    var timeString = dateString[1].split('.000');
                     date = year.toString() + '-' + month.toString() + '-' + day.toString();
                     time = hour.toString() + ':' + minute.toString() + ':' + second.toString();
                     if (status == 'approved' || status == 'claimed') {
-                      _trustTransactionList.add(TrustTransaction(date, time, widget.currency.currencyName, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
+                      _trustTransactionList.add(TrustTransaction(dateString[0], timeString[0], widget.currency.currencyName, transactionAmount, isTransferIn, status, day.toString(), year.toString(), month.toString(), transactionId));
                     }
                   }
                 }
