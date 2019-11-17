@@ -120,6 +120,63 @@ class _SwapPageState extends State<SwapPage> {
     );
   }
 
+  void _showMaterialDialog(var processingFeeDialog, var amountToTransferDialog, var amountSwapDialog) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () {},
+          child: AlertDialog(
+            content: Text(
+              'Confirm to Swap?',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (widget.currency.currencyName != 'AES') {
+                    if (amountToTransferDialog > myProcessingRate.availableBalance) {
+                      _showMaterialDialogForError('Insufficient fund to swap', 'dismissDialog');
+                    } else if (processingFeeDialog > myProcessingRate.aesBalance) {
+                      _showMaterialDialogForError('Insufficient processing fee', 'dismissDialog');
+                    } else {
+                      // Init transfer here
+                      pr1 = new ProgressDialog(context, isDismissible: false);
+                      pr1.style(message: 'Swaping Currency');
+                      _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
+                    }
+                  } else {
+                    if (amountToTransferDialog + processingFeeDialog > myProcessingRate.aesBalance) {
+                      _showMaterialDialogForError('Insufficient fund to swap', 'dismissDialog');
+                    } else {
+                      // Init transfer here
+                      pr1 = new ProgressDialog(context, isDismissible: false);
+                      pr1.style(message: 'Swaping Currency');
+                      _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
+                    }
+                  }
+                  
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                onPressed: () {
+                  Navigator.pop(context);
+                  
+                },
+              ),
+            ],
+          ),
+        );
+        
+      }
+    );
+  }
+
   void _showPasscodeDialog (var processingFeeDialog, var amountToTransferDialog, var amountSwapDialog) {
     showDialog(
       context: context,
@@ -696,36 +753,36 @@ class _SwapPageState extends State<SwapPage> {
                      var amountToSwapOutInInt, amountToSwapInInInt, handlingFeeToProcess;
                      if (widget.currency.currencyName == 'BTC') {
                        amountToSwapOutInInt = double.parse(_fromConversionController.text) * 1e3 * 1e3 * 1e2;
-                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsPrecision(12));
+                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsFixed(2));
                      } else if (widget.currency.currencyName == 'ETH') {
                       //  amountToSwapOutInInt = int.parse((double.parse(_fromConversionController.text) * 1e18).toStringAsFixed(0));
                        amountToSwapOutInInt = double.parse(_fromConversionController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsPrecision(12));
+                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsFixed(2));
                      } else if (widget.currency.currencyName == 'USDT') {
                        amountToSwapOutInInt = double.parse(_fromConversionController.text) * 1e3 * 1e3;
-                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsPrecision(12));
+                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsFixed(2));
                      } else if (widget.currency.currencyName == 'AES') {
                        amountToSwapOutInInt = double.parse(_fromConversionController.text) * 1e3 * 1e3 * 1e2;
-                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsPrecision(12));
+                       amountToSwapOutInInt = num.parse(amountToSwapOutInInt.toStringAsFixed(2));
                      }
 
                      if (dropdownValue == 'Bitcoin') {
                        amountToSwapInInInt = double.parse(_toConversionController.text) * 1e3 * 1e3 * 1e2;
-                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsPrecision(12));
+                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsFixed(2));
                      } else if (dropdownValue == 'Ethereum') {
                        amountToSwapInInInt = double.parse(_toConversionController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsPrecision(12));
+                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsFixed(2));
                      } else if (dropdownValue == 'USDT') {
                        amountToSwapInInInt = double.parse(_toConversionController.text) * 1e3 * 1e3;
-                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsPrecision(12));
+                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsFixed(2));
                      } else if (dropdownValue == 'AES') {
                        amountToSwapInInInt = double.parse(_toConversionController.text) * 1e3 * 1e3 * 1e2;
-                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsPrecision(12));
+                       amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsFixed(2));
                      }
                      handlingFeeToProcess = handlingFee * 1e3 * 1e3 * 1e2;
-                     handlingFeeToProcess = num.parse(handlingFeeToProcess.toStringAsPrecision(12));
+                     handlingFeeToProcess = num.parse(handlingFeeToProcess.toStringAsFixed(2));
                      
-                     _showPasscodeDialog(handlingFeeToProcess, amountToSwapOutInInt, amountToSwapInInInt);
+                     _showMaterialDialog(handlingFeeToProcess, amountToSwapOutInInt, amountToSwapInInInt);
                     var testingNumber = myProcessingRate.availableBalance - amountToSwapOutInInt;
                      print('handlingFee ' + handlingFeeToProcess.toString());
                      print('amountToSwapOut ' + amountToSwapOutInInt.toString());

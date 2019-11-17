@@ -79,9 +79,9 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
       if (user != null) {
         if (widget.currency == 'BTC') {
           var withdrawalAmount = widget.transactionAmount * 1e3 * 1e3 * 1e2;
-          withdrawalAmount = num.parse(withdrawalAmount.toStringAsPrecision(12));
+          withdrawalAmount = num.parse(withdrawalAmount.toStringAsFixed(2));
           var processingAmount = actualAESProcessingFee * 1e3 * 1e3 * 1e2;
-          processingAmount = num.parse(processingAmount.toStringAsPrecision(12));
+          processingAmount = num.parse(processingAmount.toStringAsFixed(2));
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'btc',
@@ -91,9 +91,9 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
           };
         } else if (widget.currency == 'ETH') {
           var withdrawalAmount = widget.transactionAmount * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-          withdrawalAmount = num.parse(withdrawalAmount.toStringAsPrecision(12));
+          withdrawalAmount = num.parse(withdrawalAmount.toStringAsFixed(2));
           var processingAmount = actualAESProcessingFee * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-          processingAmount = num.parse(processingAmount.toStringAsPrecision(12));
+          processingAmount = num.parse(processingAmount.toStringAsFixed(2));
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'eth',
@@ -103,9 +103,9 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
           };
         } else if (widget.currency == 'USDT') {
           var withdrawalAmount = widget.transactionAmount * 1e3 * 1e3;
-          withdrawalAmount = num.parse(withdrawalAmount.toStringAsPrecision(12));
+          withdrawalAmount = num.parse(withdrawalAmount.toStringAsFixed(2));
           var processingAmount = actualAESProcessingFee * 1e3 * 1e3;
-          processingAmount = num.parse(processingAmount.toStringAsPrecision(12));
+          processingAmount = num.parse(processingAmount.toStringAsFixed(2));
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'usdt',
@@ -115,9 +115,9 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
           };
         } else if (widget.currency == 'AES') {
           var withdrawalAmount = widget.transactionAmount * 1e3 * 1e3 * 1e2;
-          withdrawalAmount = num.parse(withdrawalAmount.toStringAsPrecision(12));
+          withdrawalAmount = num.parse(withdrawalAmount.toStringAsFixed(2));
           var processingAmount = actualAESProcessingFee * 1e3 * 1e3 * 1e2;
-          processingAmount = num.parse(processingAmount.toStringAsPrecision(12));
+          processingAmount = num.parse(processingAmount.toStringAsFixed(2));
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'aes',
@@ -565,9 +565,9 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                               }
 
                               var withdrawalAmount = widget.transactionAmount * 1e3 * 1e3 * 1e2;
-                              withdrawalAmount = num.parse(withdrawalAmount.toStringAsPrecision(12));
+                              withdrawalAmount = num.parse(withdrawalAmount.toStringAsFixed(2));
                               var processingAmount = actualAESProcessingFee * 1e3 * 1e3 * 1e2;
-                              processingAmount = num.parse(processingAmount.toStringAsPrecision(12));
+                              processingAmount = num.parse(processingAmount.toStringAsFixed(2));
                               
                               print(processingAmount.toString());
                               print(withdrawalAmount.toString());

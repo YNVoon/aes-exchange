@@ -596,22 +596,22 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                               if (_quantityController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'ETH'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'USDT'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'AES'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 }
                               }
                               print(inputQuantityInDouble.runtimeType);
                               print('quantity' + inputQuantityInDouble.toString());
 
-                              // var test = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                              // var test = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                               // print(test.toString());
                               
                               if (_quantityController.text.isEmpty) {
@@ -702,16 +702,16 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                             var inputQuantityInDouble;
                             if (widget.currency.currencyName == 'BTC') {
                               inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                             } else if (widget.currency.currencyName == 'ETH'){
                               inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                             } else if (widget.currency.currencyName == 'USDT'){
                               inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
-                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                             } else if (widget.currency.currencyName == 'AES'){
                               inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                              inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                             }
                             _confirmAndTransfer2(pr1, inputQuantityInDouble.toString());
                             

@@ -205,7 +205,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                     var aesProcessingFeeCalc = double.parse(myFlexibleProcessingFee.aesProcessing) * 1e3 * 1e3 * 1e2;
                     aesProcessingFeeInInt = int.parse(aesProcessingFeeCalc.toStringAsFixed(0));
                     var inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                    inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                    inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                     // Make sure aesprocessingfee plus aes amount to send wont greater than their balance fund in wallet
                     if ((aesProcessingFeeInInt + inputQuantityInDouble) > myFlexibleProcessingFee.aesBalance) {
                       print('testing ' + (aesProcessingFeeInInt + inputQuantityInDouble).toString());
@@ -505,16 +505,16 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                               if (_quantityController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'ETH'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'USDT'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'AES'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 }
                               }
 
@@ -592,16 +592,16 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                       var inputQuantityInDouble;
                       if (widget.currency.currencyName == 'BTC') {
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                       } else if (widget.currency.currencyName == 'ETH'){
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                       } else if (widget.currency.currencyName == 'USDT'){
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                       } else if (widget.currency.currencyName == 'AES'){
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                       }
                       print('processingFee ' + aesProcessingFeeInInt.toString());
                       print('amountToProcess ' + inputQuantityInDouble.toString());

@@ -52,6 +52,8 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
 
   ProgressDialog pr1, pr2;
 
+  int decimal = 10;
+
   TransferTrustFeesAndAmount myTransferTrustFeesAndAmount = TransferTrustFeesAndAmount(
     btcBalance: '0.00000000', ethBalance: '0.0000000000', aesBalance: '0.00000000', usdtBalance: '0.000000'
   );
@@ -70,6 +72,9 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
   var queryParameters = <String, String>{};
 
   var actualAESProcessingFee = 0.00;
+
+  var processingFeeRate = 0.00;
+  var handlingFee = 0.00;
 
   bool validateBitcoinAddress (String address) {
     if ((address[0] == '1' || address[0] == '3') && address.length == 34) {
@@ -121,7 +126,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
     );
   }
 
-  Future<void> _confirmAndTransfer2(ProgressDialog pd, String amountToSend, String receiverAddress) async {
+  Future<void> _confirmAndTransfer2(ProgressDialog pd, String amountToSend, String receiverAddress, String processingFee) async {
     pd.show();
     try {
       FirebaseUser user = (await _auth.currentUser());
@@ -131,28 +136,32 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
             'uuid': user.uid,
             'typeOfCurrency': 'btc',
             'amountToSend': amountToSend,
-            'withdrawalAddress': receiverAddress
+            'withdrawalAddress': receiverAddress,
+            'processingFee': processingFee
           };
         } else if (widget.currency.currencyName == 'ETH') {
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'eth',
             'amountToSend': amountToSend,
-            'withdrawalAddress': receiverAddress
+            'withdrawalAddress': receiverAddress,
+            'processingFee': processingFee
           };
         } else if (widget.currency.currencyName == 'USDT') {
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'usdt',
             'amountToSend': amountToSend,
-            'withdrawalAddress': receiverAddress
+            'withdrawalAddress': receiverAddress,
+            'processingFee': processingFee
           };
         } else if (widget.currency.currencyName == 'AES') {
           queryParameters = {
             'uuid': user.uid,
             'typeOfCurrency': 'aes',
             'amountToSend': amountToSend,
-            'withdrawalAddress': receiverAddress
+            'withdrawalAddress': receiverAddress,
+            'processingFee': processingFee
           };
         }
 
@@ -189,16 +198,21 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                 if (widget.currency.currencyName == 'BTC') {
                   avaiBalance = (double.parse(myTransferTrustFeesAndAmount.btcBalance) / 1e8).toStringAsFixed(10);
                   avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.btcBalance);
+                  decimal = 10;
                 } else if (widget.currency.currencyName == 'ETH') {
                   avaiBalance = (double.parse(myTransferTrustFeesAndAmount.ethBalance) / 1e18).toStringAsFixed(12);
                   avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.ethBalance);
+                  decimal = 12;
                 } else if (widget.currency.currencyName == 'USDT') {
                   avaiBalance = (double.parse(myTransferTrustFeesAndAmount.usdtBalance) / 1e6).toStringAsFixed(8);
                   avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.usdtBalance);
+                  decimal = 8;
                 } else if (widget.currency.currencyName == 'AES') {
                   avaiBalance = (double.parse(myTransferTrustFeesAndAmount.aesBalance) / 1e8).toStringAsFixed(10);
                   avaiBalanceForCalc = num.parse(myTransferTrustFeesAndAmount.aesBalance);
+                  decimal = 10;
                 }
+                processingFeeRate = double.parse(myTransferTrustFeesAndAmount.withdrawalProcessingFeeRate);
                 pd.dismiss();
               });
               
@@ -592,7 +606,20 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                   onFieldSubmitted: (term) {
 
                   },
-                  inputFormatters: [DecimalTextInputFormatter(decimalRange: 12)],
+                  onChanged: (text) {
+                    print(_quantityController.text);
+                    if (_quantityController.text == '') {
+                      setState(() {
+                        handlingFee = 0.00;
+                      });
+                    } else {
+                      setState(() {
+                        handlingFee = double.parse(_quantityController.text) * processingFeeRate;
+                      });
+                    }
+                   
+                  },
+                  inputFormatters: [DecimalTextInputFormatter(decimalRange: decimal)],
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   controller: _quantityController,
                   textInputAction: TextInputAction.done,
@@ -626,6 +653,9 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                               splashColor: Colors.transparent,
                               onTap: () {
                                 _quantityController.text = avaiBalance;
+                                 setState(() {
+                                    handlingFee = double.parse(_quantityController.text) * processingFeeRate;
+                                  });
                               },
                               child: Text(
                                 "All",
@@ -647,24 +677,24 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                // Container(
-                //   margin: EdgeInsets.only(bottom: 12.0, top: 15.0),
-                //   width: MediaQuery.of(context).size.width,
-                //   child: Text(
-                //     'Handling fee',
-                //     style: TextStyle(color: Colors.black, fontSize: 14.0),
-                //     textAlign: TextAlign.start,
-                //   ),
-                // ),
-                // Container(
-                //   width: MediaQuery.of(context).size.width,
-                //   margin: EdgeInsets.only(bottom: 10.0, top: 12.0),
-                //   child: Text(
-                //     myFlexibleProcessingFee.aesProcessing.toStringAsFixed(8) + ' AES',
-                //     style: TextStyle(color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.bold),
-                //     textAlign: TextAlign.start,
-                //   ),
-                // ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 12.0, top: 15.0),
+                  width: MediaQuery.of(context).size.width,
+                  child: Text(
+                    'Handling fee',
+                    style: TextStyle(color: Colors.black, fontSize: 14.0),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.only(bottom: 10.0, top: 12.0),
+                  child: Text(
+                    handlingFee.toStringAsFixed(8) + ' ' + widget.currency.currencyName,
+                    style: TextStyle(color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
                 // Divider(
                 //   thickness: 0.5,
                 //   height: 0.0,
@@ -714,18 +744,22 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                               if (_quantityController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'ETH'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'USDT'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 } else if (widget.currency.currencyName == 'AES'){
                                   inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                                  inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
                                 }
                               }
+
+                              print('inputQuantityInDouble ' + inputQuantityInDouble.toString());
+                              print('avaiBalanceForCalc ' + avaiBalanceForCalc.toString());
+                              print('avaiBalance ' + avaiBalance.toString());
 
                               if (_coinAddressController.text.isNotEmpty) {
                                 if (widget.currency.currencyName == 'BTC') {
@@ -754,9 +788,9 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                               } else if (inputQuantityInDouble <= 0){
                                 textFormValidate = false;
                                 textFormInvalidMsg = 'Insufficient Fund to transfer.';
-                              } else if (inputQuantityInDouble > avaiBalanceForCalc){
+                              } else if (inputQuantityInDouble + handlingFee > avaiBalanceForCalc){
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Insufficient Fund.';
+                                textFormInvalidMsg = 'Insufficient Fund / Processing Fee.';
                               } else {
                                 // accept = value;
                                 textFormValidate = true;
@@ -842,21 +876,25 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                       //   _confirmAndTransfer(pr1, (double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2).round(), _coinAddressController.text);
                       // }
                       // print(_coinAddressController.text);
-                      var inputQuantityInDouble;
+                      var inputQuantityInDouble, processingFeeInString;
                       if (widget.currency.currencyName == 'BTC') {
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
+                        processingFeeInString = (handlingFee * 1e8).toStringAsFixed(2);
                       } else if (widget.currency.currencyName == 'ETH'){
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
+                        processingFeeInString = (handlingFee * 1e18).toStringAsFixed(2);
                       } else if (widget.currency.currencyName == 'USDT'){
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
+                        processingFeeInString = (handlingFee * 1e6).toStringAsFixed(2);
                       } else if (widget.currency.currencyName == 'AES'){
                         inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
-                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsPrecision(12));
+                        inputQuantityInDouble = num.parse(inputQuantityInDouble.toStringAsFixed(2));
+                        processingFeeInString = (handlingFee * 1e8).toStringAsFixed(2);
                       }
-                      _confirmAndTransfer2(pr1, inputQuantityInDouble.toString(), _coinAddressController.text);
+                      _confirmAndTransfer2(pr1, inputQuantityInDouble.toString(), _coinAddressController.text, processingFeeInString);
                       
 
                     } : null,

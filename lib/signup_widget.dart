@@ -46,7 +46,7 @@ class _SignupPageState extends State<SignupPage> {
   String _email;
   String _password;
   String _confirmPassword;
-  String _invitationCode;
+  String _invitationCode = '';
 
   bool _obscureText = true;
   bool _obscureText1 = true;
@@ -129,14 +129,27 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> signUp() async {
     pr1.show();
+    var queryParameters;
+    
+    print('Sign up with ' + _invitationCode);
     try {
       FirebaseUser user = (await _auth.createUserWithEmailAndPassword(email: _email, password: _password)).user;
-      var queryParameters = {
-        'email': _email,
-        'uuid': user.uid,
-        'referralCode': randomAlphaNumeric(10),
-        'invitationCode': _invitationCode
-      };
+      if (_invitationCode == null || _invitationCode == ''){
+        queryParameters = {
+          'email': _email,
+          'uuid': user.uid,
+          'referralCode': randomAlphaNumeric(10),
+          'invitationCode': '700628776X'
+        };
+      } else {
+        queryParameters = {
+          'email': _email,
+          'uuid': user.uid,
+          'referralCode': randomAlphaNumeric(10),
+          'invitationCode': _invitationCode
+        };
+      }
+      
       new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/createUser', queryParameters))
         .then((HttpClientRequest request) => request.close())
         .then((HttpClientResponse response) {
@@ -327,7 +340,7 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.local_offer, color: Colors.black,),
                                   
-                                  hintText: "Input invitation code",
+                                  hintText: "Input invitation code (Optional)",
                                   border: OutlineInputBorder(),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -335,11 +348,14 @@ class _SignupPageState extends State<SignupPage> {
                                 ),
                                 validator: (value) {
                                   _invitationCode = value;
-                                  if (value.isEmpty) {
-                                    return 'Please insert invitation code';
-                                  } else if (value.length < 6) {
-                                    return 'Invalid invitation code';
-                                  }
+                                  if (value.isNotEmpty) {
+                                    if (value.length < 6) {
+                                      return 'Invalid invitation code';
+                                    }
+                                  } 
+                                  // else if (value.length < 6) {
+                                  
+                                  // }
                                   return null;
                                 },
                               ),
@@ -360,6 +376,10 @@ class _SignupPageState extends State<SignupPage> {
                                       setState(() {
                                         _autoValidate = true;
                                       });
+                                      if (_invitationCode == null || _invitationCode == ''){
+                                        print(_invitationCode);
+                                      }
+                                      
                                     }
                                     
                                   },
