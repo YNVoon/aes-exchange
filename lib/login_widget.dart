@@ -3,8 +3,28 @@ import 'package:flutter/services.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'signup_widget.dart';
 import 'main.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'dart:io' show Platform;
+import 'dart:io';
+import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+
+class AppUpdate {
+  final String androidAppLink;
+  final String iosAppLink;
+
+  AppUpdate({this.androidAppLink, this.iosAppLink});
+
+  factory AppUpdate.fromJson(Map<String, dynamic> json) {
+    return AppUpdate(
+      androidAppLink: json['androidAppLink'].toString(),
+      iosAppLink: json['iosAppLink'].toString(),
+    );
+  }
+}
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -13,6 +33,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  AppUpdate myAppUpdate = AppUpdate();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   
@@ -31,6 +53,31 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _obscureText = true;
 
+  void _launchURL(String path) async {
+    var url = path;
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch URL';
+    }
+  }
+
+  Future<void> _requestUpdateLink() async {
+    try {
+      new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getUpdateLink'))
+        .then((HttpClientRequest request) => request.close())
+        .then((HttpClientResponse response) {
+          response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
+            myAppUpdate = AppUpdate.fromJson(contents);
+            print('android: ' + myAppUpdate.androidAppLink);
+            _checkAppVersion();
+          });
+        });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   bool validateEmail(String value) {
     Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
@@ -38,6 +85,39 @@ class _LoginPageState extends State<LoginPage> {
       return false;
     else
       return true;
+  }
+
+  void _showMaterialDialogForUpdate() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () {},
+          child: AlertDialog(
+            content: Text(
+              'You app version is outdated. Please update to the latest one.',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Update Now', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                onPressed: () {
+                  if (Platform.isAndroid) {
+                    _launchURL(myAppUpdate.androidAppLink);
+                  } else if (Platform.isIOS) {
+                    _launchURL(myAppUpdate.iosAppLink);
+                  }
+                  
+                },
+              ),
+            ],
+          ),
+        );
+        
+      }
+    );
   }
 
   void _showMaterialDialog(String message) {
@@ -54,6 +134,50 @@ class _LoginPageState extends State<LoginPage> {
       }
     );
     _passwordController.clear();
+  }
+
+  _checkAppVersion() async {
+    var currentAndroidAppVersion = '1.0.3';
+    var currentiOSAppVersion = '1.0.3';
+
+    final RemoteConfig remoteConfig = await RemoteConfig.instance;
+
+    if (Platform.isIOS) {
+      try {
+        // final defaults = <String, dynamic>{'ios_app_version': currentiOSAppVersion};
+        // await remoteConfig.setDefaults(defaults);
+        await remoteConfig.fetch(expiration: const Duration(seconds: 0));
+        await remoteConfig.activateFetched();
+
+        if (currentiOSAppVersion != remoteConfig.getString('ios_app_version')) {
+          print('Please update your app!');
+          print('update link ' + myAppUpdate.iosAppLink);
+          _showMaterialDialogForUpdate();
+        } else {
+          getCurrentUser();
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    } else if (Platform.isAndroid) {
+      try {
+        // final defaults = <String, dynamic>{'android_app_version': currentAndroidAppVersion};
+        // await remoteConfig.setDefaults(defaults);
+        await remoteConfig.fetch(expiration: const Duration(seconds: 0));
+        await remoteConfig.activateFetched();
+        print(remoteConfig.getString('android_app_version'));
+        if (currentAndroidAppVersion != remoteConfig.getString('android_app_version')) {
+          print('Please update your app!');
+          print('update link ' + myAppUpdate.androidAppLink);
+          _showMaterialDialogForUpdate();
+        } else {
+          getCurrentUser();
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    }
+
   }
 
   Future<void> getCurrentUser() async {
@@ -96,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    _requestUpdateLink();
   }
 
   @override

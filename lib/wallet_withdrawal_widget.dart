@@ -74,6 +74,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
   var actualAESProcessingFee = 0.00;
 
   var processingFeeRate = 0.00;
+  var aesProcessingFeeRate = 0.00;
   var handlingFee = 0.00;
 
   bool validateBitcoinAddress (String address) {
@@ -213,6 +214,7 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                   decimal = 10;
                 }
                 processingFeeRate = double.parse(myTransferTrustFeesAndAmount.withdrawalProcessingFeeRate);
+                aesProcessingFeeRate = double.parse(myTransferTrustFeesAndAmount.aesWithdrawalProcessingFeeRate);
                 pd.dismiss();
               });
               
@@ -614,7 +616,12 @@ class _WalletWithdrawalPageState extends State<WalletWithdrawalPage> {
                       });
                     } else {
                       setState(() {
-                        handlingFee = double.parse(_quantityController.text) * processingFeeRate;
+                        if (widget.currency.currencyName != 'AES') {
+                          handlingFee = double.parse(_quantityController.text) * processingFeeRate;
+                        } else {
+                          handlingFee = double.parse(_quantityController.text) * aesProcessingFeeRate;
+                        }
+                        
                       });
                     }
                    

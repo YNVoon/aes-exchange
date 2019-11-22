@@ -6,6 +6,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 
 import 'performance_widget.dart';
 import 'assets_widget.dart';
+import 'notification_widget.dart';
 import 'model/crypto_address.dart';
 import 'model/crypto_current_balance.dart';
 
@@ -330,7 +331,11 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                     width: MediaQuery.of(context).size.width / 2.05,
                     child: FlatButton.icon(
                       onPressed: () {
-                        _showMaterialDialog();
+                        // _showMaterialDialog();
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (context) => NotificationPage()),
+                        );
                       },
                       color: Colors.transparent,
                       icon: Icon(Icons.notifications, color: Color(0xFF1d2f33), size: 26.0),

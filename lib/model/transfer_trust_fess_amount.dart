@@ -4,8 +4,9 @@ class TransferTrustFeesAndAmount {
   final String aesBalance;
   final String usdtBalance;
   final String withdrawalProcessingFeeRate;
+  final String aesWithdrawalProcessingFeeRate;
 
-  TransferTrustFeesAndAmount({this.btcBalance, this.ethBalance, this.aesBalance, this.usdtBalance, this.withdrawalProcessingFeeRate});
+  TransferTrustFeesAndAmount({this.btcBalance, this.ethBalance, this.aesBalance, this.usdtBalance, this.withdrawalProcessingFeeRate, this.aesWithdrawalProcessingFeeRate});
 
   factory TransferTrustFeesAndAmount.fromJson(Map<String, dynamic> json) {
     return TransferTrustFeesAndAmount(
@@ -13,7 +14,8 @@ class TransferTrustFeesAndAmount {
       ethBalance: json['ethBalance'].toString(),
       aesBalance: json['aesBalance'].toString(),
       usdtBalance: json['usdtBalance'].toString(),
-      withdrawalProcessingFeeRate: json['withdrawalProcessingFeeRate'].toString()
+      withdrawalProcessingFeeRate: json['withdrawalProcessingFeeRate'].toString(),
+      aesWithdrawalProcessingFeeRate: json['aesWithdrawalProcessingFeeRate'].toString()
     );
   }
 }

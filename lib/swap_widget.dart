@@ -135,40 +135,47 @@ class _SwapPageState extends State<SwapPage> {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
-                onPressed: () {
-                  Navigator.pop(context);
-                  if (widget.currency.currencyName != 'AES') {
-                    if (amountToTransferDialog > myProcessingRate.availableBalance) {
-                      _showMaterialDialogForError('Insufficient fund to swap', 'dismissDialog');
-                    } else if (processingFeeDialog > myProcessingRate.aesBalance) {
-                      _showMaterialDialogForError('Insufficient processing fee', 'dismissDialog');
-                    } else {
-                      // Init transfer here
-                      pr1 = new ProgressDialog(context, isDismissible: false);
-                      pr1.style(message: 'Swaping Currency');
-                      _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
-                    }
-                  } else {
-                    if (amountToTransferDialog + processingFeeDialog > myProcessingRate.aesBalance) {
-                      _showMaterialDialogForError('Insufficient fund to swap', 'dismissDialog');
-                    } else {
-                      // Init transfer here
-                      pr1 = new ProgressDialog(context, isDismissible: false);
-                      pr1.style(message: 'Swaping Currency');
-                      _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
-                    }
-                  }
-                  
-                },
-              ),
-              FlatButton(
                 child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   Navigator.pop(context);
                   
                 },
               ),
+              FlatButton(
+                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (amountToTransferDialog  + processingFeeDialog > myProcessingRate.availableBalance) {
+                    _showMaterialDialogForError('Insufficient fund / processing fee to swap', 'dismissDialog');
+                  } else {
+                    // Init transfer here
+                    pr1 = new ProgressDialog(context, isDismissible: false);
+                    pr1.style(message: 'Swaping Currency');
+                    _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
+                  }
+                  // if (widget.currency.currencyName != 'AES') {
+                  //   if (amountToTransferDialog  + processingFeeDialog > myProcessingRate.availableBalance) {
+                  //     _showMaterialDialogForError('Insufficient fund / processing fee to swap', 'dismissDialog');
+                  //   } else {
+                  //     // Init transfer here
+                  //     pr1 = new ProgressDialog(context, isDismissible: false);
+                  //     pr1.style(message: 'Swaping Currency');
+                  //     _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
+                  //   }
+                  // } else {
+                  //   if (amountToTransferDialog + processingFeeDialog > myProcessingRate.aesBalance) {
+                  //     _showMaterialDialogForError('Insufficient fund to swap', 'dismissDialog');
+                  //   } else {
+                  //     // Init transfer here
+                  //     pr1 = new ProgressDialog(context, isDismissible: false);
+                  //     pr1.style(message: 'Swaping Currency');
+                  //     _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
+                  //   }
+                  // }
+                  
+                },
+              ),
+              
             ],
           ),
         );
@@ -637,24 +644,25 @@ class _SwapPageState extends State<SwapPage> {
                                    _toConversionController.text = (double.parse(_fromConversionController.text) * afterConversionValue).toStringAsFixed(10);
                                    setState(() {
                                      enableButton = true;
+                                     handlingFee = (double.parse(_fromConversionController.text) * myProcessingRate.processingRate);
                                    });
-                                   if (widget.currency.currencyName == 'BTC') {
-                                      setState(() {
-                                        handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.btcCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
-                                      });
-                                    } else if (widget.currency.currencyName == 'ETH') {
-                                      setState(() {
-                                        handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.ethCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
-                                      });
-                                    } else if (widget.currency.currencyName == 'USDT') {
-                                      setState(() {
-                                        handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.usdtCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
-                                      });
-                                    } else if (widget.currency.currencyName == 'AES') {
-                                      setState(() {
-                                        handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.aesCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
-                                      });
-                                    }
+                                  //  if (widget.currency.currencyName == 'BTC') {
+                                  //     setState(() {
+                                  //       handlingFee = double.parse(_fromConversionController.text) * myProcessingRate.processingRate;
+                                  //     });
+                                  //   } else if (widget.currency.currencyName == 'ETH') {
+                                  //     setState(() {
+                                  //       handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.ethCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
+                                  //     });
+                                  //   } else if (widget.currency.currencyName == 'USDT') {
+                                  //     setState(() {
+                                  //       handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.usdtCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
+                                  //     });
+                                  //   } else if (widget.currency.currencyName == 'AES') {
+                                  //     setState(() {
+                                  //       handlingFee = double.parse(((double.parse(_fromConversionController.text) * myProcessingRate.aesCurrentPrice / myProcessingRate.aesCurrentPrice) * myProcessingRate.processingRate).toStringAsFixed(8));
+                                  //     });
+                                  //   }
                                  }
 
                                  
@@ -731,7 +739,7 @@ class _SwapPageState extends State<SwapPage> {
                            ),
                            children: <TextSpan>[
                              TextSpan(text: "Handling Fee: "),
-                             TextSpan(text: handlingFee.toStringAsFixed(8) + " AES", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))
+                             TextSpan(text: handlingFee.toStringAsFixed(8) + " " + widget.currency.currencyName, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))
                            ]
                            
                          ),
@@ -779,8 +787,17 @@ class _SwapPageState extends State<SwapPage> {
                        amountToSwapInInInt = double.parse(_toConversionController.text) * 1e3 * 1e3 * 1e2;
                        amountToSwapInInInt = num.parse(amountToSwapInInInt.toStringAsFixed(2));
                      }
-                     handlingFeeToProcess = handlingFee * 1e3 * 1e3 * 1e2;
-                     handlingFeeToProcess = num.parse(handlingFeeToProcess.toStringAsFixed(2));
+
+                     if (widget.currency.currencyName == 'BTC' || widget.currency.currencyName == 'AES') {
+                       handlingFeeToProcess = handlingFee * 1e3 * 1e3 * 1e2;
+                       handlingFeeToProcess = num.parse(handlingFeeToProcess.toStringAsFixed(2));
+                     } else if (widget.currency.currencyName == 'USDT') {
+                       handlingFeeToProcess = handlingFee * 1e3 * 1e3;
+                       handlingFeeToProcess = num.parse(handlingFeeToProcess.toStringAsFixed(2));
+                     } else if (widget.currency.currencyName == 'ETH') {
+                       handlingFeeToProcess = handlingFee * 1e3 * 1e3 * 1e3 * 1e3 * 1e3 * 1e3;
+                       handlingFeeToProcess = num.parse(handlingFeeToProcess.toStringAsFixed(2));
+                     }
                      
                      _showMaterialDialog(handlingFeeToProcess, amountToSwapOutInInt, amountToSwapInInInt);
                     var testingNumber = myProcessingRate.availableBalance - amountToSwapOutInInt;

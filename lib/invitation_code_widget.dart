@@ -103,7 +103,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                   ),
                   Container(
                     child: QrImage(
-                       data: 'https://wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode,
+                       data: 'https://aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode,
                        version: 4,
                        size: 165.0,
                      ),
