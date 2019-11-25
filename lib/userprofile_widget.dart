@@ -6,6 +6,7 @@ import 'model/user_profile.dart';
 
 import 'personal_info_widget.dart';
 import 'login_widget.dart';
+import 'about_us_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -17,6 +18,9 @@ import 'dart:io';
 import 'dart:convert';
 import 'model/user_information.dart';
 import 'security_widget.dart';
+import 'reset_password_widget.dart';
+
+import 'package:aes_exchange/utils/app_localizations.dart';
 
 
 
@@ -94,7 +98,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
         await _auth.signOut();
         print('Sign out successful');
         Fluttertoast.showToast(
-            msg: "Successfully Sign Out",
+            msg: AppLocalizations.of(context).translate('successfully_sign_out'),
         );
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
       } else {
@@ -105,19 +109,25 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
     }
   }
 
-  
-
   Widget _buildSettingRow(UserProfile userProfile, int index) {
     return GestureDetector(
       onTap: () {
         print("tabbed");
-        if (userProfile.title == 'Invitation code') {
+        if (userProfile.title == 'Invitation Code' || userProfile.title == '邀请码') {
           Navigator.push(
             context, 
             MaterialPageRoute(builder: (context) => InvitationCodePage(userInformation: myUserInformation,)),
           );
-        } else if (userProfile.title == 'About us' || userProfile.title == 'Security') {
-          _showMaterialDialog();
+        } else if (userProfile.title == 'About Us' || userProfile.title == '关于我们') {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => AboutUsPage()),
+          );
+        } else if (userProfile.title == '重设密码' || userProfile.title == 'Change Password') {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => ResetPasswordPage()),
+          );
         } 
         // else if (userProfile.title == 'Security') {
         //   Navigator.push(
@@ -171,14 +181,22 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
     
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Getting User Information..');
+      pr2.style(message: AppLocalizations.of(context).translate('getting_user_information'));
       _getUserInformation(pr2);
+      setState(() {
+        _settingList[0][0].title = AppLocalizations.of(context).translate('invitation_code');
+        _settingList[1][0].title = AppLocalizations.of(context).translate('security');
+        _settingList[2][0].title = AppLocalizations.of(context).translate('about_us');
+      });
     });
     
   }
 
   @override
   Widget build(BuildContext context) {
+    pr1 = new ProgressDialog(context, isDismissible: false);
+    pr1.style(message: AppLocalizations.of(context).translate('getting_user_information'));
+
     return SmartRefresher(
       controller: _refreshController,
       enablePullDown: true,
@@ -186,6 +204,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
       onRefresh: () async {
         await Future.delayed(Duration(seconds: 1));
         _refreshController.refreshCompleted();
+        _getUserInformation(pr1);
       },
       child: CustomScrollView(
         slivers: <Widget>[
@@ -210,8 +229,12 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         CircleAvatar(
-                          backgroundColor: Colors.grey,
-                          radius: 30.0,
+                          backgroundColor: Colors.white,
+                          radius: 35.0,
+                          child: Image(
+                            image: AssetImage('assets/male_avatar.png'),
+                            width: 200.0,
+                          )
                         ),
                         Container(
                           width: 200.0,
@@ -228,7 +251,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                               Container(
                                 margin: EdgeInsets.only(top: 5.0),
                                 width: MediaQuery.of(context).size.width,
-                                child: Text("User ID: " + myUserInformation.userId, style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                                child: Text("ID: " + myUserInformation.userId, style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
                               )
                             ],
                           ),
@@ -265,7 +288,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
               color: Color(0xFFEEEEEE),
               padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 12.0, bottom: 12.0),
               child: Text(
-                "Please do not disclose the transaction password, SMS and verification code to anyone, including AES exchange staff",
+                AppLocalizations.of(context).translate('do_not_disclose'),
                 style: TextStyle(fontSize: 9.0, color: Colors.grey)
               ),
             ),
@@ -282,7 +305,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
             delegate: SliverChildListDelegate(
               [
                 _buildSettingRow(_settingList[1][0], 1),
-                _buildSettingRow(_settingList[1][1], 1),
+                // _buildSettingRow(_settingList[1][1], 1),
               ]
             ),
           ),
@@ -303,7 +326,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                   signOut();
                 },
                 child: Text(
-                  "Sign Out",
+                  AppLocalizations.of(context).translate('sign_out'),
                   style: TextStyle(fontSize: 16.0)
                 ),
               ),

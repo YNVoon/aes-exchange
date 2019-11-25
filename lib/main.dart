@@ -1,3 +1,4 @@
+import 'package:aes_exchange/utils/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'property_widget.dart';
@@ -5,6 +6,10 @@ import 'trust_widget.dart';
 import 'discover_widget.dart';
 import 'userprofile_widget.dart';
 import 'login_widget.dart';
+import 'splash_screen_widget.dart';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+// import 'package:flutter_cupertino_localizations/flutter_cupertino_localizations.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,19 +30,52 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.white,
       ), 
-      // home: MyHomePage(title: 'AES Exchange'),
-      home: _isUserLoggedin ? MyHomePage(title: 'AES Exchange') : LoginPage(),
+      home: _isUserLoggedin ? MyHomePage() : SplashScreenPage(),
+      localizationsDelegates: [
+        // ... app-specific localization delegate[s] here
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale.fromSubtags(languageCode: 'zh'), // generic Chinese 'zh'
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'), // generic simplified Chinese 'zh_Hans'
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'), // generic traditional Chinese 'zh_Hant'
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'), // 'zh_Hans_CN'
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'TW'), // 'zh_Hant_TW'
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'HK'), // 'zh_Hant_HK'
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'MY'), // 'zh_Hant_HK'
+        // Locale('zh', 'CN'), 
+        // Locale('zh', 'TW'),
+        // Locale('zh', 'HK'),
+        // Locale('zh', 'SG'), 
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Check if the current device locale is supported
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode &&
+              supportedLocale.countryCode == locale.countryCode) {
+            return supportedLocale;
+          }
+        }
+        // If the locale of the device is not supported, use the first one
+        // from the list (English, in this case).
+        return supportedLocales.first;
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key}) : super(key: key);
 
-  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
+
+  
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -55,13 +93,17 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
       if (_selectedIndex == 0) {
-        appBarTitle = "AES | Deposit";
+        // appBarTitle = "AES | Deposit";
+        appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
       } else if (_selectedIndex == 1) {
-        appBarTitle = "AES | Deposit";
+        // appBarTitle = "AES | Deposit";
+        appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
       } else if (_selectedIndex == 2) {
-        appBarTitle = "Discover";
+        // appBarTitle = "Discover";
+        appBarTitle = AppLocalizations.of(context).translate('discover');
       } else if (_selectedIndex == 3) {
-        appBarTitle = "Profile";
+        // appBarTitle = "Profile";
+        appBarTitle = AppLocalizations.of(context).translate('profile');
       }
     });
   }
@@ -69,7 +111,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    appBarTitle = "AES | Deposit";
+    Future.delayed(Duration(milliseconds: 100), () {
+      setState(() {
+        appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
+      });
+    });
+    // appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
+    
   }
 
   @override
@@ -91,25 +139,28 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: _children[_selectedIndex],
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+      // Bottom Navigation Bar
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.account_balance_wallet),
-            title: Text('Funds')
+            title: Text(AppLocalizations.of(context).translate('funds'))
           ),
+            
           BottomNavigationBarItem(
             icon: Icon(Icons.monetization_on),
-            title: Text('Trust')
+            title: Text(AppLocalizations.of(context).translate('trusts'))
           ),
+            
           BottomNavigationBarItem(
             icon: Icon(Icons.public),
-            title: Text('Discover')
+            title: Text(AppLocalizations.of(context).translate('discover'))
           ),
+            
           BottomNavigationBarItem(
             icon: Icon(Icons.perm_identity),
-            title: Text('Me')
+            title: Text(AppLocalizations.of(context).translate('me'))
           ),
         ],
         currentIndex: _selectedIndex,

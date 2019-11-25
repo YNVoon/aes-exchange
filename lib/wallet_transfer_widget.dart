@@ -4,9 +4,12 @@ import 'package:aes_exchange/utils/decimal_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'terms_and_conditions_widget.dart';
 
 import 'dart:io';
 import 'dart:convert';
+
+import 'package:aes_exchange/utils/app_localizations.dart';
 
 class FlexibleProcessingFee {
   
@@ -91,7 +94,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                child: Text(AppLocalizations.of(context).translate('ok'), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   if (condition == 'navigate') {
                     Navigator.pop(context);
@@ -190,12 +193,12 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                 pd.dismiss();
                 print(contents.toString());
                 myFlexibleProcessingFee = FlexibleProcessingFee.fromJson(contents);
-                if (myFlexibleProcessingFee.status == 'No register email found') {
+                if (myFlexibleProcessingFee.status == AppLocalizations.of(context).translate('no_register_email_found')) {
                   textFormInvalidMsg2 = myFlexibleProcessingFee.status;
                   textFormValidate2 = false;
                   accept = false;
                   myFlexibleProcessingFee.aesProcessing = '0.00000000';
-                } else if (myFlexibleProcessingFee.status == "You can't transfer to your own account"){
+                } else if (myFlexibleProcessingFee.status == AppLocalizations.of(context).translate('you_cant_transfer_to_your_own_account')){
                   textFormInvalidMsg2 = myFlexibleProcessingFee.status;
                   textFormValidate2 = false;
                   accept = false;
@@ -209,7 +212,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                     // Make sure aesprocessingfee plus aes amount to send wont greater than their balance fund in wallet
                     if ((aesProcessingFeeInInt + inputQuantityInDouble) > myFlexibleProcessingFee.aesBalance) {
                       print('testing ' + (aesProcessingFeeInInt + inputQuantityInDouble).toString());
-                      _showMaterialDialogForError('Insufficient fund to transfer', 'dismissDialog');
+                      _showMaterialDialogForError(AppLocalizations.of(context).translate('insufficient_fund_to_transfer'), 'dismissDialog');
                       accept = false;
                     }
                   } else {
@@ -217,7 +220,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                     aesProcessingFeeInInt = int.parse(aesProcessingFeeCalc.toStringAsFixed(0));
                     print(aesProcessingFeeInInt.toString());
                     if (myFlexibleProcessingFee.aesBalance < aesProcessingFeeInInt) {
-                      _showMaterialDialogForError('Insufficient processing fee', 'dismissDialog');
+                      _showMaterialDialogForError(AppLocalizations.of(context).translate('insufficient_processing_fee'), 'dismissDialog');
                       accept = false;
                     }
                   }
@@ -277,7 +280,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
             response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
               print(contents.toString());
               pd.dismiss();
-              _showMaterialDialogForError('Successful Transaction', 'navigate');
+              _showMaterialDialogForError(AppLocalizations.of(context).translate('successful_transaction'), 'navigate');
             });
           });
       }
@@ -292,7 +295,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _requestAppropriateAvailableAmount(pr2);
     });
   }
@@ -314,7 +317,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                  Container(
                    width: MediaQuery.of(context).size.width,
                    child: Text(
-                     'Transfer',
+                     AppLocalizations.of(context).translate('transfer'),
                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                      textAlign: TextAlign.start,
                    ),
@@ -341,7 +344,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                   margin: EdgeInsets.only(top: 25.0, bottom: 15.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Other accounts',
+                    AppLocalizations.of(context).translate('other_accounts'),
                     style: TextStyle(color: Colors.black, fontSize: 14.0),
                     textAlign: TextAlign.start,
                   ),
@@ -362,7 +365,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey)
                     ),
-                    hintText: "Please enter recipient's email address",
+                    hintText: AppLocalizations.of(context).translate('recipient_email'),
                     hintStyle: TextStyle(fontSize: 14.0, color: Colors.grey, fontWeight: FontWeight.w300),
                     border: OutlineInputBorder(),
                     
@@ -372,7 +375,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                   margin: EdgeInsets.only(top: 25.0, bottom: 15.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Quantity Transfer',
+                    AppLocalizations.of(context).translate('quantity_transfer'),
                     style: TextStyle(color: Colors.black, fontSize: 14.0),
                     textAlign: TextAlign.start,
                   ),
@@ -394,11 +397,11 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey)
                     ),
-                    hintText: 'Please enter your quantity',
+                    hintText: AppLocalizations.of(context).translate('enter_quantity'),
                     hintStyle: TextStyle(fontSize: 14.0, color: Colors.grey, fontWeight: FontWeight.w300),
                     border: OutlineInputBorder(),
                     suffixIcon: Container(
-                      width: 75.0,
+                      width: 100.0,
                       child: Row(
                         children: <Widget>[
                           Text(
@@ -418,7 +421,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                                 _quantityController.text = avaiBalance;
                               },
                               child: Text(
-                                "All",
+                                AppLocalizations.of(context).translate('all'),
                                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12.0),
                               ),
                             ),
@@ -432,7 +435,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                   margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Available amount ' + avaiBalance + ' ' + widget.currency.currencyName,
+                    AppLocalizations.of(context).translate('available_amount') + avaiBalance + ' ' + widget.currency.currencyName,
                     style: TextStyle(color: Colors.grey, fontSize: 12.0),
                     textAlign: TextAlign.start,
                   ),
@@ -441,7 +444,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                   margin: EdgeInsets.only(bottom: 12.0, top: 20.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Handling fee',
+                    AppLocalizations.of(context).translate('handling_fee'),
                     style: TextStyle(color: Colors.black, fontSize: 14.0),
                     textAlign: TextAlign.start,
                   ),
@@ -521,30 +524,30 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                               if (_emailAddressController.text.isNotEmpty) {
                                 if (!validateEmail(_emailAddressController.text)) {
                                   textFormValidate2 = false;
-                                  textFormInvalidMsg2 = 'Invalid email address.';
+                                  textFormInvalidMsg2 = AppLocalizations.of(context).translate('invalid_email_address');
                                 } else {
                                   textFormValidate2 = true;
                                 }
                               } else if (_emailAddressController.text.isEmpty) {
                                 textFormValidate2 = false;
-                                textFormInvalidMsg2 = 'Please insert an email address.';
+                                textFormInvalidMsg2 = AppLocalizations.of(context).translate('please_insert_an_email_address');
                               }
 
                               if (_quantityController.text.isEmpty) {
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Please insert minimum amount.';
+                                textFormInvalidMsg = AppLocalizations.of(context).translate('please_insert_minimum_amount');
                               } else if (inputQuantityInDouble <= 0){
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Insufficient Fund to transfer.';
+                                textFormInvalidMsg = AppLocalizations.of(context).translate('insufficient_fund_to_transfer');
                               } else if (inputQuantityInDouble > avaiBalanceForCalc){
                                 print(inputQuantityInDouble);
                                 print(avaiBalanceForCalc);
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Insufficient Fund.';
+                                textFormInvalidMsg = AppLocalizations.of(context).translate('insufficient_fund');
                               } else {
                                 textFormValidate = true;
                                 pr1 = new ProgressDialog(context, isDismissible: false);
-                                pr1.style(message: 'Verifying Transaction...');
+                                pr1.style(message: AppLocalizations.of(context).translate('verifying_transaction'));
 
                                 if (textFormValidate && textFormValidate2) {
                                   if (value) {
@@ -563,7 +566,7 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                         ),
                         Container(
                           child: Text(
-                            'I agree '
+                            AppLocalizations.of(context).translate('i_agree')
                           ),
                         ),
                         Container(
@@ -571,10 +574,13 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
+                              );
                             },
                             child: Text(
-                              'Terms and Conditions',
+                              AppLocalizations.of(context).translate('terms_and_conditions'),
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
@@ -606,11 +612,11 @@ class _WalletTransferPageState extends State<WalletTransferPage> {
                       print('processingFee ' + aesProcessingFeeInInt.toString());
                       print('amountToProcess ' + inputQuantityInDouble.toString());
                       pr3 = new ProgressDialog(context, isDismissible: false);
-                      pr3.style(message: 'Creating Transaction...');
+                      pr3.style(message: AppLocalizations.of(context).translate('creating_transaction'));
                       _transferFund(pr3, inputQuantityInDouble.toString(), aesProcessingFeeInInt.toString(), _emailAddressController.text);
                     } : null,
                     child: Text(
-                      'Transfer',
+                      AppLocalizations.of(context).translate('transfer'),
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'main.dart';
-
 import 'dart:io';
 import 'dart:convert';
 import 'package:random_string/random_string.dart';
-import 'dart:math' show Random;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'login_widget.dart';
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 
 
 class SignUpStatus {
@@ -116,7 +114,7 @@ class _SignupPageState extends State<SignupPage> {
         await _auth.signOut();
         print('Successfully Signed out');
         Fluttertoast.showToast(
-            msg: "Something went wrong!",
+            msg: AppLocalizations.of(context).translate('something_went_wrong'),
         );
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
       } else {
@@ -178,7 +176,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Please wait...');
+    pr1.style(message: AppLocalizations.of(context).translate('please_wait'));
 
     return Container(
        child: Scaffold(
@@ -214,7 +212,7 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.email, color: Colors.black,),
                                   
-                                  hintText: "Insert Email Address",
+                                  hintText: AppLocalizations.of(context).translate('enter_email'),
                                   border: OutlineInputBorder(),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -223,9 +221,9 @@ class _SignupPageState extends State<SignupPage> {
                                 validator: (value) {
                                   _email = value;
                                   if (value.isEmpty) {
-                                    return 'Please insert email address';
+                                    return AppLocalizations.of(context).translate('please_insert_an_email_address');
                                   } else if (!validateEmail(value)) {
-                                    return 'Please insert valid email';
+                                    return AppLocalizations.of(context).translate('please_insert_valid_email');
                                   }
                                   return null;
                                 },
@@ -249,14 +247,14 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.lock, color: Colors.black,),
                                   suffixIcon: IconButton(
-                                    icon: Icon(Icons.remove_red_eye, color: Colors.grey,),
+                                    icon: Icon(Icons.visibility, color: Colors.grey,),
                                     onPressed: () {
                                       setState(() {
                                         _obscureText = !_obscureText; 
                                       });
                                     },
                                   ),
-                                  hintText: "Input password",
+                                  hintText: AppLocalizations.of(context).translate('input_password'),
                                   border: OutlineInputBorder(),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -265,9 +263,9 @@ class _SignupPageState extends State<SignupPage> {
                                 validator: (value) {
                                   _password = value;
                                   if (value.isEmpty) {
-                                    return 'Please insert password';
+                                    return AppLocalizations.of(context).translate('please_insert_password');
                                   } else if (value.length < 6) {
-                                    return 'Insert at least 6 characters';
+                                    return AppLocalizations.of(context).translate('insert_at_least_six_characters');
                                   }
                                   return null;
                                 },
@@ -290,14 +288,14 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.lock, color: Colors.black,),
                                   suffixIcon: IconButton(
-                                    icon: Icon(Icons.remove_red_eye, color: Colors.grey,),
+                                    icon: Icon(Icons.visibility, color: Colors.grey,),
                                     onPressed: () {
                                       setState(() {
                                         _obscureText1 = !_obscureText1; 
                                       });
                                     },
                                   ),
-                                  hintText: "Confirm Password",
+                                  hintText: AppLocalizations.of(context).translate('confirm_password'),
                                   border: OutlineInputBorder(),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -306,9 +304,9 @@ class _SignupPageState extends State<SignupPage> {
                                 validator: (value) {
                                   _confirmPassword = value;
                                   if (value.isEmpty) {
-                                    return 'Please confirm password';
+                                    return AppLocalizations.of(context).translate('please_confirm_password');
                                   } else if (value != _password) {
-                                    return 'Password doesn\'t match';
+                                    return AppLocalizations.of(context).translate('password_not_match');
                                   }
                                   return null;
                                 },
@@ -340,7 +338,7 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.local_offer, color: Colors.black,),
                                   
-                                  hintText: "Input invitation code (Optional)",
+                                  hintText: AppLocalizations.of(context).translate('input_invitation_code'),
                                   border: OutlineInputBorder(),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -350,7 +348,7 @@ class _SignupPageState extends State<SignupPage> {
                                   _invitationCode = value;
                                   if (value.isNotEmpty) {
                                     if (value.length < 6) {
-                                      return 'Invalid invitation code';
+                                      return AppLocalizations.of(context).translate('invalid_invitation_code');
                                     }
                                   } 
                                   // else if (value.length < 6) {
@@ -384,7 +382,7 @@ class _SignupPageState extends State<SignupPage> {
                                     
                                   },
                                   child: Text(
-                                    "Sign Up",
+                                    AppLocalizations.of(context).translate('signup'),
                                     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)
                                   ),
                                 ),

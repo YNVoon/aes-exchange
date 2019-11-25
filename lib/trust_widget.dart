@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -11,6 +10,8 @@ import 'total_trust_assets_widget.dart';
 
 import 'dart:io';
 import 'dart:convert';
+
+import 'package:aes_exchange/utils/app_localizations.dart';
  
 class TrustWidget extends StatefulWidget {
   @override
@@ -171,7 +172,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
     super.initState();
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'),);
       _requestUserDataThenCheckTrustBalance(pr2);
     });
   }
@@ -179,7 +180,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Retrieving latest data...');
+    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'),);
 
     return SmartRefresher(
       controller: _refreshController,
@@ -209,7 +210,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "Trust Assets Value",
+                        AppLocalizations.of(context).translate('trust_assets_value'),
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           // backgroundColor: Colors.black,
@@ -261,7 +262,7 @@ class _MyTrustWidgetState extends State<TrustWidget> {
                   padding: EdgeInsets.only(left: 12.0, bottom: 15.0),
                   margin: EdgeInsets.only(top: 15.0),
                   child: Text(
-                    "Trust Assets List",
+                    AppLocalizations.of(context).translate('trust_assets_list'),
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
                     textAlign: TextAlign.start,
                   ),

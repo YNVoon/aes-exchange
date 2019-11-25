@@ -10,6 +10,9 @@ import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+import 'terms_and_conditions_widget.dart';
+
 class TransferTrustPage extends StatefulWidget {
 
   TrustCurrency currency;
@@ -59,7 +62,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                child: Text(AppLocalizations.of(context).translate('ok'), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   if (condition == 'navigate') {
                     Navigator.pop(context);
@@ -155,7 +158,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
               print(contents.toString());
             });
             pd.dismiss();
-            _showMaterialDialogForError("Transfer Successfully", "navigate");
+            _showMaterialDialogForError(AppLocalizations.of(context).translate('transfer_successfully'), "navigate");
           });
       }
     } catch (e) {
@@ -432,7 +435,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _requestAppropriateAvailableAmount2(pr2);
     });
   }
@@ -449,7 +452,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
              centerTitle: true,
              elevation: 0.0,
              title: Text(
-               "Transfer",
+               AppLocalizations.of(context).translate('transfer'),
                style: Theme.of(context).textTheme.title,
              ),
            ),
@@ -462,7 +465,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                   margin: EdgeInsets.only(bottom: 12.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Coin',
+                    AppLocalizations.of(context).translate('coin'),
                     style: TextStyle(color: Color(0xFF5f696b), fontSize: 14.0),
                     textAlign: TextAlign.start,
                   ),
@@ -484,7 +487,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                   margin: EdgeInsets.only(top: 25.0, bottom: 15.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Quantity',
+                    AppLocalizations.of(context).translate('quantity'),
                     style: TextStyle(color: Color(0xFF5f696b), fontSize: 14.0),
                     textAlign: TextAlign.start,
                   ),
@@ -509,11 +512,11 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey)
                     ),
-                    hintText: 'Input Quantity',
+                    hintText: AppLocalizations.of(context).translate('input_quantity'),
                     hintStyle: TextStyle(fontSize: 14.0, color: Colors.grey, fontWeight: FontWeight.w300),
                     border: OutlineInputBorder(),
                     suffixIcon: Container(
-                      width: 75.0,
+                      width: 85.0,
                       child: Row(
                         children: <Widget>[
                           Text(
@@ -529,7 +532,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                                 _quantityController.text = avaiBalance;
                               },
                               child: Text(
-                                "All",
+                                AppLocalizations.of(context).translate('all'),
                                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 12.0),
                               ),
                             ),
@@ -543,7 +546,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                   margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
                   width: MediaQuery.of(context).size.width,
                   child: Text(
-                    'Available amount ' + avaiBalance + ' ' + widget.currency.currencyName,
+                    AppLocalizations.of(context).translate('available_amount') + avaiBalance + ' ' + widget.currency.currencyName,
                     style: TextStyle(color: Colors.grey, fontSize: 12.0),
                     textAlign: TextAlign.start,
                   ),
@@ -575,7 +578,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'Note: When the total value of Trust is turned on, it will automatically turn on Trust to generate revenue (additional fee is charged for Re-turning out.',
+                        AppLocalizations.of(context).translate('transfer_note'),
                         style: TextStyle(color: Colors.grey, fontSize: 12.0),
                       )
                     ],
@@ -616,13 +619,13 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                               
                               if (_quantityController.text.isEmpty) {
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Please insert minimum amount.';
+                                textFormInvalidMsg = AppLocalizations.of(context).translate('please_insert_minimum_amount');
                               } else if (inputQuantityInDouble <= 0){
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Insufficient Fund to transfer.';
+                                textFormInvalidMsg = AppLocalizations.of(context).translate('insufficient_fund_to_transfer');
                               } else if (inputQuantityInDouble > avaiBalanceForCalc){
                                 textFormValidate = false;
-                                textFormInvalidMsg = 'Insufficient Fund.';
+                                textFormInvalidMsg = AppLocalizations.of(context).translate('insufficient_fund');
                               } else {
                                 accept = value;
                                 textFormValidate = true;
@@ -662,7 +665,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                         Container(
                         //  margin: EdgeInsets.only(left: 10.0),
                           child: Text(
-                            'I agree '
+                            AppLocalizations.of(context).translate('i_agree')
                           ),
                         ),
                         Container(
@@ -670,10 +673,13 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-                              
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
+                              );
                             },
                             child: Text(
-                              'Trust Trading Rules',
+                              AppLocalizations.of(context).translate('terms_and_conditions'),
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
@@ -698,7 +704,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                           onPressed: accept ? () {
                             // test();
                             pr1 = new ProgressDialog(context, isDismissible: false);
-                            pr1.style(message: 'Verifying Transaction...');
+                            pr1.style(message: AppLocalizations.of(context).translate('verifying_transaction'));
                             var inputQuantityInDouble;
                             if (widget.currency.currencyName == 'BTC') {
                               inputQuantityInDouble = double.parse(_quantityController.text) * 1e3 * 1e3 * 1e2;
@@ -717,7 +723,7 @@ class _TransferTrustPageState extends State<TransferTrustPage> {
                             
                           } : null,
                           child: Text(
-                            'Confirm Transfer',
+                            AppLocalizations.of(context).translate('confirm_transfer'),
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                       ),

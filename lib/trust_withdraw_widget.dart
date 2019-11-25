@@ -11,6 +11,9 @@ import 'model/processing_fee.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+import 'terms_and_conditions_widget.dart';
+
 class TrustWithdrawPage extends StatefulWidget {
   final String date;
   final String currency;
@@ -53,7 +56,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                child: Text(AppLocalizations.of(context).translate('ok'), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   if (condition == 'navigate') {
                     Navigator.pop(context);
@@ -353,7 +356,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _requestProcessingFee2(pr2);
     });
     
@@ -390,7 +393,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
              centerTitle: true,
              elevation: 0.0,
              title: Text(
-               "Withdraw",
+               AppLocalizations.of(context).translate('trust_withdrawal'),
                style: Theme.of(context).textTheme.title,
              ),
            ),
@@ -423,7 +426,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                            Container(
                              margin: EdgeInsets.only(left: 15.0),
                              child: Text(
-                                "Trust in date",
+                                AppLocalizations.of(context).translate('trust_in_date'),
                                 style: TextStyle(color: Color(0xFFbec0bf)),
                               ),
                            ),
@@ -458,14 +461,14 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                            Container(
                              margin: EdgeInsets.only(left: 15.0),
                              child: Text(
-                                "Duration",
+                                AppLocalizations.of(context).translate('duration'),
                                 style: TextStyle(color: Color(0xFFbec0bf)),
                               ),
                            ),
                            Container(
                              margin: EdgeInsets.only(left: 15.0),
                              child: Text(
-                                difference > 1 ? difference.toString() + ' days' : difference.toString() + ' day',
+                                difference > 1 ? difference.toString() + AppLocalizations.of(context).translate('days') : difference.toString() + AppLocalizations.of(context).translate('day'),
                                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
                               ),
                            )
@@ -479,7 +482,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                  margin: EdgeInsets.only(top: 30.0, bottom: 12.0),
                  width: MediaQuery.of(context).size.width,
                  child: Text(
-                   'Coin',
+                   AppLocalizations.of(context).translate('coin'),
                    style: TextStyle(color: Color(0xFF5f696b), fontSize: 14.0),
                    textAlign: TextAlign.start,
                  ),
@@ -501,7 +504,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                  margin: EdgeInsets.only(top: 30.0, bottom: 12.0),
                  width: MediaQuery.of(context).size.width,
                  child: Text(
-                   'Amount',
+                   AppLocalizations.of(context).translate('amount'),
                    style: TextStyle(color: Color(0xFF5f696b), fontSize: 14.0),
                    textAlign: TextAlign.start,
                  ),
@@ -528,7 +531,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'If you stop storing FD at AES Wallet within 30 days, you will be charged a 5% fee.\nAfter 30 days, it can be realized at any time, no handling fee is deducted.\n\nProcessing fees: ' + actualAESProcessingFee.toString() + ' ' + widget.currency,
+                        AppLocalizations.of(context).translate('stop_storing_policy') + actualAESProcessingFee.toString() + ' ' + widget.currency,
                         style: TextStyle(color: Colors.grey, fontSize: 12.0),
                       )
                     ],
@@ -555,9 +558,9 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                               // }
                               if (value) {
                                 if ((processingFee.currentBalance + widget.transactionAmount) < actualAESProcessingFee) {
-                                  _showMaterialDialogForError('Insufficient processing fee', 'dismissDialog');
+                                  _showMaterialDialogForError(AppLocalizations.of(context).translate('insufficient_processing_fee'), 'dismissDialog');
                                 } else {
-                                  _showMaterialDialogForError('For trust that store less than 30 days will be implied with a surcharge of 5% processing fee. Are you sure?', 'dismissDialog');
+                                  _showMaterialDialogForError(AppLocalizations.of(context).translate('for_trust_that_store_dialog'), 'dismissDialog');
                                   accept = value;
                                 }
                               } else{
@@ -585,7 +588,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                         Container(
                         //  margin: EdgeInsets.only(left: 10.0),
                           child: Text(
-                            'I agree '
+                            AppLocalizations.of(context).translate('i_agree')
                           ),
                         ),
                         Container(
@@ -593,10 +596,13 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-                              
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (context) => TermsAndConditionsPage()),
+                              );
                             },
                             child: Text(
-                              'Trust Trading Rules',
+                              AppLocalizations.of(context).translate('terms_and_conditions'),
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                             ),
                           ),
@@ -624,7 +630,7 @@ class _TrustWithdrawPageState extends State<TrustWithdrawPage> {
                             
                           } : null,
                           child: Text(
-                            processingFee.status == 'claimed' ? 'You have withdrawn this' : 'Confirm Withdraw',
+                            processingFee.status == 'claimed' ? AppLocalizations.of(context).translate('you_have_withdrawn_this') : AppLocalizations.of(context).translate('confirm_withdraw'),
                             
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           ),

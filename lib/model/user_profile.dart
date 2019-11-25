@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class UserProfile {
-  final String title;
+  String title;
   final IconData icon;
   final String navigation;
 

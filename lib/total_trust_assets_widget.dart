@@ -12,6 +12,8 @@ import 'trust_withdraw_widget.dart';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 class TransactionList {
   final String trustToUsdt;
   final String trustBalance;
@@ -278,7 +280,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _getTransactionListAndLatestTrustBalance2(pr2);
     });
   }
@@ -366,7 +368,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Retrieving latest data...');
+    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
 
     List<Widget> sliverDelegateList = List<Widget> ();
 
@@ -382,7 +384,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
           centerTitle: true,
           elevation: 0.0,
           title: Text(
-            "Total Assets Value",
+            AppLocalizations.of(context).translate('total_assets_value'),
             style: Theme.of(context).textTheme.title,
           ),
         ),
@@ -446,7 +448,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                       margin: EdgeInsets.only(left: 20.0, top: 12.0, bottom: 12.0),
                       width: MediaQuery.of(context).size.width,
                       child: Text(
-                        'Trust List',
+                        AppLocalizations.of(context).translate('trust_transaction'),
                         textAlign: TextAlign.start,
                         style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)
                       ),
@@ -467,7 +469,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'No data available',
+                      AppLocalizations.of(context).translate('no_data_avaialable_for_trust_transaction'),
                       style: TextStyle(fontSize: 14.0, color: Colors.grey),
                     )
                   ],
@@ -504,7 +506,7 @@ class _TotalTrustAssetPageState extends State<TotalTrustAssetPage> {
             );
           },
           child: Text(
-            "Transfer Trust",
+            AppLocalizations.of(context).translate('transfer_trust'),
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.0),
           ),
         ),

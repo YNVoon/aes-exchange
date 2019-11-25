@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 class InvitationCodePage extends StatefulWidget {
 
   final UserInformation userInformation;
@@ -26,7 +28,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
           centerTitle: true,
           elevation: 0.0,
           title: Text(
-            "Invitation Code",
+            AppLocalizations.of(context).translate('invitation_code'),
             style: Theme.of(context).textTheme.title,
           ),
         ),
@@ -39,7 +41,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
               margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
               width: MediaQuery.of(context).size.width,
               child: Text(
-                'Blockchain-based Digital Assets Bank',
+                AppLocalizations.of(context).translate('blockchain_based'),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
@@ -58,7 +60,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                   Container(
                     margin: EdgeInsets.only(bottom: 10.0),
                     child: Text(
-                      'Sharing',
+                      AppLocalizations.of(context).translate('sharing'),
                       style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
                     ),
                   ),
@@ -78,11 +80,11 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                       onPressed: () {
                         Clipboard.setData(new ClipboardData(text: 'https://aes-wallet.web.app/signup?referral=' + widget.userInformation.userInvitationCode));
                         Fluttertoast.showToast(
-                            msg: "Copied to clipboard",
+                            msg:  AppLocalizations.of(context).translate('copied_to_clipboard'),
                         );
                       },
                       child: Text(
-                        "Copy Link",
+                        AppLocalizations.of(context).translate('copy_link'),
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
                       ),
                     ),
@@ -91,7 +93,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                     width: MediaQuery.of(context).size.width,
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Text(
-                      'A Digital Asset Bank based on blockchain communication and networking',
+                      AppLocalizations.of(context).translate('a_digital_asset_bank'),
                       style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
                       textAlign: TextAlign.center,
                     ),
@@ -111,7 +113,7 @@ class _InvitationCodePageState extends State<InvitationCodePage> {
                   Container(
                     margin: EdgeInsets.only(top: 10.0),
                     child: Text(
-                      'Scan QR Code registration download',
+                      AppLocalizations.of(context).translate('scan_qr_code_registration_download'),
                       style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
                     ),
                   ),

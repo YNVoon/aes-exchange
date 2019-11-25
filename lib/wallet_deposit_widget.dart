@@ -10,6 +10,8 @@ import 'package:flutter/services.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 class UserAddress {
 
   final String ethAddress;
@@ -77,7 +79,7 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
 
     Future.delayed(Duration.zero, () {
       pr1 = new ProgressDialog(context, isDismissible: false);
-      pr1.style(message: 'Getting User Information');
+      pr1.style(message: AppLocalizations.of(context).translate('getting_user_information'));
       _getUserAddress(pr1);
     });
   }
@@ -99,7 +101,7 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                Container(
                  width: MediaQuery.of(context).size.width,
                  child: Text(
-                   'Deposit',
+                   AppLocalizations.of(context).translate('deposit'),
                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
                    textAlign: TextAlign.start,
                  ),
@@ -139,7 +141,7 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                      Container(
                        margin: EdgeInsets.all(5.0),
                        child: Text(
-                         'Currency Address',
+                         AppLocalizations.of(context).translate('currency_address'),
                          style: TextStyle(color: Colors.grey),
                        ),
                      ),
@@ -160,11 +162,11 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                          onPressed: () {
                             Clipboard.setData(new ClipboardData(text: widget.currency.currencyName == 'BTC' ? myUserAddress.btcAddress : myUserAddress.ethAddress));
                             Fluttertoast.showToast(
-                                msg: "Copied to clipboard",
+                                msg: AppLocalizations.of(context).translate('copied_to_clipboard'),
                             );
                          },
                          child: Text(
-                           "Copy",
+                           AppLocalizations.of(context).translate('copy'),
                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
                          ),
                        ),
@@ -175,7 +177,7 @@ class _WalletDepositPageState extends State<WalletDepositPage> {
                Container(
                  margin: EdgeInsets.only(top: 20.0),
                  child: Text(
-                   'Do not recharge any of the above addresses for non-' + 'BTC' + ', otherwise the assets will not be recovered.\nAfter you recharge to the above address, you need confirmation from the entire network node. Can be confirmed after 6 network confirmation.\nYour replenishment address will not change frequently, you can replenish; If there is any change, we try to notify you through the website announcement or mail.',
+                   AppLocalizations.of(context).translate('do_not_recharge') + widget.currency.currencyName + AppLocalizations.of(context).translate('otherwise'),
                    style: TextStyle(color: Colors.grey),
                  ),
                )

@@ -7,6 +7,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'notification_details_widget.dart';
+import 'package:aes_exchange/utils/app_localizations.dart';
 
 class NotificationRecord {
   String date;
@@ -51,7 +52,10 @@ class _NotificationPageState extends State<NotificationPage> {
   Future<void> _getNotificationList(ProgressDialog pd) async {
     pd.show();
     try {
-      new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getNotice'))
+      var queryParameters = {
+        'language': AppLocalizations.of(context).translate('language'),
+      };
+      new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getNotice', queryParameters))
         .then((HttpClientRequest request) => request.close())
         .then((HttpClientResponse response) {
           response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
@@ -104,7 +108,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Getting notifications...');
+      pr2.style(message: AppLocalizations.of(context).translate('getting_notification'));
       _getNotificationList(pr2);
     });
   }
@@ -161,7 +165,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Getting notifications...');
+    pr1.style(message: AppLocalizations.of(context).translate('getting_notification'));
 
     List<Widget> sliverDelegateList = List<Widget> ();
 
@@ -180,7 +184,7 @@ class _NotificationPageState extends State<NotificationPage> {
              centerTitle: true,
              elevation: 1.0,
              title: Text(
-               "Notice",
+               AppLocalizations.of(context).translate('notice'),
                style: Theme.of(context).textTheme.title,
              ),
            ),
@@ -204,7 +208,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'No notification',
+                        AppLocalizations.of(context).translate('no_notification'),
                         style: TextStyle(fontSize: 14.0, color: Colors.grey),
                       )
                     ],

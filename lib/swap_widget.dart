@@ -8,6 +8,8 @@ import 'utils/decimal_text_input_formatter.dart';
 
 import 'package:pinput/pin_put/pin_put.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 // import 'package:pinput/pin_put/pin_put.dart';
 
 class ProcessingRate {
@@ -101,7 +103,7 @@ class _SwapPageState extends State<SwapPage> {
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                child: Text(AppLocalizations.of(context).translate('ok'), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   if (condition == 'navigate') {
                     Navigator.pop(context);
@@ -129,28 +131,28 @@ class _SwapPageState extends State<SwapPage> {
           onWillPop: () {},
           child: AlertDialog(
             content: Text(
-              'Confirm to Swap?',
+              AppLocalizations.of(context).translate('confirm_to_swap'),
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                child: Text(AppLocalizations.of(context).translate('cancel'), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   Navigator.pop(context);
                   
                 },
               ),
               FlatButton(
-                child: Text('OK', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
+                child: Text(AppLocalizations.of(context).translate('ok'), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
                 onPressed: () {
                   Navigator.pop(context);
                   if (amountToTransferDialog  + processingFeeDialog > myProcessingRate.availableBalance) {
-                    _showMaterialDialogForError('Insufficient fund / processing fee to swap', 'dismissDialog');
+                    _showMaterialDialogForError(AppLocalizations.of(context).translate('insufficient_fund_or_processing_fee_to_swap'), 'dismissDialog');
                   } else {
                     // Init transfer here
                     pr1 = new ProgressDialog(context, isDismissible: false);
-                    pr1.style(message: 'Swaping Currency');
+                    pr1.style(message: AppLocalizations.of(context).translate('swaping_currency'));
                     _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
                   }
                   // if (widget.currency.currencyName != 'AES') {
@@ -242,7 +244,7 @@ class _SwapPageState extends State<SwapPage> {
                         } else {
                           // Init transfer here
                           pr1 = new ProgressDialog(context, isDismissible: false);
-                          pr1.style(message: 'Swaping Currency');
+                          pr1.style(message: AppLocalizations.of(context).translate('swaping_currency'));
                           _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
                         }
                       } else {
@@ -251,7 +253,7 @@ class _SwapPageState extends State<SwapPage> {
                         } else {
                           // Init transfer here
                           pr1 = new ProgressDialog(context, isDismissible: false);
-                          pr1.style(message: 'Swaping Currency');
+                          pr1.style(message: AppLocalizations.of(context).translate('swaping_currency'));
                           _confirmSwap(pr1, amountToTransferDialog.toString(), amountSwapDialog.toString(), processingFeeDialog.toString());
                         }
                       }
@@ -326,9 +328,9 @@ class _SwapPageState extends State<SwapPage> {
               myTransactionStatus = TransactionStatus.fromJson(contents);
               pd.dismiss();
               if (myTransactionStatus.status == 'success') {
-                _showMaterialDialogForError("Swap Successfully", "navigate");
+                _showMaterialDialogForError(AppLocalizations.of(context).translate('swap_successfully'), "navigate");
               } else {
-                _showMaterialDialogForError("Transaction Failed", "navigate");
+                _showMaterialDialogForError(AppLocalizations.of(context).translate('transaction_failed'), "navigate");
               }
               print(contents.toString());
               
@@ -456,7 +458,7 @@ class _SwapPageState extends State<SwapPage> {
     dropdownValueFix = valueToPlace;
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _getSwappingRate(pr2);
       // _showPasscodeDialog();
     });
@@ -474,7 +476,7 @@ class _SwapPageState extends State<SwapPage> {
              elevation: 1.0,
              centerTitle: true,
              title: Text(
-               "Swap",
+               AppLocalizations.of(context).translate('swap'),
                style: Theme.of(context).textTheme.title
              ),
             ),
@@ -676,7 +678,7 @@ class _SwapPageState extends State<SwapPage> {
                                  focusedBorder: UnderlineInputBorder(
                                    borderSide: BorderSide(color: Colors.grey)
                                  ),
-                                 hintText: 'Input Quantity',
+                                 hintText: AppLocalizations.of(context).translate('input_quantity'),
                                  hintStyle: TextStyle(fontSize: 12.0, color: Colors.grey, fontWeight: FontWeight.w400),
                                ),
                              ),
@@ -701,7 +703,7 @@ class _SwapPageState extends State<SwapPage> {
                                  focusedBorder: UnderlineInputBorder(
                                    borderSide: BorderSide(color: Colors.grey)
                                  ),
-                                 hintText: 'Exchange Quantity',
+                                 hintText: AppLocalizations.of(context).translate('exchange_quantity'),
                                  hintStyle: TextStyle(fontSize: 12.0, color: Colors.grey, fontWeight: FontWeight.w400),
                                ),
                              ),
@@ -715,7 +717,7 @@ class _SwapPageState extends State<SwapPage> {
                        margin: EdgeInsets.only(left: 20.0),
                        width: MediaQuery.of(context).size.width,
                        child: Text(
-                         'Convert rate:',
+                         AppLocalizations.of(context).translate('convert_rate'),
                          textAlign: TextAlign.left,
                         ),
                      ),
@@ -738,7 +740,7 @@ class _SwapPageState extends State<SwapPage> {
                              fontSize: 14.0
                            ),
                            children: <TextSpan>[
-                             TextSpan(text: "Handling Fee: "),
+                             TextSpan(text: AppLocalizations.of(context).translate('handling_fee')),
                              TextSpan(text: handlingFee.toStringAsFixed(8) + " " + widget.currency.currencyName, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))
                            ]
                            
@@ -810,7 +812,7 @@ class _SwapPageState extends State<SwapPage> {
 
                    } : null,
                    child: Text(
-                     "Next Step",
+                     AppLocalizations.of(context).translate('next_step'),
                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
                    ),
                  ),

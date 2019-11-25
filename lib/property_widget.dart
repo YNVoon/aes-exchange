@@ -14,6 +14,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
  
 class PropertyWidget extends StatefulWidget {
   @override
@@ -226,7 +228,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
     
     Future.delayed(Duration(milliseconds: 300), () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'),);
       _requestUserDataThenCheckBalance(pr2);
     });
     
@@ -235,7 +237,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Retrieving latest data...');
+    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
 
     return SmartRefresher(
       controller: _refreshController,
@@ -265,7 +267,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Funds Assets Value",
+                    AppLocalizations.of(context).translate('funds_assets_value'),
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       // backgroundColor: Colors.black,
@@ -275,7 +277,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.only(top: 30.0),
+                    margin: EdgeInsets.only(top: 25.0),
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
@@ -320,7 +322,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                       },
                       color: Colors.transparent,
                       icon: Icon(Icons.insert_chart, color: Color(0xFF1d2f33), size: 26.0),
-                      label: Text('Performance', style: TextStyle(color: Color(0xFF1d2f33), fontSize: 16.0)),
+                      label: Text(AppLocalizations.of(context).translate('performance'), style: TextStyle(color: Color(0xFF1d2f33), fontSize: 16.0)),
                     ),
                   ),
                   VerticalDivider(
@@ -339,7 +341,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                       },
                       color: Colors.transparent,
                       icon: Icon(Icons.notifications, color: Color(0xFF1d2f33), size: 26.0),
-                      label: Text('Notice', style: TextStyle(color: Color(0xFF1d2f33), fontSize: 16.0)),
+                      label: Text(AppLocalizations.of(context).translate('notice'), style: TextStyle(color: Color(0xFF1d2f33), fontSize: 16.0)),
                     ),
                   ),
                 ],
@@ -366,7 +368,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                           height: 30.0,
                           // color: Colors.blue,
                           child: Text(
-                            "Name", 
+                            AppLocalizations.of(context).translate('currency_name'),
                             style: TextStyle(color: Colors.grey, fontSize: 12.0),
                           ),
                         ),
@@ -389,7 +391,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                         height: 30.0,
                         // color: Colors.yellow,
                         child: Text(
-                          "24H Chg %", 
+                          AppLocalizations.of(context).translate('twentyfourHour'), 
                           style: TextStyle(color: Colors.grey, fontSize: 12.0)
                         ),
                       ),

@@ -9,9 +9,9 @@ import 'transaction_record_widget.dart';
 import 'withdrawal_record_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:io';
-import 'dart:convert';
 import 'package:progress_dialog/progress_dialog.dart';
+
+import 'package:aes_exchange/utils/app_localizations.dart';
 
 
 class AssetsPage extends StatefulWidget {
@@ -99,7 +99,7 @@ class _AssetsPageState extends State<AssetsPage> {
              centerTitle: true,
              elevation: 1.0,
              title: Text(
-               "Assets",
+               AppLocalizations.of(context).translate('assets'),
                style: Theme.of(context).textTheme.title
              ),
            ),
@@ -148,7 +148,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               Container(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
-                                  "Total",
+                                  AppLocalizations.of(context).translate('total'),
                                   style: TextStyle(fontSize: 16.0, color: Colors.grey),
                                   textAlign: TextAlign.start,
                                 ),
@@ -168,7 +168,7 @@ class _AssetsPageState extends State<AssetsPage> {
                                 Container(
                                   width: MediaQuery.of(context).size.width / 2,
                                   child: Text(
-                                    "Available Balance",
+                                    AppLocalizations.of(context).translate('available_balance'),
                                     style: TextStyle(fontSize: 16.0, color: Colors.grey),
                                     textAlign: TextAlign.start,
                                   ),
@@ -200,7 +200,7 @@ class _AssetsPageState extends State<AssetsPage> {
                               Container(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
-                                  "Estimate value (USDT)",
+                                  AppLocalizations.of(context).translate('estimate_value'),
                                   style: TextStyle(fontSize: 16.0, color: Colors.grey),
                                   textAlign: TextAlign.start,
                                 ),
@@ -220,7 +220,7 @@ class _AssetsPageState extends State<AssetsPage> {
                                 Container(
                                   width: MediaQuery.of(context).size.width / 2,
                                   child: Text(
-                                    "Estimate value (USDT)",
+                                    AppLocalizations.of(context).translate('estimate_value'),
                                     style: TextStyle(fontSize: 16.0, color: Colors.grey),
                                     textAlign: TextAlign.start,
                                   ),
@@ -249,7 +249,7 @@ class _AssetsPageState extends State<AssetsPage> {
                           Container(
                             width: MediaQuery.of(context).size.width,
                             child: Text(
-                              "Trade",
+                              AppLocalizations.of(context).translate('trade'),
                               style: TextStyle(fontSize: 16.0, color: Colors.black, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.start,
                             ),
@@ -263,11 +263,11 @@ class _AssetsPageState extends State<AssetsPage> {
                         children: <Widget>[
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Swap", 0),
+                            child: _buildGridButtons(AppLocalizations.of(context).translate('swap'), 0),
                           ),
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Transfer", 1),
+                            child: _buildGridButtons(AppLocalizations.of(context).translate('transfer'), 1),
                           ),
                         ],
                       ),
@@ -278,11 +278,11 @@ class _AssetsPageState extends State<AssetsPage> {
                         children: <Widget>[
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Withdrawal Record", 2),
+                            child: _buildGridButtons(AppLocalizations.of(context).translate('withdrawal_record'), 2),
                           ),
                           Flexible(
                             flex: 1,
-                            child: _buildGridButtons("Transaction", 3),
+                            child: _buildGridButtons(AppLocalizations.of(context).translate('transaction'), 3),
                           ),
                         ],
                       ),
@@ -314,7 +314,7 @@ class _AssetsPageState extends State<AssetsPage> {
                                 );
                               },
                               child: Text(
-                                "Deposit",
+                                AppLocalizations.of(context).translate('deposit'),
                                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
                               ),
                             ),
@@ -334,7 +334,7 @@ class _AssetsPageState extends State<AssetsPage> {
                                 );
                               },
                               child: Text(
-                                "Withdrawal",
+                                AppLocalizations.of(context).translate('withdrawal'),
                                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
                               ),
                             ),

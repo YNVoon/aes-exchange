@@ -9,6 +9,8 @@ import 'model/transaction_record.dart';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 class TransactionRecordList {
   final List<dynamic> transaction;
 
@@ -107,34 +109,40 @@ class _TransactionPageState extends State<TransactionPage> {
                       } else if (key == 'type') {
                         if (item[key] == 'trust in') {
                           isTransferIn = false;
-                          typeOfTransaction = 'Trust In';
+                          typeOfTransaction = AppLocalizations.of(context).translate('trust_in');
                         } else if (item[key] == 'trust out') {
                           isTransferIn = true;
-                          typeOfTransaction = 'Trust Out';
+                          typeOfTransaction = AppLocalizations.of(context).translate('trust_out');
                         } else if (item[key] == 'transfer in') {
                           isTransferIn = true;
-                          typeOfTransaction = 'Transfer In';
+                          typeOfTransaction = AppLocalizations.of(context).translate('transfer_in');
                         } else if (item[key] == 'transfer out') {
                           isTransferIn = false;
-                          typeOfTransaction = 'Transfer Out';
+                          typeOfTransaction = AppLocalizations.of(context).translate('transfer_out');
                         } else if (item[key] == 'bonus in') {
                           isTransferIn = true;
-                          typeOfTransaction = 'Bonus In';
+                          typeOfTransaction = AppLocalizations.of(context).translate('bonus_in');
+                        } else if (item[key] == 'referral bonus') {
+                          isTransferIn = true;
+                          typeOfTransaction = AppLocalizations.of(context).translate('referral_bonus_in');
+                        } else if (item[key] == 'matching bonus') {
+                          isTransferIn = true;
+                          typeOfTransaction = AppLocalizations.of(context).translate('matching_bonus');
                         } else if (item[key] == 'withdrawal out') {
                           isTransferIn = false;
-                          typeOfTransaction = 'Withdrawal Out';
+                          typeOfTransaction = AppLocalizations.of(context).translate('withdrawal_out');
                         } else if (item[key] == 'swap in') {
                           isTransferIn = true;
-                          typeOfTransaction = 'Swap In';
+                          typeOfTransaction = AppLocalizations.of(context).translate('swap_in');
                         } else if (item[key] == 'swap out') {
                           isTransferIn = false;
-                          typeOfTransaction = 'Swap Out';
+                          typeOfTransaction = AppLocalizations.of(context).translate('swap_out');
                         } else if (item[key] == 'deposit in') {
                           isTransferIn = true;
-                          typeOfTransaction = 'Deposit In';
+                          typeOfTransaction = AppLocalizations.of(context).translate('deposit_in');
                         } else if (item[key] == 'processing fee') {
                           isTransferIn = false;
-                          typeOfTransaction = 'Processing Fee';
+                          typeOfTransaction = AppLocalizations.of(context).translate('processing_fee');
                         }
                       } else if (key == 'status') {
                         status = item[key];
@@ -168,7 +176,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _getTransactionList(pr2);
     });
   }
@@ -256,7 +264,7 @@ class _TransactionPageState extends State<TransactionPage> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Retrieving latest data...');
+    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
 
     List<Widget> sliverDelegateList = List<Widget> ();
 
@@ -272,7 +280,7 @@ class _TransactionPageState extends State<TransactionPage> {
           centerTitle: true,
           elevation: 1.0,
           title: Text(
-            'Transaction Records',
+            AppLocalizations.of(context).translate('transaction_records'),
             style: Theme.of(context).textTheme.title,
           ),
         ),
@@ -297,7 +305,7 @@ class _TransactionPageState extends State<TransactionPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'No data available',
+                      AppLocalizations.of(context).translate('no_data_available_for_transaction'),
                       style: TextStyle(fontSize: 14.0, color: Colors.grey),
                     )
                   ],

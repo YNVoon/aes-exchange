@@ -1,7 +1,7 @@
 // Team Performance List Model
 
 class PerformanceTeam {
-  final String title;
+  String title;
   double aesVal;
   double usdtVal;
 

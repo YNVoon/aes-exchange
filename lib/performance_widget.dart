@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
 
 class TrustPerformanceParam {
   final String yesterdayTeamEarningInUsdt;
@@ -175,15 +176,20 @@ class _PerformancePageState extends State<PerformancePage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _getPerformance(pr2);
+      setState(() {
+         _performanceAttrList[0].title = AppLocalizations.of(context).translate('currency_management_income');
+         _performanceAttrList[1].title = AppLocalizations.of(context).translate('referral_bonus');
+         _performanceAttrList[2].title = AppLocalizations.of(context).translate('community_market_revenue');
+      });
     });
   }
   
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Retrieving latest data...');
+    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
       appBar: PreferredSize(
@@ -259,7 +265,7 @@ class _PerformancePageState extends State<PerformancePage> {
                             width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.only(top: 5.0),
                             child: Text(
-                              "Yesterday Team Earnings (AES)",
+                              AppLocalizations.of(context).translate('yesterday_team_earning'),
                               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18.0)
                             ),
                           ),
@@ -293,7 +299,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                         width: MediaQuery.of(context).size.width,
                                         // margin: EdgeInsets.only(top: 10.0),
                                         child: Text(
-                                          "Recent 7-day Return",
+                                          AppLocalizations.of(context).translate('recent_seven_day_return'),
                                           style: TextStyle(color: Colors.white, fontSize: 15.0),
                                           textAlign: TextAlign.start,
                                         ),
@@ -318,7 +324,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                         width: MediaQuery.of(context).size.width,
                                         // margin: EdgeInsets.only(top: 10.0),
                                         child: Text(
-                                          "Accured Return (30 days)",
+                                          AppLocalizations.of(context).translate('acquired_return_thirtydays'),
                                           style: TextStyle(color: Colors.white, fontSize: 15.0),
                                           textAlign: TextAlign.start,
                                         ),
@@ -350,7 +356,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                     Container(
                                       width: MediaQuery.of(context).size.width,
                                       child: Text(
-                                        "Team Data",
+                                        AppLocalizations.of(context).translate('team_data'),
                                         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
                                         textAlign: TextAlign.start,
                                       ),
@@ -362,14 +368,14 @@ class _PerformancePageState extends State<PerformancePage> {
                                           Container(
                                             width: MediaQuery.of(context).size.width / 2,
                                             child: Text(
-                                              "Team Community",
+                                              AppLocalizations.of(context).translate('team_community'),
                                               style: TextStyle(color: Colors.black, fontSize: 15.0),
                                               textAlign: TextAlign.start,
                                             ),
                                           ),
                                           Spacer(),
                                           Text(
-                                            myTrustPerformance.teamMember + " People",
+                                            myTrustPerformance.teamMember + AppLocalizations.of(context).translate('people'),
                                             style: TextStyle(color: Colors.black, fontSize: 15.0),
                                           ),
                                         ],
@@ -406,10 +412,10 @@ class _PerformancePageState extends State<PerformancePage> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 18.0, left: 20.0),
+                            margin: EdgeInsets.only(top: 16.0, left: 20.0),
                             width: MediaQuery.of(context).size.width,
                             child: Text(
-                              "Income Overview",
+                              AppLocalizations.of(context).translate('income_overview'),
                               style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
                               textAlign: TextAlign.start,
                             ),

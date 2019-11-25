@@ -3,28 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'signup_widget.dart';
 import 'main.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import 'dart:io' show Platform;
-import 'dart:io';
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:aes_exchange/utils/app_localizations.dart';
 
-class AppUpdate {
-  final String androidAppLink;
-  final String iosAppLink;
-
-  AppUpdate({this.androidAppLink, this.iosAppLink});
-
-  factory AppUpdate.fromJson(Map<String, dynamic> json) {
-    return AppUpdate(
-      androidAppLink: json['androidAppLink'].toString(),
-      iosAppLink: json['iosAppLink'].toString(),
-    );
-  }
-}
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -33,8 +14,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  AppUpdate myAppUpdate = AppUpdate();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   
@@ -53,31 +32,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _obscureText = true;
 
-  void _launchURL(String path) async {
-    var url = path;
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch URL';
-    }
-  }
-
-  Future<void> _requestUpdateLink() async {
-    try {
-      new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getUpdateLink'))
-        .then((HttpClientRequest request) => request.close())
-        .then((HttpClientResponse response) {
-          response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
-            myAppUpdate = AppUpdate.fromJson(contents);
-            print('android: ' + myAppUpdate.androidAppLink);
-            _checkAppVersion();
-          });
-        });
-    } catch (e) {
-      print(e);
-    }
-  }
-
   bool validateEmail(String value) {
     Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
@@ -87,38 +41,6 @@ class _LoginPageState extends State<LoginPage> {
       return true;
   }
 
-  void _showMaterialDialogForUpdate() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return WillPopScope(
-          onWillPop: () {},
-          child: AlertDialog(
-            content: Text(
-              'You app version is outdated. Please update to the latest one.',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Update Now', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
-                onPressed: () {
-                  if (Platform.isAndroid) {
-                    _launchURL(myAppUpdate.androidAppLink);
-                  } else if (Platform.isIOS) {
-                    _launchURL(myAppUpdate.iosAppLink);
-                  }
-                  
-                },
-              ),
-            ],
-          ),
-        );
-        
-      }
-    );
-  }
 
   void _showMaterialDialog(String message) {
     showDialog(
@@ -136,50 +58,6 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.clear();
   }
 
-  _checkAppVersion() async {
-    var currentAndroidAppVersion = '1.0.3';
-    var currentiOSAppVersion = '1.0.3';
-
-    final RemoteConfig remoteConfig = await RemoteConfig.instance;
-
-    if (Platform.isIOS) {
-      try {
-        // final defaults = <String, dynamic>{'ios_app_version': currentiOSAppVersion};
-        // await remoteConfig.setDefaults(defaults);
-        await remoteConfig.fetch(expiration: const Duration(seconds: 0));
-        await remoteConfig.activateFetched();
-
-        if (currentiOSAppVersion != remoteConfig.getString('ios_app_version')) {
-          print('Please update your app!');
-          print('update link ' + myAppUpdate.iosAppLink);
-          _showMaterialDialogForUpdate();
-        } else {
-          getCurrentUser();
-        }
-      } catch (e) {
-        print(e.toString());
-      }
-    } else if (Platform.isAndroid) {
-      try {
-        // final defaults = <String, dynamic>{'android_app_version': currentAndroidAppVersion};
-        // await remoteConfig.setDefaults(defaults);
-        await remoteConfig.fetch(expiration: const Duration(seconds: 0));
-        await remoteConfig.activateFetched();
-        print(remoteConfig.getString('android_app_version'));
-        if (currentAndroidAppVersion != remoteConfig.getString('android_app_version')) {
-          print('Please update your app!');
-          print('update link ' + myAppUpdate.androidAppLink);
-          _showMaterialDialogForUpdate();
-        } else {
-          getCurrentUser();
-        }
-      } catch (e) {
-        print(e.toString());
-      }
-    }
-
-  }
-
   Future<void> getCurrentUser() async {
     try {
       FirebaseUser user = (await _auth.currentUser());
@@ -189,8 +67,6 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         print('No active user');
       }
-      // await _auth.signOut();
-      // print("Success");
     } catch (e) {
       print(e.message);
     }
@@ -216,18 +92,17 @@ class _LoginPageState extends State<LoginPage> {
     
   }
   
-
   @override
   void initState() {
     super.initState();
-    _requestUpdateLink();
+    getCurrentUser();
   }
 
   @override
   Widget build(BuildContext context) {
 
     pr = new ProgressDialog(context, isDismissible: false);
-    pr.style(message: 'Please wait...');
+    pr.style(message: AppLocalizations.of(context).translate('please_wait'));
     
     return Container(
       child: Scaffold(
@@ -263,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.email, color: Colors.black,),
-                                hintText: "Enter Email",
+                                hintText: AppLocalizations.of(context).translate('enter_email'),
                                 border: OutlineInputBorder(),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -274,9 +149,9 @@ class _LoginPageState extends State<LoginPage> {
                               validator: (value) {
                                 _email = value;
                                 if (value.isEmpty) {
-                                  return 'Please insert an email address';
+                                  return AppLocalizations.of(context).translate('please_insert_an_email_address');
                                 } else if (!validateEmail(value)) {
-                                  return 'Please insert valid email';
+                                  return AppLocalizations.of(context).translate('please_insert_valid_email');
                                 }
                                 return null;
                               },
@@ -310,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                               obscureText: _obscureText,
                               decoration: InputDecoration(
                                 suffixIcon: IconButton(
-                                  icon: Icon(Icons.remove_red_eye, color: Colors.grey,),
+                                  icon: Icon(Icons.visibility, color: Colors.grey,),
                                   onPressed: () {
                                     setState(() {
                                       _obscureText = !_obscureText; 
@@ -318,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                                   },
                                 ),
                                 prefixIcon: Icon(Icons.lock, color: Colors.black,),
-                                hintText: "Input password",
+                                hintText: AppLocalizations.of(context).translate('input_password'),
                                 border: OutlineInputBorder(),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(color: Color(0xFF0e47a1), width: 2.0),
@@ -327,9 +202,9 @@ class _LoginPageState extends State<LoginPage> {
                               validator: (value) {
                                 _password = value;
                                 if (value.isEmpty) {
-                                  return 'Please insert password';
+                                  return AppLocalizations.of(context).translate('please_insert_password');
                                 } else if (value.length < 6) {
-                                  return 'Insert at least 6 characters';
+                                  return AppLocalizations.of(context).translate('insert_at_least_six_characters');
                                 }
                                 return null;
                               },
@@ -358,7 +233,7 @@ class _LoginPageState extends State<LoginPage> {
                                     }
                                 },
                                 child: Text(
-                                  "Login",
+                                  AppLocalizations.of(context).translate('login'),
                                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)
                                 ),
                               ),
@@ -395,8 +270,8 @@ class _LoginPageState extends State<LoginPage> {
                                       fontSize: 16.0,
                                     ),
                                     children: <TextSpan>[
-                                      TextSpan(text: "Don't have an account yet? "),
-                                      TextSpan(text: 'Register', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0e47a1), fontSize: 16.0))
+                                      TextSpan(text: AppLocalizations.of(context).translate('dont_have_an_account_yet')),
+                                      TextSpan(text: AppLocalizations.of(context).translate('register'), style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0e47a1), fontSize: 16.0))
                                     ],
                                   ),
                                 ),

@@ -9,6 +9,8 @@ import 'model/transaction_record.dart';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 class TransactionRecordList {
   final List<dynamic> transaction;
 
@@ -107,7 +109,7 @@ class _WithdrawalRecordPageState extends State<WithdrawalRecordPage> {
                       } else if (key == 'type') {
                         if (item[key] == 'withdrawal out') {
                           isTransferIn = false;
-                          typeOfTransaction = 'Withdrawal Out';
+                          typeOfTransaction = AppLocalizations.of(context).translate('withdrawal_out');
                         } 
                       } else if (key == 'status') {
                         status = item[key];
@@ -140,7 +142,7 @@ class _WithdrawalRecordPageState extends State<WithdrawalRecordPage> {
 
     Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: 'Retrieving latest data...');
+      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
       _getTransactionList(pr2);
     });
   }
@@ -228,7 +230,7 @@ class _WithdrawalRecordPageState extends State<WithdrawalRecordPage> {
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: 'Retrieving latest data...');
+    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
 
     List<Widget> sliverDelegateList = List<Widget> ();
 
@@ -244,7 +246,7 @@ class _WithdrawalRecordPageState extends State<WithdrawalRecordPage> {
           centerTitle: true,
           elevation: 1.0,
           title: Text(
-            'Withdrawal Records',
+            AppLocalizations.of(context).translate('withdrawal_record'),
             style: Theme.of(context).textTheme.title,
           ),
         ),
@@ -269,7 +271,7 @@ class _WithdrawalRecordPageState extends State<WithdrawalRecordPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'No data available',
+                      AppLocalizations.of(context).translate('no_data_available_for_withdrawal'),
                       style: TextStyle(fontSize: 14.0, color: Colors.grey),
                     )
                   ],

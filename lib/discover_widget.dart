@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:aes_exchange/utils/app_localizations.dart';
+
 class DiscoverWidget extends StatefulWidget {
   DiscoverWidget({Key key}) : super(key: key);
 
@@ -35,13 +37,25 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
       builder: (context) {
         return AlertDialog(
           content: Text(
-            'Coming Soon',
+            AppLocalizations.of(context).translate('coming_soon'),
             style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
         );
       }
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        shoppingListDescription = [];
+        shoppingListDescription.add(AppLocalizations.of(context).translate('pay_bill'));
+      });
+    });
   }
 
   Widget _buildCard(String imagePath, int index) {
@@ -76,11 +90,11 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
                     children: <Widget>[
                       Container(
                         width: 120.0,
-                        child: Text(blockChainListTitle[index] + " Explorer", textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                        child: Text(blockChainListTitle[index] + AppLocalizations.of(context).translate('explorer'), textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
                       ),
                       Container(
                         width: 120.0,
-                        child: Text("Browse the " + blockChainListTitle[index] + " latest info", style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
+                        child: Text(AppLocalizations.of(context).translate('browse_the') + blockChainListTitle[index] + AppLocalizations.of(context).translate('latest_info'), style: TextStyle(fontSize: 12.0, color: Colors.grey), textAlign: TextAlign.start)
                       )
                     ],
                   ),
@@ -215,7 +229,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
                           Container(
                             margin: EdgeInsets.only(top: 5.0),
                             child: Text(
-                              "Convenient",
+                              AppLocalizations.of(context).translate('convenient'),
                               style: TextStyle(
                                 fontSize: 12.0
                               ),
@@ -252,7 +266,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
                           Container(
                             margin: EdgeInsets.only(top: 5.0),
                             child: Text(
-                              "Shopping center",
+                              AppLocalizations.of(context).translate('shopping_center'),
                               style: TextStyle(
                                 fontSize: 12.0
                               ),
@@ -289,7 +303,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
                           Container(
                             margin: EdgeInsets.only(top: 5.0),
                             child: Text(
-                              "Webcast",
+                              AppLocalizations.of(context).translate('webcast'),
                               style: TextStyle(
                                 fontSize: 12.0
                               ),
@@ -309,7 +323,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
               padding: EdgeInsets.only(left: 12.0, bottom: 20.0),
               margin: EdgeInsets.only(top: 25.0),
               child: Text(
-                "Shopping Center",
+                AppLocalizations.of(context).translate('shopping_center'),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
                 textAlign: TextAlign.start,
               ),
@@ -335,7 +349,7 @@ class _DiscoverWidgetState extends State<DiscoverWidget> {
               padding: EdgeInsets.only(left: 12.0, bottom: 20.0),
               margin: EdgeInsets.only(top: 25.0),
               child: Text(
-                "Blockchain",
+                AppLocalizations.of(context).translate('explorer'),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
                 textAlign: TextAlign.start,
               ),
