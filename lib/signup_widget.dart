@@ -247,7 +247,7 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.lock, color: Colors.black,),
                                   suffixIcon: IconButton(
-                                    icon: Icon(Icons.visibility, color: Colors.grey,),
+                                    icon: _obscureText ? Icon(Icons.visibility_off, color: Colors.grey,) : Icon(Icons.visibility, color: Colors.grey,),
                                     onPressed: () {
                                       setState(() {
                                         _obscureText = !_obscureText; 
@@ -288,7 +288,7 @@ class _SignupPageState extends State<SignupPage> {
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Icons.lock, color: Colors.black,),
                                   suffixIcon: IconButton(
-                                    icon: Icon(Icons.visibility, color: Colors.grey,),
+                                    icon: _obscureText1 ? Icon(Icons.visibility_off, color: Colors.grey,) : Icon(Icons.visibility, color: Colors.grey,),
                                     onPressed: () {
                                       setState(() {
                                         _obscureText1 = !_obscureText1; 

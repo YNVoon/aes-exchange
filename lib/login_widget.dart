@@ -185,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                               obscureText: _obscureText,
                               decoration: InputDecoration(
                                 suffixIcon: IconButton(
-                                  icon: Icon(Icons.visibility, color: Colors.grey,),
+                                  icon: _obscureText ? Icon(Icons.visibility_off, color: Colors.grey,) : Icon(Icons.visibility, color: Colors.grey,),
                                   onPressed: () {
                                     setState(() {
                                       _obscureText = !_obscureText; 
