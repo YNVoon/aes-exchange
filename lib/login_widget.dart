@@ -79,7 +79,21 @@ class _LoginPageState extends State<LoginPage> {
       print("Success");
       print(authResult);
       pr.dismiss();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+      if (!pr.isShowing()) {
+        Future.delayed(Duration(milliseconds: 500)).then((onValue) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+        });
+      }
+      print('isDismiss');
+      
+      // Future.delayed(Duration(milliseconds: 2000)).then((onValue) {
+      //   pr.dismiss();
+        
+      // }).then((onValue) {
+        
+      // })
+      
+      
       
       // Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
     } catch (e) {

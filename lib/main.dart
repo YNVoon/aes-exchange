@@ -19,68 +19,106 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark
-      )
-    );
+        statusBarIconBrightness: Brightness.dark));
     return MaterialApp(
-      title: 'AES Exchange',
-      theme: ThemeData(
-        primaryColor: Colors.white,
-      ), 
-      home: _isUserLoggedin ? MyHomePage() : SplashScreenPage(),
-      localizationsDelegates: [
-        // ... app-specific localization delegate[s] here
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        Locale('en', 'US'),
-        Locale.fromSubtags(languageCode: 'zh'), // generic Chinese 'zh'
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'), // generic simplified Chinese 'zh_Hans'
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'), // generic traditional Chinese 'zh_Hant'
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'), // 'zh_Hans_CN'
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'TW'), // 'zh_Hant_TW'
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'HK'), // 'zh_Hant_HK'
-        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant', countryCode: 'MY'), // 'zh_Hant_HK'
-        // Locale('zh', 'CN'), 
-        // Locale('zh', 'TW'),
-        // Locale('zh', 'HK'),
-        // Locale('zh', 'SG'), 
-      ],
-      localeResolutionCallback: (locale, supportedLocales) {
-        // Check if the current device locale is supported
-        for (var supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale.languageCode &&
-              supportedLocale.countryCode == locale.countryCode) {
-            return supportedLocale;
+        title: 'AES Exchange',
+        theme: ThemeData(
+          primaryColor: Colors.white,
+        ),
+        home: _isUserLoggedin ? MyHomePage() : SplashScreenPage(),
+        localizationsDelegates: [
+          // ... app-specific localization delegate[s] here
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('en', 'US'),
+          Locale.fromSubtags(languageCode: 'zh'), // generic Chinese 'zh'
+          Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hans'), // generic simplified Chinese 'zh_Hans'
+          Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hant'), // generic traditional Chinese 'zh_Hant'
+          Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hans',
+              countryCode: 'CN'), // 'zh_Hans_CN'
+          Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hant',
+              countryCode: 'TW'), // 'zh_Hant_TW'
+          Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hant',
+              countryCode: 'HK'), // 'zh_Hant_HK'
+          Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hant',
+              countryCode: 'MY'), // 'zh_Hant_HK'
+          // Locale('zh', 'CN'),
+          // Locale('zh', 'TW'),
+          // Locale('zh', 'HK'),
+          // Locale('zh', 'SG'),
+        ],
+        // localeResolutionCallback: (locale, supportedLocales) {
+        //   // Check if the current device locale is supported
+        //   for (var supportedLocale in supportedLocales) {
+        //     if (supportedLocale.languageCode == locale.languageCode &&
+        //         supportedLocale.countryCode == locale.countryCode) {
+        //       return supportedLocale;
+        //     }
+        //   }
+        //   // If the locale of the device is not supported, use the first one
+        //   // from the list (English, in this case).
+        //   return supportedLocales.first;
+        // },
+        localeResolutionCallback:
+            (Locale locale, Iterable<Locale> supportedLocales) {
+          if (locale == null) {
+            debugPrint("*language locale is null!!!");
+            return supportedLocales.first;
           }
-        }
-        // If the locale of the device is not supported, use the first one
-        // from the list (English, in this case).
-        return supportedLocales.first;
-      },
-    );
+
+          for (Locale supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale.languageCode ||
+                supportedLocale.countryCode == locale.countryCode) {
+              debugPrint("*language ok $supportedLocale");
+              return supportedLocale;
+            }
+          }
+
+          debugPrint("*language to fallback ${supportedLocales.first}");
+          return supportedLocales.first;
+        });
   }
 }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
 
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
-
-  
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   String appBarTitle = "";
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 100), () {
+      setState(() {
+        appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
+      });
+    });
+    // appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
+  }
 
   final List<Widget> _children = [
     PropertyWidget(),
@@ -108,25 +146,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: 100), () {
-      setState(() {
-        appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
-      });
-    });
-    // appBarTitle = AppLocalizations.of(context).translate('aes_deposit');
-    
-  }
+  
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
       appBar: PreferredSize(
-        preferredSize: _selectedIndex == 0 || _selectedIndex == 1 ? Size.fromHeight(50.0) : Size.fromHeight(0.0),
+        preferredSize: _selectedIndex == 0 || _selectedIndex == 1
+            ? Size.fromHeight(50.0)
+            : Size.fromHeight(0.0),
         child: AppBar(
           centerTitle: true,
           elevation: 0.0,
@@ -135,33 +164,26 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(
             appBarTitle,
             style: Theme.of(context).textTheme.title,
-            ),
+          ),
         ),
       ),
       body: _children[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-      // Bottom Navigation Bar
+        // Bottom Navigation Bar
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            title: Text(AppLocalizations.of(context).translate('funds'))
-          ),
-            
+              icon: Icon(Icons.account_balance_wallet),
+              title: Text(AppLocalizations.of(context).translate('funds'))),
           BottomNavigationBarItem(
-            icon: Icon(Icons.monetization_on),
-            title: Text(AppLocalizations.of(context).translate('trusts'))
-          ),
-            
+              icon: Icon(Icons.monetization_on),
+              title: Text(AppLocalizations.of(context).translate('trusts'))),
           BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            title: Text(AppLocalizations.of(context).translate('discover'))
-          ),
-            
+              icon: Icon(Icons.public),
+              title: Text(AppLocalizations.of(context).translate('discover'))),
           BottomNavigationBarItem(
-            icon: Icon(Icons.perm_identity),
-            title: Text(AppLocalizations.of(context).translate('me'))
-          ),
+              icon: Icon(Icons.perm_identity),
+              title: Text(AppLocalizations.of(context).translate('me'))),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueAccent,

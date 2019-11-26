@@ -18,6 +18,7 @@ import 'package:aes_exchange/utils/app_localizations.dart';
 
  
 class PropertyWidget extends StatefulWidget {
+
   @override
   _MyPropertyWidgetState createState() => _MyPropertyWidgetState();
 }
@@ -82,6 +83,7 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
         new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/updateUserBalanceInWallet', queryParameters))
           .then((HttpClientRequest request) => request.close())
           .then((HttpClientResponse response) {
+            
             response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
               setState(() {
                 myCryptoCurrentBalance = CryptoCurrentBalance.fromJson(contents);
@@ -109,16 +111,16 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
                 _currencyList[3].currencyBalance = (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toStringAsFixed(6);
                 _currencyList[3].equalityToUsdtTotal = double.parse(myCryptoCurrentBalance.totalUsdtToUsdt);
                 _currencyList[3].currencyBalanceTotal = (double.parse(myCryptoCurrentBalance.totalUsdtBalance) / 1000000).toStringAsFixed(6);
-                pd.dismiss();
               });
-
-              
-              
               print('btcBalance: ' + (double.parse(myCryptoCurrentBalance.btcBalance) / 100000000).toString());
               print('ethBalance: ' + (double.parse(myCryptoCurrentBalance.ethBalance) / 1e18).toString());
               print('aesBalance: ' + (double.parse(myCryptoCurrentBalance.aesBalance) / 1e8).toString());
               print('usdtBalance: ' + (double.parse(myCryptoCurrentBalance.usdtBalance) / 1000000).toString());
+
+              pd.dismiss();
+              
             });
+            
           });
       } else {
         pd.dismiss();
@@ -226,10 +228,11 @@ class _MyPropertyWidgetState extends State<PropertyWidget> {
   void initState() {
     super.initState();
     
-    Future.delayed(Duration(milliseconds: 300), () {
+    Future.delayed(Duration.zero, () {
       pr2 = new ProgressDialog(context, isDismissible: false);
       pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'),);
       _requestUserDataThenCheckBalance(pr2);
+      
     });
     
   }

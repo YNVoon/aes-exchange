@@ -155,7 +155,12 @@ class _SignupPageState extends State<SignupPage> {
             mySignUpStatus = SignUpStatus.fromJson(contents);
             if (mySignUpStatus.status == 'success') {
               pr1.dismiss();
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+              if (!pr1.isShowing()) {
+                Future.delayed(Duration(milliseconds: 500)).then((onValue) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
+                });
+              }
+              // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => MyHomePage()));
             } else {
               pr1.dismiss();
               signOut();
