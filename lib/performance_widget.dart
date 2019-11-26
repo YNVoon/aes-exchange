@@ -281,7 +281,7 @@ class _PerformancePageState extends State<PerformancePage> {
                 SliverToBoxAdapter(
                     child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * imageRatio,
+                  height: 350.0,
                   child: Stack(
                     children: <Widget>[
                       Container(
