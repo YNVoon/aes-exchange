@@ -11,7 +11,10 @@ import 'splash_screen_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'package:flutter_cupertino_localizations/flutter_cupertino_localizations.dart';
 
-void main() => runApp(MyApp());
+Future main() async {
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -145,8 +148,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
   }
-
-  
 
   @override
   Widget build(BuildContext context) {

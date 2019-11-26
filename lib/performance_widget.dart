@@ -27,43 +27,46 @@ class TrustPerformanceParam {
   final String referralBonus;
   final String teamMember;
 
-  TrustPerformanceParam({
-    this.yesterdayTeamEarningInUsdt, this.yesterdayTeamEarning,
-    this.acquired30DaysInUsdt, this.acquired30Days,
-    this.communityMarketRevenueInUsdt, this.communityMarketRevenue,
-    this.currencyManagementIncomeInUsdt, this.currencyManagementIncome,
-    this.recent7DaysInUsdt, this.recent7Days,
-    this.referralBonusInUsdt, this.referralBonus, this.teamMember});
+  TrustPerformanceParam(
+      {this.yesterdayTeamEarningInUsdt,
+      this.yesterdayTeamEarning,
+      this.acquired30DaysInUsdt,
+      this.acquired30Days,
+      this.communityMarketRevenueInUsdt,
+      this.communityMarketRevenue,
+      this.currencyManagementIncomeInUsdt,
+      this.currencyManagementIncome,
+      this.recent7DaysInUsdt,
+      this.recent7Days,
+      this.referralBonusInUsdt,
+      this.referralBonus,
+      this.teamMember});
 
   factory TrustPerformanceParam.fromJson(Map<String, dynamic> json) {
     return TrustPerformanceParam(
-      acquired30Days: json['acquired30Days'],
-      acquired30DaysInUsdt: json['acquired30DaysInUsdt'],
-      yesterdayTeamEarning: json['yesterDayTeamEarning'],
-      yesterdayTeamEarningInUsdt: json['yesterdayTeamEarningInUsdt'],
-      communityMarketRevenueInUsdt: json['communityMarketRevenueInUsdt'],
-      communityMarketRevenue: json['communityMarketRevenue'],
-      currencyManagementIncome: json['currencyManagementIncome'],
-      currencyManagementIncomeInUsdt: json['currencyManagementIncomeInUsdt'],
-      recent7Days: json['recent7Days'],
-      recent7DaysInUsdt: json['recent7DaysInUsdt'],
-      referralBonus: json['referralBonus'],
-      referralBonusInUsdt: json['referralBonusInUsdt'],
-      teamMember: json['teamMember']
-    );
+        acquired30Days: json['acquired30Days'],
+        acquired30DaysInUsdt: json['acquired30DaysInUsdt'],
+        yesterdayTeamEarning: json['yesterDayTeamEarning'],
+        yesterdayTeamEarningInUsdt: json['yesterdayTeamEarningInUsdt'],
+        communityMarketRevenueInUsdt: json['communityMarketRevenueInUsdt'],
+        communityMarketRevenue: json['communityMarketRevenue'],
+        currencyManagementIncome: json['currencyManagementIncome'],
+        currencyManagementIncomeInUsdt: json['currencyManagementIncomeInUsdt'],
+        recent7Days: json['recent7Days'],
+        recent7DaysInUsdt: json['recent7DaysInUsdt'],
+        referralBonus: json['referralBonus'],
+        referralBonusInUsdt: json['referralBonusInUsdt'],
+        teamMember: json['teamMember']);
   }
 }
 
 class PerformancePage extends StatefulWidget {
-  
   PerformancePage({Key key}) : super(key: key);
 
   _PerformancePageState createState() => _PerformancePageState();
 }
 
-
 class _PerformancePageState extends State<PerformancePage> {
-
   final RefreshController _refreshController = RefreshController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -78,11 +81,19 @@ class _PerformancePageState extends State<PerformancePage> {
   ];
 
   TrustPerformanceParam myTrustPerformance = TrustPerformanceParam(
-    acquired30Days: '0.00', acquired30DaysInUsdt: '0.00', yesterdayTeamEarning: '0.00',
-    yesterdayTeamEarningInUsdt: '0.00', communityMarketRevenue: '0.00', communityMarketRevenueInUsdt: '0.00',
-    currencyManagementIncome: '0.00', currencyManagementIncomeInUsdt: '0.00', recent7Days: '0.00', recent7DaysInUsdt: '0.00',
-    referralBonus: '0.00', referralBonusInUsdt: '0.00', teamMember: '0'
-  );
+      acquired30Days: '0.00',
+      acquired30DaysInUsdt: '0.00',
+      yesterdayTeamEarning: '0.00',
+      yesterdayTeamEarningInUsdt: '0.00',
+      communityMarketRevenue: '0.00',
+      communityMarketRevenueInUsdt: '0.00',
+      currencyManagementIncome: '0.00',
+      currencyManagementIncomeInUsdt: '0.00',
+      recent7Days: '0.00',
+      recent7DaysInUsdt: '0.00',
+      referralBonus: '0.00',
+      referralBonusInUsdt: '0.00',
+      teamMember: '0');
 
   ProgressDialog pr1, pr2;
 
@@ -91,38 +102,49 @@ class _PerformancePageState extends State<PerformancePage> {
   String yesterdayEarninginAES = '0.000000';
   String yesterdayEarninginUSDT = '0.000000';
 
-  Future<void> _getPerformance (ProgressDialog pd) async {
+  double imageRatio = 0.45;
+
+  Future<void> _getPerformance(ProgressDialog pd) async {
     pd.show();
     try {
       FirebaseUser user = (await _auth.currentUser());
       if (user != null) {
-        queryParameters = {
-          'uuid': user.uid
-        };
+        queryParameters = {'uuid': user.uid};
 
-        new HttpClient().postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net', '/httpFunction/api/v1/getPerformance', queryParameters))
-          .then((HttpClientRequest request) => request.close())
-          .then((HttpClientResponse response) {
-            response.transform(Utf8Decoder()).transform(json.decoder).listen((contents) {
-              setState(() {
-                myTrustPerformance = TrustPerformanceParam.fromJson(contents);
-                _performanceAttrList[0].aesVal = double.parse(myTrustPerformance.currencyManagementIncome);
-                _performanceAttrList[0].usdtVal = double.parse(myTrustPerformance.currencyManagementIncomeInUsdt);
-                _performanceAttrList[1].aesVal = double.parse(myTrustPerformance.referralBonus);
-                _performanceAttrList[1].usdtVal = double.parse(myTrustPerformance.referralBonusInUsdt);
-                _performanceAttrList[2].aesVal = double.parse(myTrustPerformance.communityMarketRevenue);
-                _performanceAttrList[2].usdtVal = double.parse(myTrustPerformance.communityMarketRevenueInUsdt);
-                yesterdayEarninginAES = myTrustPerformance.yesterdayTeamEarning;
-                yesterdayEarninginUSDT = myTrustPerformance.yesterdayTeamEarningInUsdt;
-                print(myTrustPerformance.yesterdayTeamEarning);
-                pd.dismiss();
-              });
+        new HttpClient()
+            .postUrl(new Uri.https('us-central1-aes-wallet.cloudfunctions.net',
+                '/httpFunction/api/v1/getPerformance', queryParameters))
+            .then((HttpClientRequest request) => request.close())
+            .then((HttpClientResponse response) {
+          response
+              .transform(Utf8Decoder())
+              .transform(json.decoder)
+              .listen((contents) {
+            setState(() {
+              myTrustPerformance = TrustPerformanceParam.fromJson(contents);
+              _performanceAttrList[0].aesVal =
+                  double.parse(myTrustPerformance.currencyManagementIncome);
+              _performanceAttrList[0].usdtVal = double.parse(
+                  myTrustPerformance.currencyManagementIncomeInUsdt);
+              _performanceAttrList[1].aesVal =
+                  double.parse(myTrustPerformance.referralBonus);
+              _performanceAttrList[1].usdtVal =
+                  double.parse(myTrustPerformance.referralBonusInUsdt);
+              _performanceAttrList[2].aesVal =
+                  double.parse(myTrustPerformance.communityMarketRevenue);
+              _performanceAttrList[2].usdtVal =
+                  double.parse(myTrustPerformance.communityMarketRevenueInUsdt);
+              yesterdayEarninginAES = myTrustPerformance.yesterdayTeamEarning;
+              yesterdayEarninginUSDT =
+                  myTrustPerformance.yesterdayTeamEarningInUsdt;
+              print(myTrustPerformance.yesterdayTeamEarning);
+              pd.dismiss();
             });
           });
-        
+        });
       }
     } catch (e) {
-      print (e);
+      print(e);
     }
   }
 
@@ -159,7 +181,10 @@ class _PerformancePageState extends State<PerformancePage> {
                     Spacer(),
                     Text(
                       performanceTeam.usdtVal.toStringAsFixed(2) + " USDT",
-                      style: TextStyle(color: Color(0xFF273b54), fontSize: 15.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Color(0xFF273b54),
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -174,279 +199,316 @@ class _PerformancePageState extends State<PerformancePage> {
   @override
   void initState() {
     super.initState();
+    
     Future.delayed(Duration.zero, () {
+      print(MediaQuery.of(context).size.height.toString());
+      var screenHeight = MediaQuery.of(context).size.height;
+      if (screenHeight < 600) {
+        setState(() {
+          imageRatio = 0.9; 
+        });
+      }
       pr2 = new ProgressDialog(context, isDismissible: false);
-      pr2.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
+      pr2.style(
+          message:
+              AppLocalizations.of(context).translate('retrieving_latest_data'));
       _getPerformance(pr2);
       setState(() {
-         _performanceAttrList[0].title = AppLocalizations.of(context).translate('currency_management_income');
-         _performanceAttrList[1].title = AppLocalizations.of(context).translate('referral_bonus');
-         _performanceAttrList[2].title = AppLocalizations.of(context).translate('community_market_revenue');
+        _performanceAttrList[0].title = AppLocalizations.of(context)
+            .translate('currency_management_income');
+        _performanceAttrList[1].title =
+            AppLocalizations.of(context).translate('referral_bonus');
+        _performanceAttrList[2].title =
+            AppLocalizations.of(context).translate('community_market_revenue');
       });
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     pr1 = new ProgressDialog(context, isDismissible: false);
-    pr1.style(message: AppLocalizations.of(context).translate('retrieving_latest_data'));
+    pr1.style(
+        message:
+            AppLocalizations.of(context).translate('retrieving_latest_data'));
     return Scaffold(
-      backgroundColor: Color(0xFFFAFAFA),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
-        child: AppBar(
-          brightness: Brightness.dark,
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              SystemChrome.setSystemUIOverlayStyle(
-                SystemUiOverlayStyle(
-                  statusBarColor: Colors.white
-                )
-              );
-              Navigator.pop(context);
-
-            },
-          ),
-          // actions: <Widget>[
-          //   Container(
-          //     margin: EdgeInsets.only(right: 15.0),
-          //     // height: 10.0,
-          //     child: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       crossAxisAlignment: CrossAxisAlignment.center,
-          //       children: <Widget>[
-          //         Text(
-          //           "Switch to Badge Reward",
-          //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
-          //         )
-          //       ],
-          //     ),
-          //   )
-          // ],
-          backgroundColor: Color(0xFF000116),
-          elevation: 5.0,
-          iconTheme: IconThemeData(
-            color: Colors.white
-          )
+        backgroundColor: Color(0xFFFAFAFA),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: AppBar(
+              brightness: Brightness.dark,
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  SystemChrome.setSystemUIOverlayStyle(
+                      SystemUiOverlayStyle(statusBarColor: Colors.white));
+                  Navigator.pop(context);
+                },
+              ),
+              // actions: <Widget>[
+              //   Container(
+              //     margin: EdgeInsets.only(right: 15.0),
+              //     // height: 10.0,
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: <Widget>[
+              //         Text(
+              //           "Switch to Badge Reward",
+              //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
+              //         )
+              //       ],
+              //     ),
+              //   )
+              // ],
+              backgroundColor: Color(0xFF000116),
+              elevation: 5.0,
+              iconTheme: IconThemeData(color: Colors.white)),
         ),
-      ),
-      body: SmartRefresher(
-        controller: _refreshController,
-        enablePullDown: true,
-        header: MaterialClassicHeader(color: Colors.blue, backgroundColor: Colors.white,),
-        onRefresh: () async {
-          _refreshController.refreshCompleted();
-          _getPerformance(pr1);
-        },
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 380.0,
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          alignment: Alignment(-1.0, -1.0),
-                          image: AssetImage("assets/blue_stock.jpg"),
-                          fit: BoxFit.contain
-                        )
+        body: SmartRefresher(
+            controller: _refreshController,
+            enablePullDown: true,
+            header: MaterialClassicHeader(
+              color: Colors.blue,
+              backgroundColor: Colors.white,
+            ),
+            onRefresh: () async {
+              _refreshController.refreshCompleted();
+              _getPerformance(pr1);
+            },
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverToBoxAdapter(
+                    child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * imageRatio,
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                alignment: Alignment(-1.0, -1.0),
+                                image: AssetImage("assets/blue_stock.jpg"),
+                                fit: BoxFit.fitWidth)),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.only(top: 5.0),
-                            child: Text(
-                              AppLocalizations.of(context).translate('yesterday_team_earning'),
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18.0)
+                      Container(
+                        margin:
+                            EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.only(top: 5.0),
+                              child: Text(
+                                  AppLocalizations.of(context)
+                                      .translate('yesterday_team_earning'),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0)),
                             ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.only(top: 20.0),
-                            child: Text(
-                              yesterdayEarninginAES,
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30.0),
-                              textAlign: TextAlign.start,
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.only(top: 20.0),
+                              child: Text(
+                                yesterdayEarninginAES,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 30.0),
+                                textAlign: TextAlign.start,
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.only(top: 10.0),
-                            child: Text(
-                              yesterdayEarninginUSDT + " USDT",
-                              style: TextStyle(color: Colors.white, fontSize: 13.0),
-                              textAlign: TextAlign.start,
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.only(top: 10.0),
+                              child: Text(
+                                yesterdayEarninginUSDT + " USDT",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 13.0),
+                                textAlign: TextAlign.start,
+                              ),
                             ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 30.0),
-                            child: Row(
-                              children: <Widget>[
-                                Flexible(
-                                  flex: 1,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        // margin: EdgeInsets.only(top: 10.0),
-                                        child: Text(
-                                          AppLocalizations.of(context).translate('recent_seven_day_return'),
-                                          style: TextStyle(color: Colors.white, fontSize: 15.0),
-                                          textAlign: TextAlign.start,
+                            Container(
+                              margin: EdgeInsets.only(top: 30.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Flexible(
+                                    flex: 1,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          // margin: EdgeInsets.only(top: 10.0),
+                                          child: Text(
+                                            AppLocalizations.of(context)
+                                                .translate(
+                                                    'recent_seven_day_return'),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.0),
+                                            textAlign: TextAlign.start,
+                                          ),
                                         ),
-                                      ),
-                                      Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        margin: EdgeInsets.only(top: 10.0),
-                                        child: Text(
-                                          myTrustPerformance.recent7Days + ' AES',
-                                          style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.start,
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          margin: EdgeInsets.only(top: 10.0),
+                                          child: Text(
+                                            myTrustPerformance.recent7Days +
+                                                ' AES',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.start,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        // margin: EdgeInsets.only(top: 10.0),
-                                        child: Text(
-                                          AppLocalizations.of(context).translate('acquired_return_thirtydays'),
-                                          style: TextStyle(color: Colors.white, fontSize: 15.0),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        margin: EdgeInsets.only(top: 10.0),
-                                        child: Text(
-                                          myTrustPerformance.acquired30Days + " AES",
-                                          style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 30.0),
-                            child: Card(
-                              child: Container(
-                                padding: EdgeInsets.all(15.0),
-                                width: MediaQuery.of(context).size.width,
-                                height: 100.0,
-                                child: Column(
-                                  children: <Widget>[
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Text(
-                                        AppLocalizations.of(context).translate('team_data'),
-                                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
-                                        textAlign: TextAlign.start,
-                                      ),
+                                      ],
                                     ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 15.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Container(
-                                            width: MediaQuery.of(context).size.width / 2,
-                                            child: Text(
-                                              AppLocalizations.of(context).translate('team_community'),
-                                              style: TextStyle(color: Colors.black, fontSize: 15.0),
-                                              textAlign: TextAlign.start,
+                                  ),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          // margin: EdgeInsets.only(top: 10.0),
+                                          child: Text(
+                                            AppLocalizations.of(context)
+                                                .translate(
+                                                    'acquired_return_thirtydays'),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.0),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          margin: EdgeInsets.only(top: 10.0),
+                                          child: Text(
+                                            myTrustPerformance.acquired30Days +
+                                                " AES",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 30.0),
+                              child: Card(
+                                child: Container(
+                                  padding: EdgeInsets.all(15.0),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 100.0,
+                                  child: Column(
+                                    children: <Widget>[
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        child: Text(
+                                          AppLocalizations.of(context)
+                                              .translate('team_data'),
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16.0),
+                                          textAlign: TextAlign.start,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(top: 15.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                              child: Text(
+                                                AppLocalizations.of(context)
+                                                    .translate(
+                                                        'team_community'),
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 15.0),
+                                                textAlign: TextAlign.start,
+                                              ),
                                             ),
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            myTrustPerformance.teamMember + AppLocalizations.of(context).translate('people'),
-                                            style: TextStyle(color: Colors.black, fontSize: 15.0),
-                                          ),
-                                        ],
+                                            Spacer(),
+                                            Text(
+                                              myTrustPerformance.teamMember +
+                                                  AppLocalizations.of(context)
+                                                      .translate('people'),
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15.0),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    // Divider(
-                                    //   color: Colors.grey,
-                                    //   thickness: 0.3,
-                                    //   height: 28.0,
-                                    // ),
-                                    // Container(
-                                    //   // margin: EdgeInsets.only(top: 15.0),
-                                    //   child: Row(
-                                    //     children: <Widget>[
-                                    //       Container(
-                                    //         width: MediaQuery.of(context).size.width / 2,
-                                    //         child: Text(
-                                    //           "Trust Performance",
-                                    //           style: TextStyle(color: Colors.black, fontSize: 15.0),
-                                    //           textAlign: TextAlign.start,
-                                    //         ),
-                                    //       ),
-                                    //       Spacer(),
-                                    //       Text(
-                                    //         "0.000000 USDT",
-                                    //         style: TextStyle(color: Color(0xFF273b54), fontSize: 15.0, fontWeight: FontWeight.bold),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 16.0, left: 20.0),
-                            width: MediaQuery.of(context).size.width,
-                            child: Text(
-                              AppLocalizations.of(context).translate('income_overview'),
-                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
-                              textAlign: TextAlign.start,
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+                            // Container(
+                            //   margin: EdgeInsets.only(top: 16.0, left: 20.0),
+                            //   width: MediaQuery.of(context).size.width,
+                            //   child: Text(
+                            //     AppLocalizations.of(context).translate('income_overview'),
+                            //     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0),
+                            //     textAlign: TextAlign.start,
+                            //   ),
+                            // )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 16.0, left: 40.0),
+                    width: MediaQuery.of(context).size.width,
+                    child: Text(
+                      AppLocalizations.of(context).translate('income_overview'),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0),
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
                 ),
-              )
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  _buildCardRow(_performanceAttrList[0]),
-                  _buildCardRow(_performanceAttrList[1]),
-                  _buildCardRow(_performanceAttrList[2]),
-                  // _buildCardRow(_performanceAttrList[3]),
-                  // _buildCardRow(_performanceAttrList[4]),
-                  // _buildCardRow(_performanceAttrList[5]),
-                ]
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                margin: EdgeInsets.all(10.0),
-              ),
-            )
-          ],
-        )
-      )
-    );
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    _buildCardRow(_performanceAttrList[0]),
+                    _buildCardRow(_performanceAttrList[1]),
+                    _buildCardRow(_performanceAttrList[2]),
+                    // _buildCardRow(_performanceAttrList[3]),
+                    // _buildCardRow(_performanceAttrList[4]),
+                    // _buildCardRow(_performanceAttrList[5]),
+                  ]),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: EdgeInsets.all(10.0),
+                  ),
+                )
+              ],
+            )));
   }
 }
