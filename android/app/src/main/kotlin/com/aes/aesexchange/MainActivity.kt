@@ -1,4 +1,4 @@
-package com.example.aes_exchange
+package com.aes.aesexchange
 
 import android.os.Bundle
 
